@@ -1,0 +1,14 @@
+{
+  "id": "content_002",
+  "character": "Isabelle",
+  "topic": "control-flow",
+  "title": "제어 흐름으로 프로그래밍 기술 향상시키기",
+  "description": "Isabelle과 함께 if/else 조건문을 배워봅시다",
+  "text": "안녕하세요! 저는 Isabelle입니다. 오늘은 제어 흐름에 대해 설명해드리겠습니다.\n\n제어 흐름은 프로그램이 어떤 조건에 따라 다른 결정을 내리는 방법입니다. 가장 간단한 예는 if/else 문입니다.\n\nif (날씨 === '맑음') {\n  공원에서 놀겠습니다!\n} else {\n  집에서 책을 읽겠습니다.\n}\n\n이렇게 조건에 따라 다른 행동을 할 수 있어요. switch 문도 여러 조건을 처리할 때 유용합니다.",
+  "imageId": "img_control_flow_001",
+  "difficulty": "beginner",
+  "estimatedTime": 5,
+  "tags": ["control-flow", "conditionals", "javascript"],
+  "createdAt": "2024-11-30T10:00:00Z",
+  "updatedAt": "2024-11-30T10:00:00Z"
+}

@@ -1,0 +1,64 @@
+.character-selector {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.character-title {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.character-card {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  user-select: none;
+}
+
+.character-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: #4CAF50;
+}
+
+.character-card.selected {
+  background: #e8f5e9;
+  border-color: #4CAF50;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.character-avatar {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.character-emoji {
+  display: inline-block;
+}
+
+.character-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.character-species {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}

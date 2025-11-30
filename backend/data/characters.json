@@ -1,0 +1,62 @@
+[
+  {
+    "id": "char_tom_nook",
+    "name": "Tom Nook",
+    "species": "Raccoon",
+    "description": "성공한 사업가 Tom Nook",
+    "imageUrl": "/images/characters/tom-nook.png",
+    "voiceProfile": "business-formal",
+    "specialties": ["variables", "functions", "data-structures"],
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "char_isabelle",
+    "name": "Isabelle",
+    "species": "Shih Tzu",
+    "description": "도시 비서 Isabelle",
+    "imageUrl": "/images/characters/isabelle.png",
+    "voiceProfile": "friendly-cheerful",
+    "specialties": ["control-flow", "loops", "conditionals"],
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "char_timmy",
+    "name": "Timmy",
+    "species": "Tanuki",
+    "description": "Nook의 어린 아들",
+    "imageUrl": "/images/characters/timmy.png",
+    "voiceProfile": "cute-young",
+    "specialties": ["basics", "types"],
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "char_tommy",
+    "name": "Tommy",
+    "species": "Tanuki",
+    "description": "Nook의 다른 어린 아들",
+    "imageUrl": "/images/characters/tommy.png",
+    "voiceProfile": "cute-young",
+    "specialties": ["basics", "arrays"],
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "char_blathers",
+    "name": "Blathers",
+    "species": "Owl",
+    "description": "박물관 관장 Blathers",
+    "imageUrl": "/images/characters/blathers.png",
+    "voiceProfile": "academic-formal",
+    "specialties": ["objects", "oop", "design-patterns"],
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "char_celeste",
+    "name": "Celeste",
+    "species": "Owl",
+    "description": "별 박사 Celeste",
+    "imageUrl": "/images/characters/celeste.png",
+    "voiceProfile": "mystical-wise",
+    "specialties": ["async", "promises", "async-await"],
+    "createdAt": "2024-11-30T10:00:00Z"
+  }
+]

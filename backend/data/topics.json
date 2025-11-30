@@ -1,0 +1,79 @@
+[
+  {
+    "id": "topic_variables",
+    "name": "변수와 데이터 타입",
+    "slug": "variables",
+    "description": "JavaScript의 변수와 다양한 데이터 타입",
+    "difficulty": "beginner",
+    "estimatedTime": 30,
+    "contentCount": 3,
+    "order": 1,
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "topic_control_flow",
+    "name": "제어 흐름",
+    "slug": "control-flow",
+    "description": "if/else, switch 조건문",
+    "difficulty": "beginner",
+    "estimatedTime": 25,
+    "contentCount": 2,
+    "order": 2,
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "topic_loops",
+    "name": "반복문",
+    "slug": "loops",
+    "description": "for, while, do-while 반복문",
+    "difficulty": "beginner",
+    "estimatedTime": 35,
+    "contentCount": 3,
+    "order": 3,
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "topic_functions",
+    "name": "함수와 스코프",
+    "slug": "functions",
+    "description": "함수 정의, 호출, 스코프 이해",
+    "difficulty": "beginner",
+    "estimatedTime": 40,
+    "contentCount": 3,
+    "order": 4,
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "topic_arrays",
+    "name": "배열과 객체",
+    "slug": "arrays",
+    "description": "배열 메서드, 객체 속성",
+    "difficulty": "intermediate",
+    "estimatedTime": 45,
+    "contentCount": 3,
+    "order": 5,
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "topic_async",
+    "name": "비동기 프로그래밍",
+    "slug": "async",
+    "description": "Promise, async/await",
+    "difficulty": "intermediate",
+    "estimatedTime": 50,
+    "contentCount": 2,
+    "order": 6,
+    "createdAt": "2024-11-30T10:00:00Z"
+  },
+  {
+    "id": "topic_oop",
+    "name": "객체 지향 프로그래밍",
+    "slug": "oop",
+    "description": "클래스, 상속, 캡슐화",
+    "difficulty": "advanced",
+    "estimatedTime": 60,
+    "contentCount": 2,
+    "order": 7,
+    "createdAt": "2024-11-30T10:00:00Z"
+  }
+]
