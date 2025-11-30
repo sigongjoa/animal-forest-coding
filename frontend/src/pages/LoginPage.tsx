@@ -93,9 +93,9 @@ const LoginPage: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // 로그인 성공 → 토큰 저장 및 IDE 페이지로 이동
+        // 로그인 성공 → 토큰 저장 및 스토리 페이지로 이동
         localStorage.setItem('authToken', data.token);
-        window.location.href = '/ide';
+        window.location.href = '/story';
       } else {
         alert('로그인 실패. 다시 시도해주세요.');
         setIsLoading(false);
