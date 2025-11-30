@@ -4,6 +4,12 @@ class NookPhoneUI {
   constructor() {
     this.isOpen = false;
     this.currentTab = 'missions';
+    this.userProgress = {
+      totalPoints: 0,
+      earnedBadges: [],
+      completedMissions: [],
+      currentStreak: 0
+    };
   }
 
   createNookPhoneHTML() {
@@ -390,6 +396,40 @@ class NookPhoneUI {
       }
     });
     this.displayMissions();
+    this.displayProgress();
+  }
+
+  displayProgress() {
+    const progressList = document.getElementById('progress-list');
+    if (!progressList) return;
+
+    const completionPercentage = ide.missions.length > 0
+      ? Math.round((this.userProgress.completedMissions.length / ide.missions.length) * 100)
+      : 0;
+
+    const badgesHTML = this.userProgress.earnedBadges.length > 0
+      ? this.userProgress.earnedBadges.map(badge => `<span style="display: inline-block; background: #fff3e0; color: #e65100; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin: 2px; font-weight: 600;">🏆 ${badge}</span>`).join('')
+      : '<span style="color: #999;">뱃지를 획득하려면 미션을 완료하세요!</span>';
+
+    progressList.innerHTML = `
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 13px; font-weight: 600; color: #2e7d32; margin-bottom: 8px;">💰 포인트</div>
+        <div style="font-size: 20px; font-weight: bold; color: #2e7d32;">${this.userProgress.totalPoints}</div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 13px; font-weight: 600; color: #2e7d32; margin-bottom: 8px;">✅ 진행도</div>
+        <div style="background: #c8e6c9; border-radius: 8px; height: 20px; overflow: hidden;">
+          <div style="background: #81c784; height: 100%; width: ${completionPercentage}%; transition: width 0.3s;"></div>
+        </div>
+        <div style="font-size: 11px; color: #666; margin-top: 4px;">${this.userProgress.completedMissions.length}/${ide.missions.length} 미션 완료</div>
+      </div>
+
+      <div>
+        <div style="font-size: 13px; font-weight: 600; color: #2e7d32; margin-bottom: 8px;">🏆 뱃지</div>
+        <div>${badgesHTML}</div>
+      </div>
+    `;
   }
 
   switchTab(tabName) {
@@ -408,6 +448,11 @@ class NookPhoneUI {
     );
     if (activeButton) activeButton.classList.add('active');
 
+    // 진행도 탭 선택 시 새로 고침
+    if (tabName === 'progress') {
+      this.displayProgress();
+    }
+
     this.currentTab = tabName;
   }
 
@@ -415,14 +460,16 @@ class NookPhoneUI {
     const missionsList = document.getElementById('missions-list');
     if (!missionsList || ide.missions.length === 0) return;
 
-    missionsList.innerHTML = ide.missions.map(mission => `
-      <div class="mission-card ${mission.id === ide.currentMission?.id ? 'active' : ''}"
+    missionsList.innerHTML = ide.missions.map(mission => {
+      const isCompleted = this.userProgress.completedMissions.includes(mission.id);
+      return `
+      <div class="mission-card ${mission.id === ide.currentMission?.id ? 'active' : ''} ${isCompleted ? 'completed' : ''}"
            onclick="nookphone.selectMission('${mission.id}')">
-        <div style="font-weight: 600; color: #2e7d32;">${mission.title}</div>
+        <div style="font-weight: 600; color: #2e7d32;">${isCompleted ? '✅ ' : ''}${mission.title}</div>
         <div style="font-size: 12px; color: #666; margin-top: 4px;">${mission.description}</div>
         <span class="mission-difficulty ${mission.difficulty}">${mission.difficulty}</span>
       </div>
-    `).join('');
+    `}).join('');
   }
 
   selectMission(missionId) {
@@ -463,6 +510,12 @@ class NookPhoneUI {
 
       if (ide.currentMission) {
         const gradeResult = await ide.gradeMission(code, ide.currentMission.id);
+
+        // 성공 시 포인트와 뱃지 업데이트
+        if (gradeResult.passed) {
+          this.awardPoints(gradeResult);
+        }
+
         this.showNookReaction(gradeResult);
       }
     } else {
@@ -472,6 +525,27 @@ class NookPhoneUI {
         message: '음... 뭔가 이상한데?',
         error: result.error
       });
+    }
+  }
+
+  awardPoints(gradeResult) {
+    if (gradeResult.reward) {
+      const { points, badge } = gradeResult.reward;
+
+      // 포인트 추가
+      this.userProgress.totalPoints += points;
+
+      // 뱃지 추가 (중복 제거)
+      if (badge && !this.userProgress.earnedBadges.includes(badge)) {
+        this.userProgress.earnedBadges.push(badge);
+      }
+
+      // 완료된 미션 추가
+      if (ide.currentMission && !this.userProgress.completedMissions.includes(ide.currentMission.id)) {
+        this.userProgress.completedMissions.push(ide.currentMission.id);
+      }
+
+      console.log(`🎉 축하합니다! +${points}점 획득! 총 ${this.userProgress.totalPoints}점`);
     }
   }
 
@@ -498,16 +572,42 @@ class NookPhoneUI {
     const messageEl = document.getElementById('reaction-message');
 
     let message = result.message || result.feedback || '...';
-    if (result.error && !result.passed) {
-      message = result.hint || message;
+    let avatar = '🦝'; // 기본 너굴
+
+    if (result.passed) {
+      // 성공 메시지 다양화
+      const successMessages = [
+        '오호! 완벽하구리!',
+        '훌륭합니다!',
+        '정말 잘 했어요!',
+        '이제 진짜 프로그래머군요!',
+        '천재인가 봅니다!'
+      ];
+      message = successMessages[Math.floor(Math.random() * successMessages.length)];
+      if (result.message) message += ' ' + result.message;
+      avatar = '🦝'; // 행복한 너굴
+    } else if (result.error) {
+      // 오류 메시지
+      const errorMessages = [
+        '음... 뭔가 이상한데?',
+        '다시 한 번 살펴보게!',
+        '거의 다 왔어요!',
+        '여기가 문제인 것 같은데...'
+      ];
+      message = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+      if (result.hint) message += ' 💡 ' + result.hint;
+      avatar = '🦝';
     }
 
-    messageEl.textContent = message;
+    messageEl.textContent = avatar + ' ' + message;
     reactionEl.classList.remove('hidden');
+
+    // 성공할 때는 더 길게 표시
+    const duration = result.passed ? 4000 : 3000;
 
     setTimeout(() => {
       reactionEl.classList.add('hidden');
-    }, 3000);
+    }, duration);
   }
 
   updateTime() {
