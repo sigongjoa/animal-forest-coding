@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import IDEWindowManager from '../components/IDEWindowManager';
 
@@ -16,7 +16,8 @@ const StoryPage: React.FC = () => {
   const [currentDialogueIndex, setCurrentDialogueIndex] = useState<number>(0);
   const [displayedText, setDisplayedText] = useState<string>('');
   const [isTyping, setIsTyping] = useState<boolean>(true);
-  const [sceneStartTime, setSceneStartTime] = useState<number>(Date.now());
+  const typingIndexRef = useRef<number>(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // 스토리 데이터
   const scenes: Scene[] = [
@@ -49,30 +50,56 @@ const StoryPage: React.FC = () => {
     }
   ];
 
+  // TTS 오디오 재생
+  const playDialogueAudio = async (text: string) => {
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        if (audioRef.current) {
+          audioRef.current.src = audioUrl;
+          audioRef.current.play().catch(err => console.log('Audio play failed:', err));
+        }
+      }
+    } catch (error) {
+      console.error('TTS error:', error);
+    }
+  };
+
   // 텍스트 타이핑 효과
   useEffect(() => {
-    if (!isTyping) return;
-
     const currentScene = scenes[currentSceneIndex];
     const currentDialogue = currentScene.dialogues[currentDialogueIndex];
 
     if (!currentDialogue) return;
 
+    if (!isTyping) return;
+
+    typingIndexRef.current = 0;
     const typingSpeed = 50; // ms per character
-    let currentIndex = 0;
 
     const typingInterval = setInterval(() => {
-      if (currentIndex <= currentDialogue.length) {
-        setDisplayedText(currentDialogue.substring(0, currentIndex));
-        currentIndex++;
+      typingIndexRef.current++;
+      if (typingIndexRef.current <= currentDialogue.length) {
+        setDisplayedText(currentDialogue.substring(0, typingIndexRef.current));
       } else {
         setIsTyping(false);
         clearInterval(typingInterval);
       }
     }, typingSpeed);
 
+    // 대사 시작할 때 오디오 재생
+    playDialogueAudio(currentDialogue);
+
     return () => clearInterval(typingInterval);
-  }, [currentSceneIndex, currentDialogueIndex, isTyping, scenes]);
+  }, [currentSceneIndex, currentDialogueIndex, isTyping]);
 
   // 다음 대사로
   const handleNextDialogue = () => {
@@ -106,6 +133,9 @@ const StoryPage: React.FC = () => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black flex items-center justify-center">
+      {/* 오디오 요소 */}
+      <audio ref={audioRef} className="hidden" />
+
       {/* 배경 이미지 */}
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
