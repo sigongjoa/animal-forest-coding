@@ -130,6 +130,11 @@ const IDEPage: React.FC = () => {
       // Capture stdout using Pyodide's built-in output capture
       let capturedOutput = '';
 
+      const indentedCode = code
+        .split('\n')
+        .map((line) => '    ' + line)
+        .join('\n');
+
       const pythonCode = `
 import sys
 from io import StringIO
@@ -138,10 +143,7 @@ old_stdout = sys.stdout
 sys.stdout = StringIO()
 
 try:
-${code
-  .split('\n')
-  .map((line) => '    ' + line)
-  .join('\n')}
+${indentedCode}
 except Exception as e:
     print(f"Error: {e}")
 
@@ -151,12 +153,12 @@ print(result, end='')
 `;
 
       const output = await pyRef.current.runPythonAsync(pythonCode);
-      const outputStr = String(output || '').trim();
+      const outputStr = output !== undefined && output !== null ? String(output).trim() : '';
       capturedOutput = outputStr || '(출력 없음)';
       setOutput(capturedOutput);
 
       // Check if passed test cases
-      if (currentMission && outputStr === currentMission.testCases[0].expected.trim()) {
+      if (currentMission && outputStr && outputStr === currentMission.testCases[0].expected.trim()) {
         if (!completedMissions.has(currentMission.id)) {
           const newCompleted = new Set(completedMissions);
           newCompleted.add(currentMission.id);
