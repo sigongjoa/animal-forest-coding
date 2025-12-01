@@ -7,9 +7,9 @@ const EntryPage: React.FC = () => {
 
   const handleStartClick = () => {
     setIsButtonPressed(true);
-    // 버튼 클릭 애니메이션 후 로그인 페이지로 이동
+    // 버튼 클릭 애니메이션 후 스토리 페이지로 이동 (로그인 스킵)
     setTimeout(() => {
-      navigate('/login');
+      navigate('/story');
     }, 300);
   };
 
