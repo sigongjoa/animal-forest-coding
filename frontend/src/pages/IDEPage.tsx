@@ -127,38 +127,23 @@ const IDEPage: React.FC = () => {
     setOutput('');
 
     try {
-      // Capture stdout using Pyodide's built-in output capture
-      let capturedOutput = '';
+      // Simply execute the user's code directly
+      // Pyodide captures stdout automatically
+      await pyRef.current.runPythonAsync(code);
 
-      const indentedCode = code
-        .split('\n')
-        .map((line) => '    ' + line)
-        .join('\n');
-
+      // Try to get output from Python's sys module
       const pythonCode = `
 import sys
-from io import StringIO
-
-old_stdout = sys.stdout
-sys.stdout = StringIO()
-
-try:
-${indentedCode}
-except Exception as e:
-    print(f"Error: {e}")
-
-result = sys.stdout.getvalue()
-sys.stdout = old_stdout
-print(result, end='')
+# Get captured output from stdout
+sys.stdout.getvalue() if hasattr(sys.stdout, 'getvalue') else ''
 `;
 
-      const output = await pyRef.current.runPythonAsync(pythonCode);
-      const outputStr = output !== undefined && output !== null ? String(output).trim() : '';
-      capturedOutput = outputStr || '(출력 없음)';
-      setOutput(capturedOutput);
+      const capturedOutput = await pyRef.current.runPythonAsync(pythonCode);
+      const finalOutput = capturedOutput && capturedOutput.trim() ? String(capturedOutput).trim() : '(코드가 실행되었습니다)';
+      setOutput(finalOutput);
 
       // Check if passed test cases
-      if (currentMission && outputStr && outputStr === currentMission.testCases[0].expected.trim()) {
+      if (currentMission && finalOutput && finalOutput !== '(코드가 실행되었습니다)' && finalOutput === currentMission.testCases[0].expected.trim()) {
         if (!completedMissions.has(currentMission.id)) {
           const newCompleted = new Set(completedMissions);
           newCompleted.add(currentMission.id);
