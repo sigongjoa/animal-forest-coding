@@ -50,8 +50,8 @@ test.describe('StoryPage E2E Tests', () => {
 
   // E2E-3: 다음 버튼으로 대사 진행
   test('E2E-3: Click next button should advance dialogue', async () => {
-    // 초기 진행도 확인
-    const progressInitial = page.getByText(/1 \/ 2 \( 1 \/ 5 \)/);
+    // 초기 진행도 확인 (공백 무시)
+    const progressInitial = page.getByText(/1\s*\/\s*2\s*\(\s*1\s*\/\s*5\s*\)/);
     await expect(progressInitial).toBeVisible();
 
     // 다음 버튼 클릭
@@ -59,7 +59,7 @@ test.describe('StoryPage E2E Tests', () => {
     await nextButton.click();
 
     // 진행도가 변경되었는지 확인
-    await expect(page.getByText(/1 \/ 2 \( 2 \/ 5 \)/)).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/1\s*\/\s*2\s*\(\s*2\s*\/\s*5\s*\)/)).toBeVisible({ timeout: 5000 });
   });
 
   // E2E-4: 여러 대사 진행 후 씬 변경
@@ -75,8 +75,8 @@ test.describe('StoryPage E2E Tests', () => {
     // 5번째 대사에서 클릭하면 Scene 2로 이동
     await nextButton.click();
 
-    // Scene 2 확인 (진행도가 2/2로 변경)
-    await expect(page.getByText(/2 \/ 2 \( 1 \/ 6 \)/)).toBeVisible({ timeout: 5000 });
+    // Scene 2 확인 (진행도가 2/2로 변경) - 공백 무시
+    await expect(page.getByText(/2\s*\/\s*2\s*\(\s*1\s*\/\s*6\s*\)/)).toBeVisible({ timeout: 5000 });
   });
 
   // E2E-5: 배경이미지 변경 확인
@@ -132,23 +132,23 @@ test.describe('StoryPage E2E Tests', () => {
 
   // E2E-8: 진행도 정확성 확인
   test('E2E-8: Progress indicator should show correct numbers', async () => {
-    // 초기 진행도 확인
-    await expect(page.getByText(/1 \/ 2 \( 1 \/ 5 \)/)).toBeVisible();
+    // 초기 진행도 확인 (공백 무시)
+    await expect(page.getByText(/1\s*\/\s*2\s*\(\s*1\s*\/\s*5\s*\)/)).toBeVisible();
 
     const nextButton = page.getByRole('button', { name: /다음|시작하기/i });
 
-    // 각 단계별 진행도 확인
-    const expectedProgress = [
-      '1 / 2 ( 2 / 5 )',
-      '1 / 2 ( 3 / 5 )',
-      '1 / 2 ( 4 / 5 )',
-      '1 / 2 ( 5 / 5 )',
-      '2 / 2 ( 1 / 6 )',
+    // 각 단계별 진행도 확인 (공백 무시하는 정규식)
+    const expectedProgressPatterns = [
+      /1\s*\/\s*2\s*\(\s*2\s*\/\s*5\s*\)/,
+      /1\s*\/\s*2\s*\(\s*3\s*\/\s*5\s*\)/,
+      /1\s*\/\s*2\s*\(\s*4\s*\/\s*5\s*\)/,
+      /1\s*\/\s*2\s*\(\s*5\s*\/\s*5\s*\)/,
+      /2\s*\/\s*2\s*\(\s*1\s*\/\s*6\s*\)/,
     ];
 
-    for (const progress of expectedProgress) {
+    for (const pattern of expectedProgressPatterns) {
       await nextButton.click();
-      await expect(page.getByText(new RegExp(progress))).toBeVisible({ timeout: 3000 });
+      await expect(page.getByText(pattern)).toBeVisible({ timeout: 3000 });
     }
   });
 
