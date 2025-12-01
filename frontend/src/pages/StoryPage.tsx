@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import IDEWindowManager from '../components/IDEWindowManager';
 
 interface Scene {
   id: number;
@@ -116,6 +117,9 @@ const StoryPage: React.FC = () => {
 
       {/* 다크 오버레이 */}
       <div className="absolute inset-0 bg-black opacity-40 z-10" />
+
+      {/* IDE 윈도우 매니저 */}
+      <IDEWindowManager />
 
       {/* 메인 콘텐츠 */}
       <div className="relative z-20 w-full h-full flex flex-col justify-end pb-12 px-4">

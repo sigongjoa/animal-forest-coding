@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const EntryPage: React.FC = () => {
   const navigate = useNavigate();
   const [isButtonPressed, setIsButtonPressed] = useState<boolean>(false);
 
+  useEffect(() => {
+    console.log('🎬 EntryPage 컴포넌트가 렌더링되었습니다!');
+  }, []);
+
   const handleStartClick = () => {
+    console.log('🎬 EntryPage: handleStartClick 시작');
     setIsButtonPressed(true);
     // 버튼 클릭 애니메이션 후 스토리 페이지로 이동 (로그인 스킵)
     setTimeout(() => {
+      console.log('🎬 EntryPage: navigate 호출 직전');
+      console.log('🎬 navigate 함수:', typeof navigate);
       navigate('/story');
+      console.log('🎬 EntryPage: navigate 호출 완료');
     }, 300);
   };
 

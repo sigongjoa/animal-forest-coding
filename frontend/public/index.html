@@ -55,37 +55,6 @@
       이 애플리케이션을 실행하려면 JavaScript를 활성화해야 합니다.
     </noscript>
     <div id="root"></div>
-
-    <!-- Phase 2 IDE 스크립트 -->
-    <script src="ide.js"></script>
-    <script src="nookphone.js"></script>
-
-    <!-- 기존 앱 -->
-    <script src="app.js"></script>
-
-    <!-- IDE 초기화 -->
-    <script>
-      (async () => {
-        const statusEl = document.createElement('div');
-        statusEl.className = 'ide-loading';
-        statusEl.textContent = '⏳ Pyodide IDE 초기화 중...';
-        document.body.appendChild(statusEl);
-
-        const ideReady = await initializeIDE();
-        if (ideReady) {
-          nookphone.init();
-          statusEl.textContent = '✅ IDE 준비 완료!';
-          statusEl.className = 'ide-loading ide-ready';
-          console.log('🎮 너굴포트 IDE가 준비되었습니다!');
-
-          setTimeout(() => {
-            statusEl.style.display = 'none';
-          }, 2000);
-        } else {
-          statusEl.textContent = '❌ IDE 초기화 실패';
-          statusEl.style.color = '#ff6b6b';
-        }
-      })();
-    </script>
+    <!-- React 앱이 여기에 마운트됩니다 (src/index.tsx) -->
   </body>
 </html>
