@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+
   // ============ STATE 관리 ============
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -102,12 +105,12 @@ const LoginPage: React.FC = () => {
       }
 
       // 어느 경우든 스토리 페이지로 이동
-      window.location.href = '/story';
+      navigate('/story', { replace: true });
     } catch (error) {
       console.error('로그인 에러:', error);
       // 에러 발생해도 계속 진행 (프로토타입 모드)
       localStorage.setItem('authToken', 'demo-token-' + Date.now());
-      window.location.href = '/story';
+      navigate('/story', { replace: true });
     }
   };
 
