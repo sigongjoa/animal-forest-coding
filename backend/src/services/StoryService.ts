@@ -76,7 +76,7 @@ class StoryService {
 
       // Add to cache with LRU eviction
       if (this.episodesCache.size >= this.maxCacheSize) {
-        const firstKey = this.episodesCache.keys().next().value;
+        const firstKey = this.episodesCache.keys().next().value as string;
         this.episodesCache.delete(firstKey);
         console.log(`♻️ Evicted ${firstKey} from cache`);
       }

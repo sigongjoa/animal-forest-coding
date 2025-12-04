@@ -180,7 +180,7 @@ Please analyze this code and provide feedback in JSON format.`;
         throw new Error(`Ollama API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as { response: string };
       const responseText = data.response;
 
       let feedbackData;
