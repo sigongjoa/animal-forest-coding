@@ -1,12 +1,61 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { restoreGameState, selectProgression } from './store/slices/progressionSlice';
+import { persistenceService } from './services/PersistenceService';
+import { store } from './store';
 import EntryPage from './pages/EntryPage';
 import LoginPage from './pages/LoginPage';
 import StoryPage from './pages/StoryPage';
 import IDEPage from './pages/IDEPage';
 import './App.css';
 
-function App() {
+function AppWithPersistence() {
+  const dispatch = useDispatch();
+  const progression = useSelector(selectProgression);
+
+  // Restore game state on app mount
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+
+    if (userId && token) {
+      console.log('[App] Restoring game state for user:', userId);
+      dispatch(restoreGameState({ studentId: userId, token }) as any);
+    }
+  }, [dispatch]);
+
+  // Set up auto-save when student is logged in
+  useEffect(() => {
+    if (progression.studentId) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        console.log('[App] Starting auto-save for user:', progression.studentId);
+
+        const unsubscribe = store.subscribe(() => {
+          const currentState = store.getState().progression;
+          persistenceService.startAutoSave(
+            () => ({
+              studentId: progression.studentId!,
+              episodeId: currentState.episodeId || 'ep_1',
+              completedMissions: currentState.completedMissions,
+              currentMissionIndex: currentState.currentMissionIndex,
+              points: currentState.points,
+              badges: currentState.badges,
+              lastModified: Date.now(),
+            }),
+            token
+          );
+        });
+
+        return () => {
+          persistenceService.stopAutoSave();
+          unsubscribe();
+        };
+      }
+    }
+  }, [progression.studentId]);
+
   return (
     <Router>
       <Routes>
@@ -20,4 +69,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppWithPersistence;

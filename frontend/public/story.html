@@ -334,10 +334,11 @@
         <div class="header">
             <h1>🏝️ 너굴 코딩 - 에피소드 1</h1>
             <p>공짜는 없다구리!</p>
+            <p data-testid="points" style="font-size: 18px; margin-top: 10px;">포인트: <span id="points-display">0</span></p>
         </div>
 
         <!-- 진행도 -->
-        <div class="progress" id="progressBar">
+        <div class="progress" id="progressBar" data-testid="progress-bar">
             <div class="progress-item completed"></div>
             <div class="progress-item"></div>
             <div class="progress-item"></div>
@@ -423,7 +424,7 @@
                 </div>
 
                 <label>코드를 작성하세요:</label>
-                <textarea id="editor-step1" class="editor-input">public class BankSystem {
+                <textarea id="editor-step1" class="editor-input" data-testid="editor-input">public class BankSystem {
     public static void main(String[] args) {
         // 미션 1: 빚(loan) 변수를 선언하고 초기화하세요.
         // 여기에 코드를 작성하세요
@@ -432,16 +433,16 @@
 }</textarea>
 
                 <div class="editor-controls">
-                    <button class="run-button" onclick="runStep1()">▶ 코드 실행</button>
-                    <button class="reset-button" onclick="resetStep1()">🔄 초기화</button>
+                    <button class="run-button" data-testid="run-code-btn" onclick="runStep1()">▶ 코드 실행</button>
+                    <button class="reset-button" data-testid="reset-code-btn" onclick="resetStep1()">🔄 초기화</button>
                 </div>
 
-                <div id="output-step1" class="output-section">
+                <div id="output-step1" class="output-section" data-testid="output-section">
                     <div class="output-title">📤 실행 결과:</div>
-                    <div id="output-content-step1" class="output"></div>
+                    <div id="output-content-step1" class="output" data-testid="output-content"></div>
                 </div>
 
-                <button id="next-step1" class="controls" style="width: 100%; display: none; margin-top: 15px;" onclick="goToMission2()">
+                <button id="next-step1" class="controls" style="width: 100%; display: none; margin-top: 15px;" data-testid="submit-code-btn" onclick="goToMission2()">
                     ✅ 완료! 다음 단계로 →
                 </button>
             </div>
@@ -546,7 +547,7 @@
                 "좋아, 계좌 개설이 완료됐어. 현재 빚: <strong>49,800벨</strong>. 매달 이자: <strong>2,490벨</strong>. ...열심히 일해서 갚아야겠지? 자, 이제 밖으로 나가서 돈을 벌어보자고!"
             </div>
 
-            <div class="success">
+            <div class="success" data-testid="mission-success">
                 ✅ 1주 차 학습 완료!
                 <br><br>
                 획득 지식: Primitive Types, Variable Declaration, Type Casting

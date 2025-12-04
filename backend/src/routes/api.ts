@@ -4,14 +4,16 @@ import { ImageService } from '../services/ImageService';
 import { AnimalesesTTSService } from '../services/AnimalesesTTSService';
 import { ApiError } from '../middleware/errorHandler';
 import feedbackRouter from './feedback';
+import progressionRouter from './progression';
 
 const router = Router();
 const contentService = new ContentService();
 const imageService = new ImageService();
 const ttsService = new AnimalesesTTSService();
 
-// Feedback 라우터 마운트
+// 라우터 마운트
 router.use(feedbackRouter);
+router.use('/progression', progressionRouter);
 
 // ==================== Characters ====================
 
