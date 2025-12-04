@@ -88,3 +88,22 @@ frontend/build/
 frontend/dist/
 frontend/.cache/
 frontend/.parcel-cache/
+
+# Test and Report outputs
+playwright-report/
+test-results/
+test-assets/
+coverage/
+.nyc_output/
+junit.xml
+*.lcov
+.coverage
+
+# Build and Development
+dist/
+build/
+out/
+
+# Additional dependencies (if accidentally committed)
+backend/node_modules/
+frontend/node_modules/
