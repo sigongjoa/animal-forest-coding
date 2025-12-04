@@ -3,11 +3,15 @@ import { ContentService } from '../services/ContentService';
 import { ImageService } from '../services/ImageService';
 import { AnimalesesTTSService } from '../services/AnimalesesTTSService';
 import { ApiError } from '../middleware/errorHandler';
+import feedbackRouter from './feedback';
 
 const router = Router();
 const contentService = new ContentService();
 const imageService = new ImageService();
 const ttsService = new AnimalesesTTSService();
+
+// Feedback 라우터 마운트
+router.use(feedbackRouter);
 
 // ==================== Characters ====================
 
