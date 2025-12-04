@@ -1,0 +1,43 @@
+{
+  "id": "ep_1",
+  "title": "파이썬과의 첫 만남",
+  "description": "너굴이와 함께 프로그래밍을 배우는 첫 번째 에피소드",
+  "order": 1,
+  "scenes": [
+    {
+      "id": 1,
+      "imageUrl": "/assets/img1.jpg",
+      "character": "tom_nook",
+      "characterName": "너굴",
+      "dialogues": [
+        "어서 오시게, 주민 대표!",
+        "우리 섬 생활은 좀 익숙해졌나?",
+        "다름이 아니라, 우리 섬도 이제 최첨단 디지털 시대를 맞이해서",
+        "'무인도 이주 플랜 관리 시스템'을 도입했거든!",
+        "이름하여... **파이썬(Python)**이라네!"
+      ],
+      "duration": 8000
+    },
+    {
+      "id": 2,
+      "imageUrl": "/assets/img2.jpg",
+      "character": "tom_nook",
+      "characterName": "너굴",
+      "dialogues": [
+        "자자, 겁먹을 것 없어!",
+        "이건 그냥 아주 똑똑한 너굴포트라고 생각하면 돼.",
+        "우리가 이 녀석한테 명령을 내리면,",
+        "섬의 정보를 기억하거나 계산을 대신 해주지.",
+        "오늘은 나랑 같이 이 시스템에 자네의 기본 정보를 등록해보자고.",
+        "아주 쉬운 것부터 시작할 테니 걱정 말게!"
+      ],
+      "duration": 10000
+    }
+  ],
+  "rewards": {
+    "basePoints": 100,
+    "completionBonus": 50,
+    "skipPenalty": -20,
+    "badges": ["story-complete"]
+  }
+}
