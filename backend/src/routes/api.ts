@@ -5,6 +5,7 @@ import { AnimalesesTTSService } from '../services/AnimalesesTTSService';
 import { ApiError } from '../middleware/errorHandler';
 import feedbackRouter from './feedback';
 import progressionRouter from './progression';
+import storiesRouter from './stories';
 
 const router = Router();
 const contentService = new ContentService();
@@ -14,6 +15,7 @@ const ttsService = new AnimalesesTTSService();
 // 라우터 마운트
 router.use(feedbackRouter);
 router.use('/progression', progressionRouter);
+router.use('/stories', storiesRouter);
 
 // ==================== Characters ====================
 

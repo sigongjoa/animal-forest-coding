@@ -10,6 +10,7 @@
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
+import { databaseService } from '../services/DatabaseService';
 
 // 타입 정의
 interface GameState {
@@ -319,43 +320,19 @@ function validateMissionCompletion(
 }
 
 /**
- * 임시 저장소 (나중에 PostgreSQL로 교체)
+ * DatabaseService에서 데이터 저장소 관리
+ * SQLite 기반 영속성 저장소 사용
  */
-const progressionStore = new Map<string, GameState>();
-
 async function saveProgressionToDatabase(state: GameState): Promise<GameState> {
-  // TODO: Replace with actual database call
-  // const result = await db.progression.upsert({
-  //   where: { studentId: state.studentId },
-  //   update: state,
-  //   create: state,
-  // });
-  // return result;
-
-  // 임시 구현
-  progressionStore.set(state.studentId, state);
-  return state;
+  return await databaseService.saveProgressionToDatabase(state);
 }
 
 async function loadProgressionFromDatabase(studentId: string): Promise<GameState | null> {
-  // TODO: Replace with actual database call
-  // const result = await db.progression.findUnique({
-  //   where: { studentId },
-  // });
-  // return result || null;
-
-  // 임시 구현
-  return progressionStore.get(studentId) || null;
+  return await databaseService.loadProgressionFromDatabase(studentId);
 }
 
 async function clearProgressionFromDatabase(studentId: string): Promise<void> {
-  // TODO: Replace with actual database call
-  // await db.progression.delete({
-  //   where: { studentId },
-  // });
-
-  // 임시 구현
-  progressionStore.delete(studentId);
+  return await databaseService.clearProgressionFromDatabase(studentId);
 }
 
 /**

@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectProgression } from '../store/slices/progressionSlice';
+import { persistenceService } from '../services/PersistenceService';
 import IDEWindowManager from '../components/IDEWindowManager';
 
 interface Scene {
@@ -12,6 +16,8 @@ interface Scene {
 
 const StoryPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const progression = useSelector(selectProgression);
   const [currentSceneIndex, setCurrentSceneIndex] = useState<number>(0);
   const [currentDialogueIndex, setCurrentDialogueIndex] = useState<number>(0);
   const [displayedText, setDisplayedText] = useState<string>('');
@@ -101,6 +107,54 @@ const StoryPage: React.FC = () => {
     return () => clearInterval(typingInterval);
   }, [currentSceneIndex, currentDialogueIndex, isTyping]);
 
+  // 스토리 진행상황 저장 및 IDE로 이동
+  const saveProgressionAndNavigate = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      if (!userId) {
+        console.warn('⚠️ No userId found, navigating without saving');
+        navigate('/ide');
+        return;
+      }
+
+      // 진행상황 업데이트
+      const updatedProgression = {
+        studentId: progression.studentId || userId,
+        episodeId: progression.episodeId || 'ep_1',
+        completedMissions: progression.completedMissions.includes('story')
+          ? progression.completedMissions
+          : [...progression.completedMissions, 'story'],
+        currentMissionIndex: Math.max(progression.currentMissionIndex, 1),
+        points: progression.points + 100,
+        badges: progression.badges.includes('story-complete')
+          ? progression.badges
+          : [...progression.badges, 'story-complete'],
+        lastModified: Date.now(),
+      };
+
+      // localStorage에 저장
+      persistenceService.saveToLocalStorage(updatedProgression);
+      console.log('✅ Progress saved to localStorage');
+
+      // Backend에도 동기화 (로그인한 경우)
+      if (token) {
+        try {
+          await persistenceService.saveToBackend(updatedProgression, token);
+          console.log('✅ Progress synced to backend');
+        } catch (error) {
+          console.warn('⚠️ Backend sync failed, but local save succeeded:', error);
+        }
+      }
+
+      navigate('/ide');
+    } catch (error) {
+      console.error('❌ Error saving progression:', error);
+      navigate('/ide');
+    }
+  };
+
   // 다음 대사로
   const handleNextDialogue = () => {
     const currentScene = scenes[currentSceneIndex];
@@ -117,15 +171,15 @@ const StoryPage: React.FC = () => {
         setDisplayedText('');
         setIsTyping(true);
       } else {
-        // 스토리 완료 → IDE로 이동
-        navigate('/ide');
+        // 스토리 완료 → 진행상황 저장 후 IDE로 이동
+        saveProgressionAndNavigate();
       }
     }
   };
 
   // 스킵 버튼
   const handleSkip = () => {
-    navigate('/ide');
+    saveProgressionAndNavigate();
   };
 
   const currentScene = scenes[currentSceneIndex];
@@ -164,11 +218,26 @@ const StoryPage: React.FC = () => {
 
           {/* 대사 박스 */}
           <div className="bg-white border-4 border-yellow-700 rounded-lg p-6 md:p-8 shadow-2xl min-h-32 md:min-h-40 flex flex-col justify-center">
-            {/* 대사 텍스트 */}
-            <p className="text-yellow-900 font-semibold text-base md:text-lg leading-relaxed">
-              {displayedText}
+            {/* 대사 텍스트 - 마크다운 렌더링 */}
+            <div className="text-yellow-900 font-semibold text-base md:text-lg leading-relaxed">
+              <ReactMarkdown
+                components={{
+                  strong: ({ node, ...props }) => (
+                    <strong className="font-bold text-yellow-950" {...props} />
+                  ),
+                  em: ({ node, ...props }) => (
+                    <em className="italic text-yellow-800" {...props} />
+                  ),
+                  code: ({ node, ...props }) => (
+                    <code className="bg-yellow-100 px-1 py-0.5 rounded font-mono text-sm" {...props} />
+                  ),
+                  p: ({ node, ...props }) => <>{props.children}</>,
+                }}
+              >
+                {displayedText}
+              </ReactMarkdown>
               {isTyping && <span className="animate-pulse">▋</span>}
-            </p>
+            </div>
 
             {/* 진행 상황 표시 */}
             <div className="mt-6 flex justify-between items-center">
