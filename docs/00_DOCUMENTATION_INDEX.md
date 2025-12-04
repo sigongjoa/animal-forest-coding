@@ -1,10 +1,16 @@
 # 너굴 코딩 플랫폼 - 종합 기술 & 운영 문서 인덱스
 
+**Last Updated**: 2025-12-05
+**Documentation Version**: 2.0 (Restructured)
+
 ## 📚 개요
 
-이 인덱스는 너굴 코딩 플랫폼의 **성공적인 소프트웨어 개발**을 위한 4가지 핵심 문서를 소개합니다.
+이 인덱스는 너굴 코딩 플랫폼의 **성공적인 소프트웨어 개발**을 위한 모든 문서를 소개합니다.
 
-총 4개 문서, 130+ 페이지, 100+ 체크리스트로 구성되어 있습니다.
+### 📊 문서 구조
+- **Core Documentation**: 기술 아키텍처, 테스트 전략, 로드맵
+- **Phase Documentation**: 각 개발 단계별 완료 보고서 및 구현 가이드
+- **Production Readiness**: CTO 리뷰 결과 및 프로덕션 배포 준비
 
 ---
 
@@ -505,15 +511,112 @@ Sprint 10 (1주):
 
 ---
 
+---
+
+## 📂 추가 문서 (Subdirectories)
+
+### Phase Documentation (단계별 구현)
+
+**위치**: `docs/PHASE_DOCUMENTATION/`
+
+| 파일 | 내용 | 대상 |
+|------|------|------|
+| `PHASE_1_COMPLETION_SUMMARY.md` | Phase 1 완료 보고서 | 개발팀, PM |
+| `PHASE_1_IMPLEMENTATION_GUIDE.md` | Phase 1 구현 가이드 | 개발자 |
+| `SESSION_2_STORY_PAGE_GUIDE.md` | 스토리 페이지 구현 | 프론트엔드 |
+| `REPOSITORY_CLEANUP.md` | 저장소 정리 보고서 | DevOps |
+| `SESSION_COMPLETION_REPORT.md` | 세션 완료 보고서 | PM, CTO |
+
+### Production Readiness (프로덕션 배포 준비)
+
+**위치**: `docs/PRODUCTION_READINESS/`
+
+| 파일 | 내용 | 대상 | 필독 순서 |
+|------|------|------|----------|
+| `START_HERE_PRODUCTION_FIXES.md` | **🚀 시작하기** | 모두 | 1️⃣ |
+| `CTO_REVIEW_ACTION_PLAN.md` | CTO 리뷰 & 액션 플랜 | 기술팀 | 2️⃣ |
+| `PRODUCTION_READINESS_FIX_PLAN.md` | 상세 구현 가이드 (5,000+줄) | 개발자 | 3️⃣ |
+| `QUICK_START_FIX_GUIDE.md` | 빠른 시작 (터미널 명령어) | 개발자 | 3️⃣ |
+| `IMPLEMENTATION_STATUS.md` | 진행상황 추적 및 체크리스트 | PM, 개발팀 | 진행 중 |
+
+### 기술 시스템 (Technical Systems)
+
+**위치**: `docs/13_TECHNICAL_ENHANCEMENT_STRATEGY/`, `docs/14_AI_CODE_VALIDATION_FRAMEWORK/`
+
+- 에셋 시스템 설계
+- NPC AI 시스템
+- 코드 검증 프레임워크
+
+---
+
+## 🎯 문서 선택 가이드
+
+### "나는 새로운 개발자다"
+1. `01_CORE_TECHNICAL_ARCHITECTURE.md` (시스템 이해)
+2. `04_PROJECT_DEVELOPMENT_ROADMAP.md` (계획 이해)
+3. 해당 Phase 문서 (구현 시작)
+
+### "나는 개발을 진행 중이다"
+1. 현재 Phase 문서에서 구현 가이드 참고
+2. `02_COMPREHENSIVE_TEST_STRATEGY_ROADMAP.md` (테스트 작성)
+3. 해당 섹션의 상세 문서
+
+### "프로덕션 배포를 준비 중이다"
+1. `docs/PRODUCTION_READINESS/START_HERE_PRODUCTION_FIXES.md`
+2. `docs/PRODUCTION_READINESS/CTO_REVIEW_ACTION_PLAN.md`
+3. `docs/PRODUCTION_READINESS/QUICK_START_FIX_GUIDE.md`
+4. 각 문제별 구현 및 검증
+
+### "나는 PM/CTO다"
+1. `04_PROJECT_DEVELOPMENT_ROADMAP.md` (계획 & 진행)
+2. `03_DEFINITION_OF_DONE.md` (품질 기준)
+3. 각 Phase 완료 보고서 (진행상황)
+4. `docs/PRODUCTION_READINESS/CTO_REVIEW_ACTION_PLAN.md` (배포 준비)
+
+---
+
+## 📋 디렉토리 구조
+
+```
+docs/
+├── 00_DOCUMENTATION_INDEX.md              ← 마스터 인덱스 (여기서 시작)
+├── 00_DOCUMENTATION_STRUCTURE.md          ← 문서 구조 설명
+├── 01_CORE_TECHNICAL_ARCHITECTURE.md      ← 기술 아키텍처
+├── 02_COMPREHENSIVE_TEST_STRATEGY_ROADMAP.md ← 테스트 전략
+├── 03_DEFINITION_OF_DONE.md               ← 완료 기준
+├── 04_PROJECT_DEVELOPMENT_ROADMAP.md      ← 개발 로드맵
+├── 05-09_TEST_REPORTS/                    ← 테스트 보고서들
+├── 10_COMPATIBILITY_TEST_PLAN.md
+├── 11_MONITORING_OBSERVABILITY_PLAN.md
+├── 12_STORY_PAGE_E2E_TEST_REPORT.md
+├── 13_TECHNICAL_ENHANCEMENT_STRATEGY/     ← 기술 시스템
+├── 14_AI_CODE_VALIDATION_FRAMEWORK/       ← 검증 시스템
+├── PHASE_DOCUMENTATION/                   ← Phase별 문서
+│   ├── PHASE_1_COMPLETION_SUMMARY.md
+│   ├── PHASE_1_IMPLEMENTATION_GUIDE.md
+│   ├── SESSION_2_STORY_PAGE_GUIDE.md
+│   ├── REPOSITORY_CLEANUP.md
+│   └── SESSION_COMPLETION_REPORT.md
+└── PRODUCTION_READINESS/                  ← 프로덕션 배포
+    ├── START_HERE_PRODUCTION_FIXES.md
+    ├── CTO_REVIEW_ACTION_PLAN.md
+    ├── PRODUCTION_READINESS_FIX_PLAN.md
+    ├── QUICK_START_FIX_GUIDE.md
+    └── IMPLEMENTATION_STATUS.md
+```
+
+---
+
 ## 🎉 결론
 
-이 4가지 문서는 **"너굴 코딩 플랫폼"**을 성공적으로 개발, 배포, 운영하기 위한 **종합 가이드**입니다.
+이 문서들은 **"너굴 코딩 플랫폼"**을 성공적으로 개발, 배포, 운영하기 위한 **종합 가이드**입니다.
 
 핵심:
 - 📖 **아키텍처** 문서: 무엇을 만들 것인가?
 - 🧪 **테스트 전략** 문서: 어떻게 품질을 보장할 것인가?
 - ✅ **DoD** 문서: 언제 완료된 것인가?
 - 📅 **로드맵** 문서: 언제 완료할 것인가?
+- 🚀 **프로덕션 준비** 문서: 어떻게 배포할 것인가?
 
-이 4가지가 명확하면, 팀은 자신감 있게 개발을 진행할 수 있습니다. 🚀
+이 5가지가 명확하면, 팀은 자신감 있게 개발을 진행할 수 있습니다. 🦝
 
