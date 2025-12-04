@@ -559,8 +559,9 @@ Sprint 10 (1주):
 
 ### "나는 개발을 진행 중이다"
 1. 현재 Phase 문서에서 구현 가이드 참고
-2. `02_COMPREHENSIVE_TEST_STRATEGY_ROADMAP.md` (테스트 작성)
-3. 해당 섹션의 상세 문서
+2. `02_COMPREHENSIVE_TEST_STRATEGY_ROADMAP.md` (테스트 전략)
+3. `13_TEST_INTEGRATED_TESTING_SOP.md` (테스트 실행 SOP)
+4. 해당 섹션의 상세 문서
 
 ### "프로덕션 배포를 준비 중이다"
 1. `docs/PRODUCTION_READINESS/START_HERE_PRODUCTION_FIXES.md`
@@ -586,11 +587,9 @@ docs/
 ├── 02_COMPREHENSIVE_TEST_STRATEGY_ROADMAP.md ← 테스트 전략
 ├── 03_DEFINITION_OF_DONE.md               ← 완료 기준
 ├── 04_PROJECT_DEVELOPMENT_ROADMAP.md      ← 개발 로드맵
-├── 05-09_TEST_REPORTS/                    ← 테스트 보고서들
-├── 10_COMPATIBILITY_TEST_PLAN.md
-├── 11_MONITORING_OBSERVABILITY_PLAN.md
-├── 12_STORY_PAGE_E2E_TEST_REPORT.md
-├── 13_TECHNICAL_ENHANCEMENT_STRATEGY/     ← 기술 시스템
+├── 05-12_TEST_REPORTS/                    ← 테스트 보고서들
+├── 13_TEST_INTEGRATED_TESTING_SOP.md      ← 통합 테스트 SOP ✨ NEW
+├── 14_TECHNICAL_ENHANCEMENT_STRATEGY/     ← 기술 시스템
 ├── 14_AI_CODE_VALIDATION_FRAMEWORK/       ← 검증 시스템
 ├── PHASE_DOCUMENTATION/                   ← Phase별 문서
 │   ├── PHASE_1_COMPLETION_SUMMARY.md
