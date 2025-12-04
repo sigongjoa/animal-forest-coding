@@ -65,8 +65,10 @@ const ERROR_TYPES = {
  */
 export class NookAIService {
   private ollamaUrl: string;
-  private model: string = 'mistral'; // Ollama에서 제공하는 모델
+  private model: string = 'qwen2:7b'; // Ollama에서 제공하는 모델
   private systemPrompt: string;
+  private feedbackCache: Map<string, { feedback: AiFeedback; timestamp: number }> = new Map();
+  private cacheMaxAge: number = 24 * 60 * 60 * 1000; // 24시간 캐시
 
   constructor(ollamaUrl?: string) {
     this.ollamaUrl = ollamaUrl || process.env.OLLAMA_URL || 'http://localhost:11434';
@@ -102,11 +104,56 @@ Always respond in JSON format with this structure:
   }
 
   /**
-   * 코드 분석 및 피드백 생성
+   * 캐시 키 생성 (학생, 미션, 코드 기반)
+   */
+  private _generateCacheKey(submission: CodeSubmission): string {
+    return `${submission.studentId}:${submission.missionId}:${submission.code}`;
+  }
+
+  /**
+   * 캐시에서 피드백 조회
+   */
+  private _getCachedFeedback(submission: CodeSubmission): AiFeedback | null {
+    const cacheKey = this._generateCacheKey(submission);
+    const cached = this.feedbackCache.get(cacheKey);
+
+    if (!cached) {
+      return null;
+    }
+
+    // 캐시 만료 확인
+    const age = Date.now() - cached.timestamp;
+    if (age > this.cacheMaxAge) {
+      this.feedbackCache.delete(cacheKey);
+      return null;
+    }
+
+    return cached.feedback;
+  }
+
+  /**
+   * 피드백을 캐시에 저장
+   */
+  private _cacheFeedback(submission: CodeSubmission, feedback: AiFeedback): void {
+    const cacheKey = this._generateCacheKey(submission);
+    this.feedbackCache.set(cacheKey, {
+      feedback,
+      timestamp: Date.now()
+    });
+  }
+
+  /**
+   * 코드 분석 및 피드백 생성 (캐싱 포함)
    */
   async generateFeedback(submission: CodeSubmission): Promise<AiFeedback> {
     try {
-      // Ollama API 호출
+      // Step 1: 캐시 확인
+      const cachedFeedback = this._getCachedFeedback(submission);
+      if (cachedFeedback) {
+        return cachedFeedback;
+      }
+
+      // Step 2: Ollama API 호출
       const prompt = `${this.systemPrompt}
 
 User code (${submission.language}):
@@ -168,6 +215,9 @@ Please analyze this code and provide feedback in JSON format.`;
         estimatedFixTime: feedbackData.estimatedFixTime || 300,
         generatedAt: new Date(),
       };
+
+      // Step 3: 피드백을 캐시에 저장
+      this._cacheFeedback(submission, feedback);
 
       return feedback;
     } catch (error) {
@@ -328,6 +378,23 @@ Please analyze this code and provide feedback in JSON format.`;
     }
 
     return `${criticalCount}개의 중요한 오류와 ${highCount}개의 높은 오류가 있습니다.`;
+  }
+
+  /**
+   * 캐시 비우기 (테스트용)
+   */
+  clearCache(): void {
+    this.feedbackCache.clear();
+  }
+
+  /**
+   * 캐시 통계 조회
+   */
+  getCacheStats(): { size: number; entries: number } {
+    return {
+      size: this.feedbackCache.size,
+      entries: this.feedbackCache.size
+    };
   }
 }
 
