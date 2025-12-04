@@ -615,6 +615,28 @@
             });
         }
 
+        // 유틸리티: 코드 정규화 (주석 제거, 공백 정리)
+        function normalizeCode(code) {
+            // 1. 한 줄 주석 제거 (//)
+            code = code.replace(/\/\/.*$/gm, '');
+            // 2. 멀티 라인 주석 제거 (/* ... */)
+            code = code.replace(/\/\*[\s\S]*?\*\//g, '');
+            // 3. 연속된 공백을 단일 공백으로 정규화
+            code = code.replace(/\s+/g, ' ');
+            // 4. 앞뒤 공백 제거
+            return code.trim();
+        }
+
+        // 유틸리티: 정규식 기반 검증
+        function validatePattern(code, patterns, requireAll = true) {
+            const normalized = normalizeCode(code);
+            if (requireAll) {
+                return patterns.every(pattern => pattern.test(normalized));
+            } else {
+                return patterns.some(pattern => pattern.test(normalized));
+            }
+        }
+
         // Step 1: 빚(Loan) 변수 선언
         function runStep1() {
             const code = document.getElementById('editor-step1').value;
@@ -624,7 +646,14 @@
 
             outputSection.classList.add('active');
 
-            if (code.includes('int loan') && code.includes('49800')) {
+            // 정규식 패턴: "int" 키워드, "loan" 변수명, "49800" 값
+            const patterns = [
+                /\bint\s+loan\s*=\s*49800\b/,  // 가장 정확한 형태
+                /\bint\s+loan/,                 // int loan 선언 확인
+                /49800/                         // 값 확인
+            ];
+
+            if (validatePattern(code, patterns, true)) {
                 output.textContent = '✅ 성공! int 타입을 올바르게 사용했습니다.\n\n너굴: "그렇지! int를 썼구나. 깔끔해!"';
                 nextBtn.style.display = 'block';
             } else {
@@ -654,8 +683,14 @@
 
             outputSection.classList.add('active');
 
-            if (code.includes('int loan') && code.includes('49800') &&
-                code.includes('double interestRate') && code.includes('0.05')) {
+            // 정규식 패턴: double 타입, interestRate 변수, 0.05 값
+            const patterns = [
+                /\bdouble\s+interestRate\s*=\s*0\.05\b/,
+                /\bdouble\s+interestRate/,
+                /0\.05/
+            ];
+
+            if (validatePattern(code, patterns, true)) {
                 output.textContent = '✅ 성공! double 타입을 올바르게 사용했습니다.\n\n너굴: "정확해! double을 사용했군. int로 했다면 0이 되어서 이자를 못 받았을 거야!"';
                 nextBtn.style.display = 'block';
             } else {
@@ -687,11 +722,14 @@
             outputSection.classList.add('active');
 
             // 정규식으로 캐스팅 형태 확인
-            if (code.includes('int interest') &&
-                (code.includes('(int)') || code.includes('(int )'))) {
+            // (int) 캐스트 및 interest 변수 확인
+            const castingPattern = /\(int\)\s*\(?\s*loan\s*\*\s*interestRate\s*\)?/;
+            const interestPattern = /\bint\s+interest\s*=/;
+
+            if (validatePattern(code, [castingPattern, interestPattern], true)) {
                 output.textContent = '첫 달 이자: 2490벨\n\n✅ 완벽해! 캐스팅을 올바르게 사용했습니다.';
                 nextBtn.style.display = 'block';
-            } else if (code.includes('int interest') && !code.includes('(int)')) {
+            } else if (normalizeCode(code).includes('int interest') && !normalizeCode(code).includes('(int)')) {
                 output.textContent = '❌ 컴파일 에러: Type mismatch: cannot convert from double to int\n\n너굴: "캐스팅이 필요해! (int)를 붙여줘!"';
                 nextBtn.style.display = 'none';
             } else {
