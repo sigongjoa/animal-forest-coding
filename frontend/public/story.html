@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>너굴 코딩 - 에피소드 1: 공짜는 없다구리!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5deb3 0%, #ffeaa7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            grid-auto-rows: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scene {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease-out;
+            display: none;
+            grid-column: 1 / -1;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scene-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dialogue {
+            background: #f8f9fa;
+            border-left: 5px solid #ff9800;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .dialogue strong {
+            color: #c4603d;
+            font-size: 18px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #ff9800;
+        }
+
+        .code-block pre {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .console-output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #00ff00;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ide-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            grid-column: 1 / -1;
+        }
+
+        .ide-section.active {
+            display: block;
+        }
+
+        .ide-section h3 {
+            color: #c4603d;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .mission-title {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #editor {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        .editor-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-start;
+        }
+
+        .run-button {
+            background: #4CAF50;
+        }
+
+        .run-button:hover {
+            background: #45a049;
+        }
+
+        .reset-button {
+            background: #2196F3;
+        }
+
+        .reset-button:hover {
+            background: #0b7dda;
+        }
+
+        .output-section {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .output-section.active {
+            display: block;
+        }
+
+        .output-title {
+            color: #ff9800;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .output {
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .step-counter {
+            background: #ff9800;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .nook-quote {
+            background: #ffe8cc;
+            border: 3px solid #ff9800;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 16px;
+            line-height: 1.8;
+            font-weight: 500;
+            color: #c4603d;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            grid-column: 1 / -1;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            grid-column: 1 / -1;
+        }
+
+        .progress-item {
+            flex: 1;
+            height: 8px;
+            background: #ddd;
+            border-radius: 10px;
+            margin: 0 5px;
+            position: relative;
+        }
+
+        .progress-item.completed {
+            background: #4CAF50;
+        }
+
+        .progress-item.active {
+            background: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .keyboard-hint {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>🏝️ 너굴 코딩 - 에피소드 1</h1>
+            <p>공짜는 없다구리!</p>
+        </div>
+
+        <!-- 진행도 -->
+        <div class="progress" id="progressBar">
+            <div class="progress-item completed"></div>
+            <div class="progress-item"></div>
+            <div class="progress-item"></div>
+            <div class="progress-item"></div>
+            <div class="progress-item"></div>
+        </div>
+
+        <!-- Scene 1: 오프닝 -->
+        <div class="scene active" data-scene="1">
+            <h2>🎬 오프닝 컷신</h2>
+            <img src="/episode/1/opening.jpg" alt="너굴의 계산기" class="scene-image">
+
+            <div class="nook-quote">
+                "반갑다구리! 무인도 이주 패키지에 당첨된 걸 환영해! ⛺ 이 섬의 이름은... 네가 정한 대로 '코딩섬'이라고 하면 되겠군."
+            </div>
+
+            <div class="controls">
+                <button onclick="goToScene(2)">다음 →</button>
+            </div>
+        </div>
+
+        <!-- Scene 2: 스토리 진행 -->
+        <div class="scene" data-scene="2">
+            <h2>💰 빚과의 만남</h2>
+            <img src="/episode/1/2.jpg" alt="너굴의 영수증" class="scene-image">
+
+            <div class="dialogue">
+                <strong>너굴:</strong> "자, 이제 정산을 해야지? 텐트 설치비, 인건비, 스마트폰 지급비, 그리고 섬 정착 수수료를 합치면..."
+            </div>
+
+            <img src="/episode/1/3.jpg" alt="긴 영수증" class="scene-image">
+
+            <div class="dialogue">
+                <strong>너굴:</strong> "합계 <strong>49,800벨</strong>이다구리! 💰 ...뭐? 지금 빈털터리라고? 곤란하네, 곤란해."
+            </div>
+
+            <img src="/episode/1/4.jpg" alt="계약서" class="scene-image">
+
+            <div class="dialogue">
+                <strong>너굴:</strong> "좋아! 내가 특별히 '너굴 뱅크' 대출 계좌를 만들어 주지. 대신, 우리 은행 시스템이 아직 개발 중이라서... <strong>네가 직접 네 계좌 정보를 코딩해서 시스템에 등록해야 해.</strong>"
+            </div>
+
+            <img src="/episode/1/5.jpg" alt="노트북" class="scene-image">
+
+            <div class="controls">
+                <button onclick="goToScene(1)">← 이전</button>
+                <button onclick="goToScene(3)">다음 →</button>
+            </div>
+        </div>
+
+        <!-- Scene 3: 미션 준비 -->
+        <div class="scene" data-scene="3">
+            <h2>⚙️ 은행 시스템 구축</h2>
+            <img src="/episode/1/step1.jpg" alt="첫 번째 단계" class="scene-image">
+
+            <div class="mission-title">
+                🎮 퀘스트: 너굴 은행 계좌 시스템을 구축하세요!
+            </div>
+
+            <div class="dialogue">
+                <strong>너굴:</strong> "자, 내 노트북을 빌려줄게. 여기에 자바(Java) 언어로 너의 빚 정보를 입력해 봐."
+            </div>
+
+            <div class="controls">
+                <button onclick="goToScene(2)">← 이전</button>
+                <button onclick="startMission()">IDE 시작 →</button>
+            </div>
+        </div>
+
+        <!-- IDE 섹션 -->
+        <div class="ide-section" id="ideSection">
+            <h3>💻 IDE - 코딩 미션</h3>
+
+            <div id="mission-1" class="mission-container">
+                <div class="step-counter">Step 1/3: 빚(Loan) 변수 선언</div>
+
+                <div class="nook-quote">
+                    "먼저 네가 갚아야 할 돈, <strong>49,800</strong>을 저장해야 해. 벨(Bell)은 쪼개질 수 없어. 0.5벨 같은 건 없단 말이지. 그렇다면 <strong>정수형(int)</strong>과 <strong>실수형(double)</strong> 중 뭘 써야 할까?"
+                </div>
+
+                <div class="keyboard-hint">
+                    💡 힌트: 정수형(int)을 사용하세요. 49,800은 정수입니다.
+                </div>
+
+                <label>코드를 작성하세요:</label>
+                <textarea id="editor-step1" class="editor-input">public class BankSystem {
+    public static void main(String[] args) {
+        // 미션 1: 빚(loan) 변수를 선언하고 초기화하세요.
+        // 여기에 코드를 작성하세요
+
+    }
+}</textarea>
+
+                <div class="editor-controls">
+                    <button class="run-button" onclick="runStep1()">▶ 코드 실행</button>
+                    <button class="reset-button" onclick="resetStep1()">🔄 초기화</button>
+                </div>
+
+                <div id="output-step1" class="output-section">
+                    <div class="output-title">📤 실행 결과:</div>
+                    <div id="output-content-step1" class="output"></div>
+                </div>
+
+                <button id="next-step1" class="controls" style="width: 100%; display: none; margin-top: 15px;" onclick="goToMission2()">
+                    ✅ 완료! 다음 단계로 →
+                </button>
+            </div>
+
+            <div id="mission-2" class="mission-container" style="display: none;">
+                <div class="step-counter">Step 2/3: 이자율(Interest Rate) 변수 선언</div>
+
+                <div class="nook-quote">
+                    "세상에 공짜는 없지. 대출에는 <strong>이자(Interest)</strong>가 붙는 법! 내 이자율은 아주 합리적인 <strong>5% (0.05)</strong>야. 0.05는 소수점이 있으니까, 이번엔 어떤 타입을 써야 할까?"
+                </div>
+
+                <div class="keyboard-hint">
+                    💡 힌트: 실수형(double)을 사용하세요. 0.05는 소수입니다.
+                </div>
+
+                <label>Step 1의 코드에 이자율을 추가하세요:</label>
+                <textarea id="editor-step2" class="editor-input">public class BankSystem {
+    public static void main(String[] args) {
+        int loan = 49800;
+        // 미션 2: 이자율(interestRate) 변수를 선언하세요.
+        // 여기에 코드를 작성하세요
+
+    }
+}</textarea>
+
+                <div class="editor-controls">
+                    <button class="run-button" onclick="runStep2()">▶ 코드 실행</button>
+                    <button class="reset-button" onclick="resetStep2()">🔄 초기화</button>
+                </div>
+
+                <div id="output-step2" class="output-section">
+                    <div class="output-title">📤 실행 결과:</div>
+                    <div id="output-content-step2" class="output"></div>
+                </div>
+
+                <button id="next-step2" class="controls" style="width: 100%; display: none; margin-top: 15px;" onclick="goToMission3()">
+                    ✅ 완료! 다음 단계로 →
+                </button>
+            </div>
+
+            <div id="mission-3" class="mission-container" style="display: none;">
+                <div class="step-counter">Step 3/3: 캐스팅(Casting) - 핵심 개념!</div>
+
+                <div class="nook-quote">
+                    "자, 그럼 첫 달 이자가 얼마인지 계산해 볼까? <strong>빚(loan) * 이자율(interestRate)</strong>을 계산해서 <strong>이자(interest)</strong> 변수에 담아봐. 아참, <strong>이자는 1벨 단위로 끊어서(정수)</strong> 받아야 해."
+                </div>
+
+                <div class="nook-quote" style="background: #ffebee; border-color: #ff6b6b; color: #c62828;">
+                    "⚠️ 주의: int * double = double이 나와! 실수를 정수 통에 넣으려면 <strong>강제 형변환(int)</strong>이 필요해!"
+                </div>
+
+                <div class="keyboard-hint">
+                    💡 힌트: <code>int interest = (int)(loan * interestRate);</code> 형태로 작성하세요.
+                </div>
+
+                <label>최종 코드를 완성하세요:</label>
+                <textarea id="editor-step3" class="editor-input">public class BankSystem {
+    public static void main(String[] args) {
+        int loan = 49800;
+        double interestRate = 0.05;
+
+        // 미션 3: 이자 계산 결과를 정수형 변수 interest에 저장하세요.
+        // 힌트: 캐스팅을 사용하세요!
+        // 여기에 코드를 작성하세요
+
+        System.out.println("첫 달 이자: " + interest + "벨");
+    }
+}</textarea>
+
+                <div class="editor-controls">
+                    <button class="run-button" onclick="runStep3()">▶ 코드 실행</button>
+                    <button class="reset-button" onclick="resetStep3()">🔄 초기화</button>
+                </div>
+
+                <div id="output-step3" class="output-section">
+                    <div class="output-title">📤 실행 결과:</div>
+                    <div id="output-content-step3" class="output"></div>
+                </div>
+
+                <button id="next-step3" class="controls" style="width: 100%; display: none; margin-top: 15px;" onclick="goToScene(4)">
+                    🎉 완료! 이야기 계속 →
+                </button>
+            </div>
+        </div>
+
+        <!-- Scene 4: 미션 완료 -->
+        <div class="scene" data-scene="4">
+            <h2>✨ 미션 완료!</h2>
+            <img src="/episode/1/step3.jpg" alt="완료" class="scene-image">
+
+            <div class="console-output">
+첫 달 이자: 2490벨
+            </div>
+
+            <div class="nook-quote">
+                "오호~ 완벽해! (int)를 붙여서 소수점을 날려버렸구나. 사실 2490.9벨이어도 2490벨만 받게 되니 너한테 이득이지? 이게 바로 프로그래머의 특권이라구리."
+            </div>
+
+            <img src="/episode/1/6.jpg" alt="기뻐하는 너굴" class="scene-image">
+
+            <div class="nook-quote">
+                "좋아, 계좌 개설이 완료됐어. 현재 빚: <strong>49,800벨</strong>. 매달 이자: <strong>2,490벨</strong>. ...열심히 일해서 갚아야겠지? 자, 이제 밖으로 나가서 돈을 벌어보자고!"
+            </div>
+
+            <div class="success">
+                ✅ 1주 차 학습 완료!
+                <br><br>
+                획득 지식: Primitive Types, Variable Declaration, Type Casting
+                <br><br>
+                다음 주 예고: 나무를 흔들면 돈이 떨어질까, 벌집이 떨어질까? (Math.random과 if문)
+            </div>
+
+            <div class="controls">
+                <button onclick="goToScene(1)">← 처음부터</button>
+                <button onclick="nextEpisode()">다음 에피소드 →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScene = 1;
+
+        function goToScene(sceneNum) {
+            document.querySelectorAll('.scene').forEach(scene => {
+                scene.classList.remove('active');
+            });
+            document.querySelectorAll('.ide-section').forEach(ide => {
+                ide.classList.remove('active');
+            });
+
+            document.querySelector(`[data-scene="${sceneNum}"]`).classList.add('active');
+            currentScene = sceneNum;
+
+            // 진행도 업데이트
+            updateProgress();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startMission() {
+            document.querySelectorAll('.scene').forEach(scene => {
+                scene.classList.remove('active');
+            });
+            document.getElementById('ideSection').classList.add('active');
+            document.getElementById('mission-1').style.display = 'block';
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToMission2() {
+            document.getElementById('mission-1').style.display = 'none';
+            document.getElementById('mission-2').style.display = 'block';
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        function goToMission3() {
+            document.getElementById('mission-2').style.display = 'none';
+            document.getElementById('mission-3').style.display = 'block';
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        function updateProgress() {
+            const items = document.querySelectorAll('.progress-item');
+            items.forEach((item, index) => {
+                item.classList.remove('active', 'completed');
+                if (index < currentScene - 1) {
+                    item.classList.add('completed');
+                } else if (index === currentScene - 1) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Step 1: 빚(Loan) 변수 선언
+        function runStep1() {
+            const code = document.getElementById('editor-step1').value;
+            const output = document.getElementById('output-content-step1');
+            const outputSection = document.getElementById('output-step1');
+            const nextBtn = document.getElementById('next-step1');
+
+            outputSection.classList.add('active');
+
+            if (code.includes('int loan') && code.includes('49800')) {
+                output.textContent = '✅ 성공! int 타입을 올바르게 사용했습니다.\n\n너굴: "그렇지! int를 썼구나. 깔끔해!"';
+                nextBtn.style.display = 'block';
+            } else {
+                output.textContent = '❌ 오류: int loan = 49800; 형태로 선언해야 합니다.';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function resetStep1() {
+            document.getElementById('editor-step1').value = `public class BankSystem {
+    public static void main(String[] args) {
+        // 미션 1: 빚(loan) 변수를 선언하고 초기화하세요.
+        // 여기에 코드를 작성하세요
+
+    }
+}`;
+            document.getElementById('output-step1').classList.remove('active');
+            document.getElementById('next-step1').style.display = 'none';
+        }
+
+        // Step 2: 이자율(Interest Rate) 변수 선언
+        function runStep2() {
+            const code = document.getElementById('editor-step2').value;
+            const output = document.getElementById('output-content-step2');
+            const outputSection = document.getElementById('output-step2');
+            const nextBtn = document.getElementById('next-step2');
+
+            outputSection.classList.add('active');
+
+            if (code.includes('int loan') && code.includes('49800') &&
+                code.includes('double interestRate') && code.includes('0.05')) {
+                output.textContent = '✅ 성공! double 타입을 올바르게 사용했습니다.\n\n너굴: "정확해! double을 사용했군. int로 했다면 0이 되어서 이자를 못 받았을 거야!"';
+                nextBtn.style.display = 'block';
+            } else {
+                output.textContent = '❌ 오류: double interestRate = 0.05; 형태로 선언해야 합니다.';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function resetStep2() {
+            document.getElementById('editor-step2').value = `public class BankSystem {
+    public static void main(String[] args) {
+        int loan = 49800;
+        // 미션 2: 이자율(interestRate) 변수를 선언하세요.
+        // 여기에 코드를 작성하세요
+
+    }
+}`;
+            document.getElementById('output-step2').classList.remove('active');
+            document.getElementById('next-step2').style.display = 'none';
+        }
+
+        // Step 3: 캐스팅(Casting)
+        function runStep3() {
+            const code = document.getElementById('editor-step3').value;
+            const output = document.getElementById('output-content-step3');
+            const outputSection = document.getElementById('output-step3');
+            const nextBtn = document.getElementById('next-step3');
+
+            outputSection.classList.add('active');
+
+            // 정규식으로 캐스팅 형태 확인
+            if (code.includes('int interest') &&
+                (code.includes('(int)') || code.includes('(int )'))) {
+                output.textContent = '첫 달 이자: 2490벨\n\n✅ 완벽해! 캐스팅을 올바르게 사용했습니다.';
+                nextBtn.style.display = 'block';
+            } else if (code.includes('int interest') && !code.includes('(int)')) {
+                output.textContent = '❌ 컴파일 에러: Type mismatch: cannot convert from double to int\n\n너굴: "캐스팅이 필요해! (int)를 붙여줘!"';
+                nextBtn.style.display = 'none';
+            } else {
+                output.textContent = '❌ 오류: int interest 변수를 선언해야 합니다.';
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function resetStep3() {
+            document.getElementById('editor-step3').value = `public class BankSystem {
+    public static void main(String[] args) {
+        int loan = 49800;
+        double interestRate = 0.05;
+
+        // 미션 3: 이자 계산 결과를 정수형 변수 interest에 저장하세요.
+        // 힌트: 캐스팅을 사용하세요!
+        // 여기에 코드를 작성하세요
+
+        System.out.println("첫 달 이자: " + interest + "벨");
+    }
+}`;
+            document.getElementById('output-step3').classList.remove('active');
+            document.getElementById('next-step3').style.display = 'none';
+        }
+
+        function nextEpisode() {
+            alert('다음 에피소드 준비 중입니다! 🦝');
+        }
+
+        // 페이지 로드 시 진행도 업데이트
+        updateProgress();
+    </script>
+</body>
+</html>
