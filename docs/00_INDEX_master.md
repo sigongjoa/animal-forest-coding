@@ -1,7 +1,8 @@
 # 너굴 코딩 플랫폼 - 종합 기술 & 운영 문서 인덱스
 
 **Last Updated**: 2025-12-05
-**Documentation Version**: 2.0 (Restructured)
+**Documentation Version**: 3.0 (Standardized Naming Convention)
+**File Naming**: `[NUMBER]_[CATEGORY]_[description].md` (see [naming convention](00_INDEX_naming_convention.md))
 
 ## 📚 개요
 
