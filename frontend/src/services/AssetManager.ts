@@ -294,27 +294,23 @@ export class AssetManager {
    * 실제 에셋 로드 로직
    */
   private async _loadAsset(id: string, metadata: AssetMetadata): Promise<Asset> {
-    try {
-      // 실제 환경에서는 fetch로 데이터 로드
-      // 지금은 메타데이터만으로 구성
-      const asset: Asset = {
-        id,
-        metadata,
-        data: null, // 실제 구현에서는 fetch(metadata.url)로 로드
-        loadedAt: new Date(),
-        fromCache: false,
-      };
+    // 실제 환경에서는 fetch로 데이터 로드
+    // 지금은 메타데이터만으로 구성
+    const asset: Asset = {
+      id,
+      metadata,
+      data: null, // 실제 구현에서는 fetch(metadata.url)로 로드
+      loadedAt: new Date(),
+      fromCache: false,
+    };
 
-      // 캐시 크기 확인 후 저장
-      if (this.cache.size >= this.maxCacheSize) {
-        this._evictOldest();
-      }
-
-      this.cache.set(id, asset);
-      return asset;
-    } catch (error) {
-      throw new Error(`Failed to load asset ${id}: ${error}`);
+    // 캐시 크기 확인 후 저장
+    if (this.cache.size >= this.maxCacheSize) {
+      this._evictOldest();
     }
+
+    this.cache.set(id, asset);
+    return asset;
   }
 
   /**
