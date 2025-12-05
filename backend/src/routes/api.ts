@@ -7,6 +7,7 @@ import feedbackRouter from './feedback';
 import progressionRouter from './progression';
 import storiesRouter from './stories';
 import missionsRouter from './missions';
+import adminRouter from './admin';
 
 const router = Router();
 const contentService = new ContentService();
@@ -18,6 +19,7 @@ router.use(feedbackRouter);
 router.use('/progression', progressionRouter);
 router.use('/stories', storiesRouter);
 router.use('/missions', missionsRouter);
+router.use('/admin', adminRouter);
 
 // ==================== Characters ====================
 

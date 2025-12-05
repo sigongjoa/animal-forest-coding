@@ -1,5 +1,6 @@
 import { createServer } from './server';
 import { databaseService } from './services/DatabaseService';
+import { sceneService } from './services/SceneService';
 
 const app = createServer();
 const PORT = parseInt(process.env.PORT || '5000', 10);
@@ -11,6 +12,15 @@ if (!dbHealth) {
   console.error('❌ Database health check failed. Exiting...');
   process.exit(1);
 }
+
+// Scene 데이터 디렉토리 초기화
+(async () => {
+  try {
+    await sceneService.initializeDirectories();
+  } catch (error) {
+    console.error('❌ Failed to initialize scene directories:', error);
+  }
+})();
 
 const server = app.listen(PORT, HOST, () => {
   console.log(`

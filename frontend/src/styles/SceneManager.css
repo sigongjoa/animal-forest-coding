@@ -1,0 +1,281 @@
+.scene-manager {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.scene-manager h2 {
+  color: #5a4a42;
+  margin-top: 0;
+}
+
+.manager-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+/* Episodes Panel */
+.episodes-panel {
+  background: #f9f7f5;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.episodes-panel h3 {
+  color: #5a4a42;
+  margin-top: 0;
+  font-size: 1.3em;
+}
+
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.episode-item {
+  background: white;
+  border: 2px solid #e8dcc8;
+  border-radius: 6px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.episode-item:hover {
+  border-color: #c4a574;
+  background: #fffbf7;
+  transform: translateX(4px);
+}
+
+.episode-item.active {
+  background: #c4a574;
+  color: white;
+  border-color: #9d7e5c;
+}
+
+.episode-title {
+  font-weight: 600;
+  font-size: 1em;
+  margin-bottom: 6px;
+}
+
+.episode-meta {
+  font-size: 0.9em;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+/* Scenes Panel */
+.scenes-panel {
+  background: #f9f7f5;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.scenes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.scenes-header h3 {
+  color: #5a4a42;
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.btn-create {
+  padding: 10px 20px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.scenes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.scene-item {
+  background: white;
+  border-left: 4px solid #c4a574;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.scene-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateX(4px);
+}
+
+.scene-number {
+  background: #c4a574;
+  color: white;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.scene-info {
+  flex: 1;
+}
+
+.scene-type {
+  font-weight: 600;
+  color: #5a4a42;
+  margin-bottom: 4px;
+}
+
+.scene-details {
+  font-size: 0.9em;
+  color: #7a6a62;
+}
+
+.btn-delete {
+  padding: 8px 16px;
+  background: #ef5350;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+  margin-left: 12px;
+}
+
+.btn-delete:hover {
+  background: #e53935;
+  transform: scale(1.05);
+}
+
+.scene-form {
+  background: #fffbf7;
+  border: 2px dashed #c4a574;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.scene-form h4 {
+  color: #5a4a42;
+  margin-top: 0;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #5a4a42;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e8dcc8;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-submit,
+.btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-submit {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #45a049;
+}
+
+.btn-cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-cancel:hover {
+  background: #d0d0d0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7a6a62;
+  font-size: 1.2em;
+}
+
+.error-message {
+  background: #ffebee;
+  border: 2px solid #ef5350;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 1024px) {
+  .manager-container {
+    grid-template-columns: 1fr;
+  }
+
+  .episodes-panel,
+  .scenes-panel {
+    min-height: 300px;
+  }
+}

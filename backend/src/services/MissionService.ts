@@ -17,7 +17,12 @@ class MissionService {
   private maxCacheSize: number = 20;
 
   constructor() {
-    this.missionsPath = path.join(process.cwd(), 'backend', 'data', 'missions');
+    // Fix: Remove double 'backend' in path
+    const cwd = process.cwd();
+    const basePath = cwd.endsWith('backend')
+      ? path.join(cwd, 'data', 'missions')
+      : path.join(cwd, 'backend', 'data', 'missions');
+    this.missionsPath = basePath;
     console.log(`📚 MissionService initialized with path: ${this.missionsPath}`);
   }
 
