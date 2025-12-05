@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-js/master/packages/api/schema/stryker-schema.json",
+  "version": "7",
+  "testRunner": "jest",
+  "checkers": ["typescript"],
+  "mutate": [
+    "backend/src/**/*.ts",
+    "!backend/src/**/*.test.ts",
+    "!backend/src/**/*.spec.ts",
+    "!backend/src/index.ts"
+  ],
+  "testPathPattern": "tests/unit/",
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.ts"
+  },
+  "timeoutMS": 30000,
+  "timeoutFactor": 1.5,
+  "reporters": ["progress", "html"],
+  "htmlReporter": {
+    "fileName": "mutation-report/index.html"
+  },
+  "thresholds": {
+    "high": 80,
+    "medium": 70,
+    "low": 60
+  }
+}
