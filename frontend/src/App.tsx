@@ -8,6 +8,7 @@ import EntryPage from './pages/EntryPage';
 import LoginPage from './pages/LoginPage';
 import StoryPage from './pages/StoryPage';
 import IDEPage from './pages/IDEPage';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
 function AppWithPersistence() {
@@ -63,6 +64,7 @@ function AppWithPersistence() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/story" element={<StoryPage />} />
         <Route path="/ide" element={<IDEPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/" element={<Navigate to="/entry" replace />} />
       </Routes>
     </Router>
