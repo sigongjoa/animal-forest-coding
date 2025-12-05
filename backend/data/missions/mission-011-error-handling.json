@@ -1,0 +1,47 @@
+{
+  "id": "mission-011",
+  "title": "Error Handling: Try/Except",
+  "description": "Handle errors gracefully using try/except blocks.",
+  "category": "error-handling",
+  "difficulty": "advanced",
+  "order": 11,
+  "prerequisites": ["mission-007"],
+  "language": "python",
+  "points": 1000,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Handle Division by Zero",
+      "prompt": "Write try/except to handle division by zero error",
+      "template": "try:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    result = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "except ZeroDivisionError:",
+          "errorMessage": "Catch ZeroDivisionError"
+        }
+      ],
+      "hints": [
+        "Use except ZeroDivisionError: clause",
+        "Set result = 0 or error message"
+      ],
+      "successMessage": "Perfect error handling!",
+      "estimatedTimeMinutes": 4
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "손님의 잘못된 입력으로 프로그램이 망가지면 안 돼.",
+    "sceneImages": ["/episode/1/mission-011/scene-1.png"],
+    "initialDialogue": "에러를 우아하게 처리할 수 있을까?",
+    "completionDialogue": "완벽해! 이제 어떤 에러가 나도 괜찮을 것 같아!"
+  },
+  "rewards": {
+    "basePoints": 1000,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

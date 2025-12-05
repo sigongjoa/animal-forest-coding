@@ -1,0 +1,47 @@
+{
+  "id": "mission-006",
+  "title": "While Loops: Countdown",
+  "description": "Use while loops to repeat code while a condition is true.",
+  "category": "loops",
+  "difficulty": "beginner",
+  "order": 6,
+  "prerequisites": ["mission-001"],
+  "language": "python",
+  "points": 700,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Count down from 5 to 1",
+      "prompt": "Create a countdown from 5 to 1 using a while loop",
+      "template": "count = 5\nwhile count > 0:\n    print(count)\n    ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "count -= 1",
+          "errorMessage": "Decrease count using count -= 1"
+        }
+      ],
+      "hints": [
+        "Decrement count each iteration",
+        "count -= 1"
+      ],
+      "successMessage": "Perfect countdown!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "새로운 손님 도착까지 카운트다운을 하고 싶어.",
+    "sceneImages": ["/episode/1/mission-006/scene-1.png"],
+    "initialDialogue": "while 루프를 사용해서 5부터 1까지 세어줄 수 있을까?",
+    "completionDialogue": "완벽해!"
+  },
+  "rewards": {
+    "basePoints": 700,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

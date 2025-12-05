@@ -1,0 +1,47 @@
+{
+  "id": "mission-010",
+  "title": "String Methods: Text Processing",
+  "description": "Master string methods like upper(), lower(), replace(), and split().",
+  "category": "strings",
+  "difficulty": "intermediate",
+  "order": 10,
+  "prerequisites": ["mission-003"],
+  "language": "python",
+  "points": 800,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Process Text with String Methods",
+      "prompt": "Convert 'hello world' to uppercase using the upper() method",
+      "template": "text = 'hello world'\nuppertext = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "text.upper()",
+          "errorMessage": "Use the upper() method"
+        }
+      ],
+      "hints": [
+        "Use the method: text.upper()",
+        "uppertext = text.upper()"
+      ],
+      "successMessage": "Perfect! 'HELLO WORLD' in uppercase!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "손님들의 이름을 표준화해서 관리하고 싶어.",
+    "sceneImages": ["/episode/1/mission-010/scene-1.png"],
+    "initialDialogue": "텍스트를 처리하는 효율적인 방법이 필요해!",
+    "completionDialogue": "훌륭해!"
+  },
+  "rewards": {
+    "basePoints": 800,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

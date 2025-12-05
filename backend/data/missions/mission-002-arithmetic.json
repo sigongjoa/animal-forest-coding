@@ -1,0 +1,77 @@
+{
+  "id": "mission-002",
+  "title": "Arithmetic: Calculating Interest",
+  "description": "Master arithmetic operations (+, -, *, /) to calculate loan interest and manage finances.",
+  "category": "arithmetic",
+  "difficulty": "beginner",
+  "order": 2,
+  "prerequisites": ["mission-001"],
+  "language": "python",
+  "points": 600,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Calculate Interest",
+      "prompt": "Calculate 5% interest on a 49,800 벨 debt. Use multiplication: amount * rate",
+      "template": "debt_amount = 49800\ninterest_rate = 0.05\ninterest = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "debt_amount * interest_rate",
+          "errorMessage": "Use multiplication: debt_amount * interest_rate"
+        },
+        {
+          "type": "execution",
+          "expectedOutput": "2490"
+        }
+      ],
+      "hints": [
+        "Multiply debt_amount by interest_rate",
+        "interest = debt_amount * interest_rate"
+      ],
+      "successMessage": "Perfect! The interest is 2,490 벨!",
+      "estimatedTimeMinutes": 2
+    },
+    {
+      "id": 2,
+      "title": "Calculate Total with Interest",
+      "prompt": "Calculate the total amount owed: original debt + interest",
+      "template": "debt_amount = 49800\ninterest_rate = 0.05\ninterest = debt_amount * interest_rate\ntotal = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "debt_amount + interest",
+          "errorMessage": "Add debt_amount and interest"
+        },
+        {
+          "type": "execution",
+          "expectedOutput": "52290"
+        }
+      ],
+      "hints": [
+        "Add debt_amount and interest",
+        "total = debt_amount + interest"
+      ],
+      "successMessage": "Great! The total is 52,290 벨!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "너굴이 대출금과 이자를 계산하는 데 도움을 줘야 해요. 덧셈과 곱셈을 사용하세요.",
+    "sceneImages": [
+      "/episode/1/mission-002/scene-1.png",
+      "/episode/1/mission-002/scene-2.png"
+    ],
+    "initialDialogue": "빚 계산이 복잡해! 산술을 사용해서 이자를 계산해 줄 수 있어?",
+    "completionDialogue": "와우! 너는 계산 능력이 뛰어나네!"
+  },
+  "rewards": {
+    "basePoints": 600,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

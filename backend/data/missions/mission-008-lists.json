@@ -1,0 +1,47 @@
+{
+  "id": "mission-008",
+  "title": "Lists: Managing Collections",
+  "description": "Use lists to store and manage multiple values efficiently.",
+  "category": "data-structures",
+  "difficulty": "intermediate",
+  "order": 8,
+  "prerequisites": ["mission-001", "mission-005"],
+  "language": "python",
+  "points": 800,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Create and Sum a List of Prices",
+      "prompt": "Create a list of item prices and calculate the total",
+      "template": "prices = [100, 200, 150, 75]\ntotal = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "sum(prices)",
+          "errorMessage": "Use the sum() function on the list"
+        }
+      ],
+      "hints": [
+        "Use the sum() built-in function",
+        "total = sum(prices)"
+      ],
+      "successMessage": "Perfect! The total is 525!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "많은 아이템을 관리할 수 있는 리스트가 필요해.",
+    "sceneImages": ["/episode/1/mission-008/scene-1.png"],
+    "initialDialogue": "리스트를 사용해서 여러 가격을 관리할 수 있을까?",
+    "completionDialogue": "좋아! 이제 인벤토리를 효율적으로 관리할 수 있겠네!"
+  },
+  "rewards": {
+    "basePoints": 800,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

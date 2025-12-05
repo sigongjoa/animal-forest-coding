@@ -1,0 +1,47 @@
+{
+  "id": "mission-005",
+  "title": "For Loops: Sum a Range",
+  "description": "Use for loops to iterate and calculate the sum of a range of numbers.",
+  "category": "loops",
+  "difficulty": "beginner",
+  "order": 5,
+  "prerequisites": ["mission-001"],
+  "language": "python",
+  "points": 700,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Sum 1 to 10 using for loop",
+      "prompt": "Calculate the sum of numbers from 1 to 10 using a for loop with range()",
+      "template": "total = 0\nfor i in range(1, 11):\n    ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "total += i",
+          "errorMessage": "Use total += i to add each number"
+        }
+      ],
+      "hints": [
+        "Inside the loop, use total += i",
+        "total += i"
+      ],
+      "successMessage": "Perfect! The sum is 55!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "매일 벨을 모아야 하는데, 루프를 사용해서 자동으로 계산하고 싶어.",
+    "sceneImages": ["/episode/1/mission-005/scene-1.png"],
+    "initialDialogue": "1부터 10까지 더하는 걸 자동으로 해 줄 수 있을까?",
+    "completionDialogue": "와! 이제 큰 숫자도 빠르게 계산할 수 있겠네!"
+  },
+  "rewards": {
+    "basePoints": 700,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

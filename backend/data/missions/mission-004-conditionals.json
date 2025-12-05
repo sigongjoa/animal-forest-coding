@@ -1,0 +1,47 @@
+{
+  "id": "mission-004",
+  "title": "Conditionals: Age Verification",
+  "description": "Use if/else statements to make decisions based on conditions.",
+  "category": "conditionals",
+  "difficulty": "beginner",
+  "order": 4,
+  "prerequisites": ["mission-001"],
+  "language": "python",
+  "points": 700,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Check Age with if/else",
+      "prompt": "Check if age >= 18. If true, print 'Adult'. If false, print 'Minor'.",
+      "template": "age = 20\nif age >= 18:\n    print('Adult')\n",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "else:",
+          "errorMessage": "Add an else block"
+        }
+      ],
+      "hints": [
+        "Add else: print('Minor')",
+        "Remember the colon after else"
+      ],
+      "successMessage": "Great! You've mastered if/else!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "방문객의 나이를 확인해서 다른 가격을 적용하고 싶어요.",
+    "sceneImages": ["/episode/1/mission-004/scene-1.png"],
+    "initialDialogue": "나이에 따라 다른 처리를 해야 해. if/else를 써서 도와줄래?",
+    "completionDialogue": "완벽해! 이제 모든 손님을 올바르게 처리할 수 있어!"
+  },
+  "rewards": {
+    "basePoints": 700,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

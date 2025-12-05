@@ -1,0 +1,47 @@
+{
+  "id": "mission-009",
+  "title": "Dictionaries: Key-Value Pairs",
+  "description": "Use dictionaries to store and access data using keys instead of indices.",
+  "category": "data-structures",
+  "difficulty": "intermediate",
+  "order": 9,
+  "prerequisites": ["mission-007"],
+  "language": "python",
+  "points": 800,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Create and Access Dictionary Data",
+      "prompt": "Create a dictionary with item names and prices, then access Tom's price",
+      "template": "inventory = {'Tom': 100, 'Timmy': 50, 'Tommy': 75}\nprice = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "inventory['Tom']",
+          "errorMessage": "Access the dictionary using the key 'Tom'"
+        }
+      ],
+      "hints": [
+        "Use dictionary[key] to access values",
+        "price = inventory['Tom']"
+      ],
+      "successMessage": "Correct! Tom's price is 100!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "이름으로 가격을 빠르게 찾을 수 있는 방법이 필요해.",
+    "sceneImages": ["/episode/1/mission-009/scene-1.png"],
+    "initialDialogue": "딕셔너리를 사용해서 아이템을 이름으로 찾을 수 있을까?",
+    "completionDialogue": "완벽해! 이제 찾는 게 훨씬 쉽겠네!"
+  },
+  "rewards": {
+    "basePoints": 800,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

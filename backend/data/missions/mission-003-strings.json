@@ -1,0 +1,68 @@
+{
+  "id": "mission-003",
+  "title": "Strings: Text Manipulation",
+  "description": "Learn string operations: concatenation, length, and formatting messages.",
+  "category": "strings",
+  "difficulty": "beginner",
+  "order": 3,
+  "prerequisites": ["mission-001"],
+  "language": "python",
+  "points": 600,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Concatenate Strings",
+      "prompt": "Create a welcome message by concatenating 'Hello ' with the name 'traveler'",
+      "template": "name = 'traveler'\nmessage = 'Hello ' ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "+ name",
+          "errorMessage": "Use + to concatenate strings"
+        }
+      ],
+      "hints": [
+        "Use + to join strings together",
+        "message = 'Hello ' + name"
+      ],
+      "successMessage": "Perfect! Your message is: Hello traveler",
+      "estimatedTimeMinutes": 2
+    },
+    {
+      "id": 2,
+      "title": "Get String Length",
+      "prompt": "Find the length of the word 'programming' using len()",
+      "template": "word = 'programming'\nlength = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "len(word)",
+          "errorMessage": "Use len() function"
+        }
+      ],
+      "hints": [
+        "Use the len() function",
+        "length = len(word)"
+      ],
+      "successMessage": "Correct! The word 'programming' has 11 characters",
+      "estimatedTimeMinutes": 2
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "방문객들을 환영하기 위해 메시지를 만들어야 해요. 문자열 연결을 사용하세요.",
+    "sceneImages": [
+      "/episode/1/mission-003/scene-1.png"
+    ],
+    "initialDialogue": "손님들을 위해 환영 메시지를 만들어 줄래?",
+    "completionDialogue": "좋은 메시지네! 손님들이 기뻐할 거야!"
+  },
+  "rewards": {
+    "basePoints": 600,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}

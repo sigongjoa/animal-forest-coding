@@ -6,6 +6,7 @@ import { ApiError } from '../middleware/errorHandler';
 import feedbackRouter from './feedback';
 import progressionRouter from './progression';
 import storiesRouter from './stories';
+import missionsRouter from './missions';
 
 const router = Router();
 const contentService = new ContentService();
@@ -16,6 +17,7 @@ const ttsService = new AnimalesesTTSService();
 router.use(feedbackRouter);
 router.use('/progression', progressionRouter);
 router.use('/stories', storiesRouter);
+router.use('/missions', missionsRouter);
 
 // ==================== Characters ====================
 

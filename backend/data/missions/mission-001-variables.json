@@ -1,0 +1,80 @@
+{
+  "id": "mission-001",
+  "title": "Variables: Declaring an Integer",
+  "description": "Learn how to declare and use integer variables in Python. You'll help Nook keep track of his debt amount.",
+  "category": "variables",
+  "difficulty": "beginner",
+  "order": 1,
+  "prerequisites": [],
+  "language": "python",
+  "points": 500,
+  "steps": [
+    {
+      "id": 1,
+      "title": "Declare an Integer Variable",
+      "prompt": "Nook needs to record his debt amount of 49,800 벨. Create an integer variable named 'debt' and set it to 49800.",
+      "template": "# Step 1: Declare an integer variable\ndebt = ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "debt",
+          "errorMessage": "You need to create a variable named 'debt'"
+        },
+        {
+          "type": "contains",
+          "pattern": "49800",
+          "errorMessage": "The debt amount should be 49800 벨"
+        }
+      ],
+      "hints": [
+        "Variable declaration: variable_name = value",
+        "Use the variable name 'debt' and set it to 49800",
+        "debt = 49800"
+      ],
+      "successMessage": "Perfect! You've declared the debt variable correctly! 너굴이 is happy!",
+      "estimatedTimeMinutes": 2
+    },
+    {
+      "id": 2,
+      "title": "Use the Variable in Arithmetic",
+      "prompt": "Now use the 'debt' variable to calculate how much interest Nook charges. The interest rate is 5%. Calculate: debt * 0.05",
+      "template": "debt = 49800\ninterest = debt * ",
+      "validation": [
+        {
+          "type": "contains",
+          "pattern": "0.05",
+          "errorMessage": "The interest rate should be 0.05 (5%)"
+        },
+        {
+          "type": "execution",
+          "expectedOutput": "2490"
+        }
+      ],
+      "hints": [
+        "Interest calculation: debt * interest_rate",
+        "The interest rate is 5% = 0.05",
+        "interest = debt * 0.05"
+      ],
+      "successMessage": "Excellent! The interest is 2490 벨. You've successfully used variables in arithmetic!",
+      "estimatedTimeMinutes": 3
+    }
+  ],
+  "storyContext": {
+    "character": "너굴(Nook)",
+    "narrative": "너굴이 당신의 무인도 이주금을 계산하고 있습니다. 정수 변수를 사용하여 빚과 이자를 추적하세요.",
+    "sceneImages": [
+      "/episode/1/mission-001/scene-1.png",
+      "/episode/1/mission-001/scene-2.png"
+    ],
+    "initialDialogue": "안녕! 나는 너굴이야. 너의 무인도 이주금이 49,800 벨이야. 이걸 정수 변수로 만들어 줄 수 있을까?",
+    "completionDialogue": "훌륭해! 이제 너는 변수의 기초를 배웠어. 계속하면 더 복잡한 것들을 할 수 있을 거야!"
+  },
+  "rewards": {
+    "basePoints": 500,
+    "speedBonus": 50,
+    "perfectBonus": 100
+  },
+  "createdAt": "2025-12-05T00:00:00Z",
+  "updatedAt": "2025-12-05T00:00:00Z",
+  "version": 1
+}
