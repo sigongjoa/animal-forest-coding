@@ -1,13 +1,79 @@
 {
   "id": "mission-001",
   "title": "Variables: Declaring an Integer",
-  "description": "Learn how to declare and use integer variables in Python. You'll help Nook keep track of his debt amount.",
+  "description": "Learn how to declare and use integer variables in Java. You'll help Nook keep track of his debt amount.",
   "category": "variables",
   "difficulty": "beginner",
   "order": 1,
   "prerequisites": [],
-  "language": "python",
+  "language": "java",
   "points": 500,
+  "problem": {
+    "title": "너굴의 빚 기록하기",
+    "description": "너굴이 49,800벨을 변수에 저장하도록 도와주세요",
+    "prompt": "정수 변수 'debt'를 선언하고 49800을 할당하세요",
+    "context": "Nook needs to record his debt amount of 49,800 벨."
+  },
+  "template": {
+    "code": "public class Solution {\n  public static void main(String[] args) {\n    // TODO: debt 변수를 여기에 선언하세요\n    \n    System.out.println(debt);\n  }\n}",
+    "focusLines": [3, 4],
+    "startLine": 3,
+    "endLine": 4
+  },
+  "solution": {
+    "code": "public class Solution {\n  public static void main(String[] args) {\n    int debt = 49800;\n    System.out.println(debt);\n  }\n}",
+    "explanation": "int 타입으로 정수 변수를 선언합니다. 변수명은 debt, 초기값은 49800입니다.",
+    "keyPoints": [
+      "int는 정수 타입 (-2,147,483,648 ~ 2,147,483,647)",
+      "변수명은 소문자로 시작 (camelCase 규칙)",
+      "= 기호로 값을 할당",
+      "세미콜론(;)으로 문장을 끝냄",
+      "System.out.println()으로 값을 출력"
+    ],
+    "commonMistakes": [
+      {
+        "mistake": "int debt 49800;",
+        "correction": "int debt = 49800;",
+        "explanation": "할당 기호 '='를 빼먹으면 안 됩니다"
+      },
+      {
+        "mistake": "int debt = 49800",
+        "correction": "int debt = 49800;",
+        "explanation": "세미콜론을 빼먹으면 안 됩니다"
+      },
+      {
+        "mistake": "Integer debt = 49800;",
+        "correction": "int debt = 49800;",
+        "explanation": "소문자 int를 사용합니다 (Integer는 wrapper class)"
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "test-1",
+      "name": "변수 선언 확인",
+      "input": [],
+      "expectedOutput": "49800",
+      "explanation": "debt 변수가 올바르게 선언되고 출력되는지 확인",
+      "points": 500
+    }
+  ],
+  "hints": [
+    {
+      "level": 1,
+      "content": "타입 변수명 = 값; 형식으로 선언하세요",
+      "example": "int myVariable = 100;"
+    },
+    {
+      "level": 2,
+      "content": "int는 정수 타입이고, debt는 변수명입니다",
+      "example": "int debt = ?"
+    },
+    {
+      "level": 3,
+      "content": "int debt = 49800;"
+    }
+  ],
   "steps": [
     {
       "id": 1,
@@ -23,7 +89,7 @@
         {
           "type": "contains",
           "pattern": "49800",
-          "errorMessage": "The debt amount should be 49800 벨"
+          "errorMessage": "The debt amount should be 49800"
         }
       ],
       "hints": [
@@ -76,5 +142,5 @@
   },
   "createdAt": "2025-12-05T00:00:00Z",
   "updatedAt": "2025-12-05T00:00:00Z",
-  "version": 1
+  "version": 2
 }

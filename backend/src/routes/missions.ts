@@ -148,6 +148,159 @@ router.post('/check-access', async (req: Request, res: Response) => {
 });
 
 /**
+ * GET /api/missions/:missionId/solution
+ * Get solution for a mission (includes explanation, key points, common mistakes)
+ */
+router.get('/:missionId/solution', async (req: Request, res: Response) => {
+  try {
+    const { missionId } = req.params;
+    const mission = await missionService.getMission(missionId);
+
+    if (!mission) {
+      return res.status(404).json({
+        success: false,
+        error: `Mission ${missionId} not found`,
+      });
+    }
+
+    if (!mission.solution) {
+      return res.status(404).json({
+        success: false,
+        error: `No solution available for mission ${missionId}`,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        missionId,
+        solution: mission.solution,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching mission solution:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch mission solution',
+    });
+  }
+});
+
+/**
+ * POST /api/missions/:missionId/compare
+ * Compare student code with solution
+ * Returns: similarities, suggestions, test results
+ */
+router.post('/:missionId/compare', async (req: Request, res: Response) => {
+  try {
+    const { missionId } = req.params;
+    const { studentCode } = req.body;
+
+    if (!studentCode) {
+      return res.status(400).json({
+        success: false,
+        error: 'Student code is required',
+      });
+    }
+
+    const mission = await missionService.getMission(missionId);
+
+    if (!mission) {
+      return res.status(404).json({
+        success: false,
+        error: `Mission ${missionId} not found`,
+      });
+    }
+
+    if (!mission.solution) {
+      return res.status(404).json({
+        success: false,
+        error: `No solution available for mission ${missionId}`,
+      });
+    }
+
+    // 간단한 유사도 계산 (코드 비교)
+    const solutionCode = mission.solution.code;
+    const similarity = calculateSimilarity(studentCode, solutionCode);
+
+    // 기본 제안
+    const suggestions: string[] = [];
+    if (similarity < 0.5) {
+      suggestions.push('코드 구조를 다시 확인해주세요');
+    }
+    if (!studentCode.includes('System.out.println') && solutionCode.includes('System.out.println')) {
+      suggestions.push('출력문(System.out.println)을 추가해보세요');
+    }
+    if (!studentCode.includes(';') && solutionCode.includes(';')) {
+      suggestions.push('세미콜론(;)을 빼먹지 마세요');
+    }
+
+    res.json({
+      success: true,
+      data: {
+        missionId,
+        studentCode,
+        solutionCode,
+        similarities: parseFloat(similarity.toFixed(2)),
+        suggestions,
+        keyPoints: mission.solution.keyPoints || [],
+        commonMistakes: mission.solution.commonMistakes || [],
+      },
+    });
+  } catch (error) {
+    console.error('Error comparing codes:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to compare codes',
+    });
+  }
+});
+
+/**
+ * Simple similarity calculation (Levenshtein distance based)
+ */
+function calculateSimilarity(code1: string, code2: string): number {
+  const s1 = code1.trim().toLowerCase();
+  const s2 = code2.trim().toLowerCase();
+
+  if (s1 === s2) return 1.0;
+
+  const longer = s1.length > s2.length ? s1 : s2;
+  const shorter = s1.length > s2.length ? s2 : s1;
+
+  if (longer.length === 0) return 1.0;
+
+  const editDistance = getLevenshteinDistance(longer, shorter);
+  return (longer.length - editDistance) / longer.length;
+}
+
+/**
+ * Calculate Levenshtein distance
+ */
+function getLevenshteinDistance(s1: string, s2: string): number {
+  const costs: number[] = [];
+
+  for (let i = 0; i <= s1.length; i++) {
+    let lastValue = i;
+    for (let j = 0; j <= s2.length; j++) {
+      if (i === 0) {
+        costs[j] = j;
+      } else if (j > 0) {
+        let newValue = costs[j - 1];
+        if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+          newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+        }
+        costs[j - 1] = lastValue;
+        lastValue = newValue;
+      }
+    }
+    if (i > 0) costs[s2.length] = lastValue;
+  }
+
+  return costs[s2.length];
+}
+
+/**
  * GET /api/missions/stats/curriculum
  * Get curriculum statistics
  */

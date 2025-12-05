@@ -55,6 +55,40 @@ export interface MissionRewards {
 }
 
 /**
+ * Problem definition
+ */
+export interface MissionProblem {
+  title: string;
+  description: string;
+  prompt: string;
+  context?: string;
+}
+
+/**
+ * Code template definition
+ */
+export interface CodeTemplate {
+  code: string;
+  focusLines?: number[];
+  startLine?: number;
+  endLine?: number;
+}
+
+/**
+ * Solution definition (new feature)
+ */
+export interface MissionSolution {
+  code: string;
+  explanation: string;
+  keyPoints: string[];
+  commonMistakes?: Array<{
+    mistake: string;
+    correction: string;
+    explanation: string;
+  }>;
+}
+
+/**
  * Core mission definition
  * Represents a single coding mission with story context and validation
  */
@@ -64,6 +98,11 @@ export interface Mission {
   title: string; // e.g., 'Variables: Declaring an Integer'
   description: string; // Brief explanation of learning objectives
   category: string; // e.g., 'variables', 'loops', 'functions'
+
+  // Problem & Solution
+  problem?: MissionProblem; // NEW: Problem definition
+  template?: CodeTemplate; // NEW: Code template with focus lines
+  solution?: MissionSolution; // NEW: Solution code with explanation
 
   // Structure
   difficulty: 'beginner' | 'intermediate' | 'advanced';
