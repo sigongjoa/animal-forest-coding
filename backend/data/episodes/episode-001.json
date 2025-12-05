@@ -1,0 +1,11 @@
+{
+  "id": "episode-001",
+  "title": "CRUD Test",
+  "description": "Test",
+  "difficulty": "beginner",
+  "order": 1,
+  "sceneOrder": [],
+  "createdAt": "2025-12-05T07:58:17.744Z",
+  "updatedAt": "2025-12-05T07:58:18.226Z",
+  "version": 3
+}
