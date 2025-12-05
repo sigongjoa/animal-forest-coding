@@ -1,4 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import SortableSceneItem from './SortableSceneItem';
 import '../../styles/SceneManager.css';
 
 interface SceneManagerProps {
@@ -152,6 +170,54 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    if (!selectedEpisode) return;
+
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = scenes.findIndex((s) => s.id === active.id);
+    const newIndex = scenes.findIndex((s) => s.id === over.id);
+
+    const newOrder = arrayMove(scenes, oldIndex, newIndex);
+    setScenes(newOrder);
+
+    // API 호출로 순서 저장
+    try {
+      const sceneOrder = newOrder.map((s) => s.id);
+      const response = await fetch(
+        `http://localhost:5000/api/admin/episodes/${selectedEpisode.id}/scenes/reorder`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${adminToken || 'admin@nook.com:base64'}`,
+          },
+          body: JSON.stringify({ sceneOrder }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to reorder scenes');
+      }
+
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reorder scenes');
+      // 실패 시 원래 순서로 복원
+      await fetchScenes(selectedEpisode.id);
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      distance: 8,
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   return (
     <div className="scene-manager">
       <h2>📺 Scene 관리</h2>
@@ -199,47 +265,31 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
                 />
               )}
 
-              <div className="scenes-list">
-                {scenes.length === 0 ? (
-                  <p>이 Episode에 Scene이 없습니다.</p>
-                ) : (
-                  scenes.map((scene, index) => (
-                    <div key={scene.id} className="scene-item">
-                      <div className="scene-number">{index + 1}</div>
-                      <div className="scene-info">
-                        <div className="scene-type">
-                          {scene.type === 'story' && '📖 Story'}
-                          {scene.type === 'ide' && '💻 IDE Mission'}
-                          {scene.type === 'choice' && '🎯 Choice'}
-                        </div>
-                        <div className="scene-details">
-                          {scene.type === 'story' && (
-                            <>
-                              <p>{scene.npcName} - {scene.dialogues?.length || 0} lines</p>
-                            </>
-                          )}
-                          {scene.type === 'ide' && (
-                            <>
-                              <p>{scene.title} (Mission: {scene.missionId})</p>
-                            </>
-                          )}
-                          {scene.type === 'choice' && (
-                            <>
-                              <p>Question: {scene.question?.substring(0, 50)}...</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDeleteScene(scene.id)}
-                      >
-                        🗑️ Delete
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={scenes.map((s) => s.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="scenes-list">
+                    {scenes.length === 0 ? (
+                      <p>이 Episode에 Scene이 없습니다.</p>
+                    ) : (
+                      scenes.map((scene, index) => (
+                        <SortableSceneItem
+                          key={scene.id}
+                          scene={scene}
+                          index={index}
+                          onDelete={handleDeleteScene}
+                        />
+                      ))
+                    )}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </>
           ) : (
             <div className="empty-state">
