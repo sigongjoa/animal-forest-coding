@@ -15,7 +15,7 @@ const missions: Mission[] = [
     id: 'var-101',
     name: '변수 선언',
     description: '변수를 선언하고 출력하세요',
-    startCode: '# 변수를 만들고 출력해봅시다\nx = 10\nprint(x)',
+    startCode: 'public class Solution {\n  public static void main(String[] args) {\n    int x = 10;\n    System.out.println(x);\n  }\n}',
     testCases: [{ input: '', expected: '10' }],
     points: 500,
   },
@@ -23,7 +23,7 @@ const missions: Mission[] = [
     id: 'type-102',
     name: '데이터 타입',
     description: '다양한 데이터 타입을 다루세요',
-    startCode: 'name = "너굴"\nage = 30\nheight = 165.5\nprint(name, age, height)',
+    startCode: 'public class Solution {\n  public static void main(String[] args) {\n    String name = "너굴";\n    int age = 30;\n    double height = 165.5;\n    System.out.println(name + " " + age + " " + height);\n  }\n}',
     testCases: [{ input: '', expected: '너굴 30 165.5' }],
     points: 500,
   },
@@ -31,7 +31,7 @@ const missions: Mission[] = [
     id: 'math-103',
     name: '산술 연산',
     description: '계산 문제를 풀어보세요',
-    startCode: 'a = 10\nb = 3\nprint(a + b)\nprint(a * b)',
+    startCode: 'public class Solution {\n  public static void main(String[] args) {\n    int a = 10;\n    int b = 3;\n    System.out.println(a + b);\n    System.out.println(a * b);\n  }\n}',
     testCases: [{ input: '', expected: '13\n30' }],
     points: 600,
   },
@@ -39,7 +39,7 @@ const missions: Mission[] = [
     id: 'if-104',
     name: 'If 조건문',
     description: '조건문으로 분기를 만들어보세요',
-    startCode: 'score = 85\nif score >= 80:\n    print("합격")\nelse:\n    print("불합격")',
+    startCode: 'public class Solution {\n  public static void main(String[] args) {\n    int score = 85;\n    if (score >= 80) {\n      System.out.println("합격");\n    } else {\n      System.out.println("불합격");\n    }\n  }\n}',
     testCases: [{ input: '', expected: '합격' }],
     points: 700,
   },
@@ -47,15 +47,15 @@ const missions: Mission[] = [
     id: 'loop-105',
     name: 'For 반복문',
     description: '반복문으로 여러 번 실행해보세요',
-    startCode: 'for i in range(5):\n    print(i)',
+    startCode: 'public class Solution {\n  public static void main(String[] args) {\n    for (int i = 0; i < 5; i++) {\n      System.out.println(i);\n    }\n  }\n}',
     testCases: [{ input: '', expected: '0\n1\n2\n3\n4' }],
     points: 700,
   },
   {
     id: 'list-106',
-    name: '리스트 조작',
-    description: '리스트를 다루어보세요',
-    startCode: 'fruits = ["사과", "바나나", "딸기"]\nprint(fruits[0])\nfruits.append("포도")\nprint(len(fruits))',
+    name: '배열 조작',
+    description: '배열을 다루어보세요',
+    startCode: 'import java.util.ArrayList;\npublic class Solution {\n  public static void main(String[] args) {\n    ArrayList<String> fruits = new ArrayList<>();\n    fruits.add("사과");\n    fruits.add("바나나");\n    fruits.add("딸기");\n    System.out.println(fruits.get(0));\n    fruits.add("포도");\n    System.out.println(fruits.size());\n  }\n}',
     testCases: [{ input: '', expected: '사과\n4' }],
     points: 700,
   },
@@ -70,38 +70,12 @@ const IDEPage: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [completedMissions, setCompletedMissions] = useState<Set<string>>(new Set());
   const [totalPoints, setTotalPoints] = useState<number>(0);
-  const [nookMessage, setNookMessage] = useState<string>('안녕! 너는 코딩을 배울 준비가 되었나? 🦝');
-  const pyRef = useRef<any>(null);
-  const [pyodideReady, setPyodideReady] = useState<boolean>(false);
+  const [nookMessage, setNookMessage] = useState<string>('안녕! 너는 Java 코딩을 배울 준비가 되었나? 🦝');
+  const [javaReady, setJavaReady] = useState<boolean>(true);
 
-  // Initialize Pyodide
+  // Java IDE는 백엔드와 통신하므로 따로 초기화 필요 없음
   useEffect(() => {
-    const initPyodide = async () => {
-      try {
-        // Load Pyodide script first
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js';
-        script.onload = async () => {
-          // @ts-ignore
-          const pyodide = await window.loadPyodide({
-            indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.23.4/full/',
-          });
-          pyRef.current = pyodide;
-          setPyodideReady(true);
-          setNookMessage('파이썬이 준비되었어! 🎉');
-        };
-        script.onerror = () => {
-          setError('Pyodide 스크립트 로딩 실패');
-          setNookMessage('파이썬 로딩에 실패했어... 😢');
-        };
-        document.head.appendChild(script);
-      } catch (err) {
-        setError('Pyodide 초기화 실패: ' + (err as Error).message);
-        setNookMessage('파이썬 로딩에 실패했어... 😢');
-      }
-    };
-
-    initPyodide();
+    setNookMessage('자바가 준비되었어! 🎉');
   }, []);
 
   const currentMission = missions.find((m) => m.id === selectedMissionId);
@@ -117,8 +91,8 @@ const IDEPage: React.FC = () => {
   };
 
   const runCode = async () => {
-    if (!pyodideReady || !pyRef.current) {
-      setError('Pyodide가 준비되지 않았습니다.');
+    if (!javaReady) {
+      setError('Java가 준비되지 않았습니다.');
       return;
     }
 
@@ -127,19 +101,25 @@ const IDEPage: React.FC = () => {
     setOutput('');
 
     try {
-      // Simply execute the user's code directly
-      // Pyodide captures stdout automatically
-      await pyRef.current.runPythonAsync(code);
+      // Send Java code to backend for compilation and execution
+      const response = await fetch('/api/java/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: code,
+          timeout: 5000, // 5 seconds timeout
+        }),
+      });
 
-      // Try to get output from Python's sys module
-      const pythonCode = `
-import sys
-# Get captured output from stdout
-sys.stdout.getvalue() if hasattr(sys.stdout, 'getvalue') else ''
-`;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Java 실행 실패');
+      }
 
-      const capturedOutput = await pyRef.current.runPythonAsync(pythonCode);
-      const finalOutput = capturedOutput && capturedOutput.trim() ? String(capturedOutput).trim() : '(코드가 실행되었습니다)';
+      const result = await response.json();
+      const finalOutput = result.output && result.output.trim() ? result.output.trim() : '(코드가 실행되었습니다)';
       setOutput(finalOutput);
 
       // Check if passed test cases
@@ -177,7 +157,7 @@ sys.stdout.getvalue() if hasattr(sys.stdout, 'getvalue') else ''
         <div className="nookphone-container">
           {/* Header */}
           <div className="ide-header">
-            <h2>너굴포트 IDE v2.0</h2>
+            <h2>너굴포트 Java IDE v3.0</h2>
             <div className="header-buttons">
               <button className="header-btn">−</button>
               <button className="header-btn">□</button>
@@ -246,12 +226,12 @@ sys.stdout.getvalue() if hasattr(sys.stdout, 'getvalue') else ''
                     className="code-editor"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="파이썬 코드를 입력하세요..."
+                    placeholder="Java 코드를 입력하세요..."
                   />
                 </div>
 
                 <div className="editor-controls">
-                  <button className="btn-primary" onClick={runCode} disabled={isRunning || !pyodideReady}>
+                  <button className="btn-primary" onClick={runCode} disabled={isRunning || !javaReady}>
                     {isRunning ? '실행 중...' : '실행'}
                   </button>
                   <button className="btn-secondary" onClick={handleResetCode}>

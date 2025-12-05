@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import apiRoutes from './routes/api';
+import javaRoutes from './routes/java';
 import { errorHandler, ApiError } from './middleware/errorHandler';
 import { RateLimiter } from './middleware/rateLimiter';
 
@@ -39,6 +40,9 @@ export function createServer(): Express {
 
   // API 라우트
   app.use('/api', apiRoutes);
+
+  // Java Execution 라우트
+  app.use('/api/java', javaRoutes);
 
   // 정적 파일
   const dataPath = path.join(__dirname, '../data');
