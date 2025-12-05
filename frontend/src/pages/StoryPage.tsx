@@ -25,24 +25,24 @@ const StoryPage: React.FC = () => {
   const typingIndexRef = useRef<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 스토리 데이터
+  // 스토리 데이터 - /episode/1/ 디렉토리의 이미지 사용
   const scenes: Scene[] = [
     {
       id: 1,
-      image: '/assets/img1.jpg',
+      image: '/episode/1/opening.jpg',
       dialogues: [
         '어서 오시게, 주민 대표!',
         '우리 섬 생활은 좀 익숙해졌나?',
         '다름이 아니라, 우리 섬도 이제 최첨단 디지털 시대를 맞이해서',
         "'무인도 이주 플랜 관리 시스템'을 도입했거든!",
-        '이름하여... **파이썬(Python)**이라네!'
+        '이름하여... **Java**이라네!'
       ],
       character: 'tom_nook',
       npcName: 'Tom Nook'
     },
     {
       id: 2,
-      image: '/assets/img2.jpg',
+      image: '/episode/1/2.jpg',
       dialogues: [
         '자자, 겁먹을 것 없어!',
         '이건 그냥 아주 똑똑한 너굴포트라고 생각하면 돼.',
@@ -50,6 +50,113 @@ const StoryPage: React.FC = () => {
         '섬의 정보를 기억하거나 계산을 대신 해주지.',
         '오늘은 나랑 같이 이 시스템에 자네의 기본 정보를 등록해보자고.',
         '아주 쉬운 것부터 시작할 테니 걱정 말게!'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 3,
+      image: '/episode/1/3.jpg',
+      dialogues: [
+        '좋아! 이제 첫 번째 레슨을 시작해볼까?',
+        '변수(Variable)라는 게 뭔지 알아야겠네.',
+        '변수는 마치 너굴포트의 저장소 같은 거야.',
+        '물건을 보관했다가 필요할 때 꺼내듯이',
+        '정보를 저장했다가 필요할 때 쓰는 거지.'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 4,
+      image: '/episode/1/4.jpg',
+      dialogues: [
+        '예를 들면, 이런 식이야.',
+        '만약 내가 열 개의 금화를 저장하고 싶다면',
+        'int gold = 10;',
+        '이렇게 적으면 되는 거지!',
+        'int는 숫자, gold는 상자의 이름이라고 생각하면 돼.'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 5,
+      image: '/episode/1/5.jpg',
+      dialogues: [
+        '이제 너가 직접 해봐!',
+        '너굴 IDE에서 변수를 만들어보거라.',
+        '금액, 이름, 높이 같은 정보들을 저장해보면서',
+        '변수가 뭔지 느껴보면 좋겠어.',
+        '이해가 안 가면 물어봐도 괜찮아!'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 6,
+      image: '/episode/1/6.jpg',
+      dialogues: [
+        '정말 잘했어!',
+        '변수는 프로그래밍의 가장 기본이거든.',
+        '이제 이 지식으로 더 복잡한 것들을 배워나가면 돼.',
+        '계속해서 다양한 데이터 타입을 배워보자.',
+        '문자(String)도 있고, 소수(double)도 있어.'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 7,
+      image: '/episode/1/7.jpg',
+      dialogues: [
+        '다음은 산술 연산이야.',
+        '더하기, 빼기, 곱하기 같은 거지.',
+        '변수에 저장된 숫자들을 계산할 수 있어.',
+        'int a = 10;',
+        'int b = 3;',
+        'System.out.println(a + b);'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 8,
+      image: '/episode/1/8.jpg',
+      dialogues: [
+        '좋아, 이제 조건문(if)을 배워볼 차례야.',
+        '이건 마치 "만약 손님이 500벨 이상 구매하면',
+        '10% 할인해주겠다"는 조건처럼',
+        '특정 상황에서만 코드를 실행시키는 거지.',
+        '프로그래밍에서 매우 중요한 개념이야!'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 9,
+      image: '/episode/1/9.jpg',
+      dialogues: [
+        '반복문(loop)도 있어.',
+        '같은 일을 여러 번 하는 게 프로그래밍이니까',
+        'for 반복문을 쓰면 편하지.',
+        'for (int i = 0; i < 5; i++) {',
+        '  System.out.println(i);',
+        '}'
+      ],
+      character: 'tom_nook',
+      npcName: 'Tom Nook'
+    },
+    {
+      id: 10,
+      image: '/episode/1/10.jpg',
+      dialogues: [
+        '와! 정말 잘 따라오고 있네!',
+        '이제 리스트(List)라는 게 있어.',
+        '여러 개의 데이터를 한꺼번에 관리할 때 쓰지.',
+        'ArrayList<String> fruits = new ArrayList<>();',
+        '이렇게 하면 사과, 바나나 같은 과일들을',
+        '한 데 모아서 관리할 수 있어.'
       ],
       character: 'tom_nook',
       npcName: 'Tom Nook'
