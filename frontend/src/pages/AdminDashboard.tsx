@@ -12,8 +12,8 @@ interface AdminDashboardProps {
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminToken: propToken }) => {
   // For testing: use a default token if not provided
-  // Token = base64 encode of 'admin@nook.com'
-  const adminToken = propToken || Buffer.from('admin@nook.com').toString('base64');
+  // Token = 'YWRtaW5Abm9vay5jb20=' (base64 encode of 'admin@nook.com')
+  const adminToken = propToken || 'YWRtaW5Abm9vay5jb20=';
 
   const [activeTab, setActiveTab] = useState<AdminTab>('scenes');
   const [isLoading, setIsLoading] = useState(false);

@@ -62,7 +62,7 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
   const fetchEpisodes = async () => {
     setIsLoading(true);
     try {
-      const token = adminToken || Buffer.from('admin@nook.com').toString('base64');
+      const token = adminToken || 'YWRtaW5Abm9vay5jb20=';
       const response = await fetch('http://localhost:5000/api/admin/episodes', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
   const fetchScenes = async (episodeId: string) => {
     setIsLoading(true);
     try {
-      const token = adminToken || Buffer.from('admin@nook.com').toString('base64');
+      const token = adminToken || 'YWRtaW5Abm9vay5jb20=';
       const response = await fetch(
         `http://localhost:5000/api/admin/episodes/${episodeId}/scenes`,
         {
@@ -119,7 +119,7 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
     if (!selectedEpisode) return;
 
     try {
-      const token = adminToken || Buffer.from('admin@nook.com').toString('base64');
+      const token = adminToken || 'YWRtaW5Abm9vay5jb20=';
       const response = await fetch(
         `http://localhost:5000/api/admin/episodes/${selectedEpisode.id}/scenes`,
         {
@@ -149,7 +149,7 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
     if (!window.confirm('정말 이 Scene을 삭제하시겠습니까?')) return;
 
     try {
-      const token = adminToken || Buffer.from('admin@nook.com').toString('base64');
+      const token = adminToken || 'YWRtaW5Abm9vay5jb20=';
       const response = await fetch(
         `http://localhost:5000/api/admin/scenes/${sceneId}`,
         {
@@ -188,7 +188,7 @@ const SceneManager: React.FC<SceneManagerProps> = ({ adminToken }) => {
 
     // API 호출로 순서 저장
     try {
-      const token = adminToken || Buffer.from('admin@nook.com').toString('base64');
+      const token = adminToken || 'YWRtaW5Abm9vay5jb20=';
       const sceneOrder = newOrder.map((s) => s.id);
       const response = await fetch(
         `http://localhost:5000/api/admin/episodes/${selectedEpisode.id}/scenes/reorder`,
