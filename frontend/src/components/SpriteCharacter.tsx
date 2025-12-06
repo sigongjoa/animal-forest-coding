@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Direction } from '../hooks/useCharacterMovement';
+import { makeImageTransparent } from '../utils/imageUtils';
 
 interface SpriteCharacterProps {
     position: { x: number; y: number };
@@ -29,6 +30,26 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
     scale = 2,
 }) => {
     const [frame, setFrame] = useState(0);
+    const [processedUrl, setProcessedUrl] = useState<string>(spriteUrl);
+
+    // 이미지 투명화 처리
+    useEffect(() => {
+        let isMounted = true;
+
+        // 기본 URL 먼저 설정 (로딩 중 깜빡임 방지용, 혹은 로딩 상태 표시)
+        // setProcessedUrl(spriteUrl); 
+
+        makeImageTransparent(spriteUrl)
+            .then(url => {
+                if (isMounted) setProcessedUrl(url);
+            })
+            .catch(err => {
+                console.error('Failed to process sprite transparency:', err);
+                if (isMounted) setProcessedUrl(spriteUrl); // Fallback
+            });
+
+        return () => { isMounted = false; };
+    }, [spriteUrl]);
 
     // 애니메이션 루프
     useEffect(() => {
@@ -43,22 +64,8 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
         return () => clearInterval(interval);
     }, [isMoving]);
 
-    // 스프라이트 크기 가정 (생성된 이미지가 1024x1024라면 4x4 -> 256x256)
-    // 실제 이미지를 보고 조정해야 하지만, 일단 CSS background-size로 처리.
-    // 4x4 그리드이므로, width/height는 전체의 25% (100% / 4)
-
-    const spriteSize = 64; // 화면에 표시될 픽셀 크기
-
     // background-position 계산
-    // x: frame index * 100% / (FRAME_COUNT - 1) ...? no.
-    // CSS spritesheet calc:
-    // width: 400% (4 frames), height: 400% (4 rows)
-    // pos-x: frame * (100 / 3)% -> 0%, 33.3%, 66.6%, 100%
-    // pos-y: row * (100 / 3)%
-
-    // 더 쉬운 방법: 픽셀 단위 계산 (이미지 크기를 모를 때 곤란)
-    // 퍼센트 단위 계산:
-    // background-size: 400% 400% (전체 이미지가 컨테이너의 4배 크기)
+    const spriteSize = 64; // 화면에 표시될 픽셀 크기
     const bgPosX = frame * (100 / (FRAME_COUNT - 1));
     const bgPosY = DIRECTION_ROW[direction] * (100 / 3);
 
@@ -70,7 +77,7 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
                 top: position.y,
                 width: `${spriteSize}px`,
                 height: `${spriteSize}px`,
-                backgroundImage: `url(${spriteUrl})`,
+                backgroundImage: `url(${processedUrl})`, // Use processedUrl
                 backgroundSize: '400% 400%', // 4 columns, 4 rows
                 backgroundPosition: `${bgPosX}% ${bgPosY}%`,
                 backgroundRepeat: 'no-repeat',
