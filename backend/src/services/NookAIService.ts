@@ -10,6 +10,8 @@
  * Phase 3.1 구현
  */
 
+import { FeedbackGuidance } from './FeedbackContextService';
+
 export interface CodeSubmission {
   studentId: string;
   missionId: string;
@@ -145,7 +147,7 @@ Always respond in JSON format with this structure:
   /**
    * 코드 분석 및 피드백 생성 (캐싱 포함)
    */
-  async generateFeedback(submission: CodeSubmission): Promise<AiFeedback> {
+  async generateFeedback(submission: CodeSubmission, context?: FeedbackGuidance): Promise<AiFeedback> {
     try {
       // Step 1: 캐시 확인
       const cachedFeedback = this._getCachedFeedback(submission);
@@ -154,9 +156,18 @@ Always respond in JSON format with this structure:
       }
 
       // Step 2: Ollama API 호출
-      const prompt = `${this.systemPrompt}
+      let prompt = `${this.systemPrompt}\n\n`;
 
-User code (${submission.language}):
+      if (context) {
+        prompt += `Context Guidance:
+- Tone: ${context.tone}
+- Hint Level: ${context.hintLevel}
+- Explanation Depth: ${context.explanationDepth}
+- Show Code Examples: ${context.codeExamplesShown}
+- Debugging Strategy: ${context.debuggingStrategy}\n\n`;
+      }
+
+      prompt += `User code (${submission.language}):
 \`\`\`
 ${submission.code}
 \`\`\`

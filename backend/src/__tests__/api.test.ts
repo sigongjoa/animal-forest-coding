@@ -5,6 +5,29 @@ import { Express } from 'express';
 describe('API Endpoints', () => {
   let app: Express;
 
+  // Mock Services
+  jest.mock('../services/AnimalesesTTSService', () => ({
+    animalesesTTSService: {
+      generateAudio: jest.fn().mockResolvedValue(Buffer.from('mock-audio')),
+    }
+  }));
+
+  jest.mock('../services/ContentService', () => ({
+    contentService: {
+      getAllCharacters: jest.fn().mockResolvedValue([{ id: 'char_001', name: 'Tom Nook', species: 'Tanuki' }]),
+      getAllTopics: jest.fn().mockResolvedValue([{ id: 'topic_001', difficulty: 'beginner' }]),
+      getContent: jest.fn().mockResolvedValue({ id: 'content_001', title: 'Variables' }),
+      searchContent: jest.fn().mockResolvedValue([{ id: 'content_001', title: 'Variables' }]),
+    }
+  }));
+
+  jest.mock('../services/ImageService', () => ({
+    imageService: {
+      getImage: jest.fn().mockResolvedValue({ buffer: Buffer.from('mock-image'), mimeType: 'image/jpeg' }),
+      getMetadata: jest.fn().mockResolvedValue({ id: 'img_001', mimeType: 'image/jpeg', size: 1024 }),
+    }
+  }));
+
   beforeAll(() => {
     app = createServer();
   });
@@ -86,7 +109,7 @@ describe('API Endpoints', () => {
     it('should return 404 for invalid character', async () => {
       const response = await request(app)
         .get('/api/content/InvalidChar/variables')
-        .expect(500);
+        .expect(404);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error).toBeDefined();
@@ -95,7 +118,7 @@ describe('API Endpoints', () => {
     it('should return 404 for invalid topic', async () => {
       const response = await request(app)
         .get('/api/content/Tom%20Nook/invalid-topic')
-        .expect(500);
+        .expect(404);
 
       expect(response.body.success).toBe(false);
     });
@@ -131,9 +154,9 @@ describe('API Endpoints', () => {
         })
         .expect(200);
 
-      expect(response.body.success).toBe(true);
-      expect(response.body.data.audioUrl).toBeDefined();
-      expect(response.body.data.mimeType).toBe('audio/mpeg');
+      expect(response.type).toBe('audio/wav');
+      expect(response.header['content-length']).toBeDefined();
+      expect(response.body).toBeInstanceOf(Buffer);
     });
 
     it('should return 400 when text is missing', async () => {

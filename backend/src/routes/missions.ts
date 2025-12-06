@@ -321,4 +321,31 @@ router.get('/stats/curriculum', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/missions/leaderboard
+ * Get student leaderboard
+ */
+router.get('/leaderboard', async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = parseInt(req.query.offset as string) || 0;
+
+    const result = await missionService.getLeaderboard(limit, offset);
+
+    res.json({
+      success: true,
+      data: result.data,
+      total: result.total,
+      limit,
+      offset
+    });
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch leaderboard',
+    });
+  }
+});
+
 export default router;

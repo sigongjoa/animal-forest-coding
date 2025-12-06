@@ -89,7 +89,11 @@ router.get(
           timestamp: new Date().toISOString(),
         },
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message && error.message.includes('not found')) {
+        error.statusCode = 404;
+        error.code = 'NOT_FOUND';
+      }
       next(error);
     }
   }
@@ -213,7 +217,11 @@ router.get(
           timestamp: new Date().toISOString(),
         },
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message && error.message.includes('not found')) {
+        error.statusCode = 404;
+        error.code = 'NOT_FOUND';
+      }
       next(error);
     }
   }

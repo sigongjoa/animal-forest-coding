@@ -1,0 +1,74 @@
+[
+    {
+        "id": "mission-001",
+        "title": "Welcome to Animal Forest",
+        "description": "Learn the basics of coding with Tom Nook.",
+        "difficulty": "beginner",
+        "order": 1,
+        "steps": [
+            {
+                "id": 1,
+                "title": "Hello, World!",
+                "description": "Print your first message to the console.",
+                "prompt": "Use console.log() to print 'Hello, Animal Forest!'",
+                "template": "// Write your code here\n",
+                "solution": "console.log('Hello, Animal Forest!');"
+            }
+        ],
+        "storyContext": {
+            "introImage": "/episode/1/mission-001/scene-1.png",
+            "introDialogue": [
+                "Hello there! Welcome to the pristine island of Animal Forest!",
+                "I'm Tom Nook, and I'll be your guide to building a wonderful life here.",
+                "To get started, we need to set up your NookPhone. Can you print a welcome message?"
+            ],
+            "successDialogue": [
+                "Excellent! Your NookPhone is now active.",
+                "You're a natural at this, yes, yes!"
+            ],
+            "failureDialogue": [
+                "Oh dear, it seems the message didn't print correctly.",
+                "Remember to use console.log() and check your spelling."
+            ]
+        },
+        "unlocks": [
+            "mission-002"
+        ]
+    },
+    {
+        "id": "mission-002",
+        "title": "Collecting Shells",
+        "description": "Learn about variables and numbers.",
+        "difficulty": "beginner",
+        "order": 2,
+        "steps": [
+            {
+                "id": 1,
+                "title": "Counting Shells",
+                "description": "Store the number of shells in a variable.",
+                "prompt": "Create a variable named 'shells' and assign it the value 5.",
+                "template": "// Create a variable named 'shells'\n",
+                "solution": "let shells = 5;"
+            }
+        ],
+        "storyContext": {
+            "introImage": "/episode/1/mission-002/scene-1.png",
+            "introDialogue": [
+                "Now that you're settled, why not collect some seashells?",
+                "They are quite valuable, you know.",
+                "Let's count how many you can find on the beach."
+            ],
+            "successDialogue": [
+                "Five shells! That's a good start.",
+                "I'll give you some Bells for those later."
+            ],
+            "failureDialogue": [
+                "Did you create the variable correctly?",
+                "Use 'let shells = 5;' to store the number."
+            ]
+        },
+        "unlocks": [
+            "mission-003"
+        ]
+    }
+]

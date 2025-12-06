@@ -65,6 +65,28 @@ class MissionService {
    * Load all missions from directory
    * Sorted by order field
    */
+  async getLeaderboard(limit: number = 10, offset: number = 0) {
+    // TODO: In a real app, this would query the database
+    // For now, return mock data sorted by points
+    const mockLeaderboard = [
+      { rank: 1, studentId: 'student_001', studentName: 'Isabelle', points: 5200, badges: 12, missionsCompleted: 15 },
+      { rank: 2, studentId: 'student_002', studentName: 'Tom Nook', points: 4800, badges: 10, missionsCompleted: 14 },
+      { rank: 3, studentId: 'student_003', studentName: 'K.K. Slider', points: 4500, badges: 9, missionsCompleted: 12 },
+      { rank: 4, studentId: 'student_004', studentName: 'Blathers', points: 4100, badges: 8, missionsCompleted: 11 },
+      { rank: 5, studentId: 'student_005', studentName: 'Timmy', points: 3800, badges: 7, missionsCompleted: 10 },
+      { rank: 6, studentId: 'student_006', studentName: 'Tommy', points: 3500, badges: 6, missionsCompleted: 9 },
+      { rank: 7, studentId: 'student_007', studentName: 'Mabel', points: 3200, badges: 5, missionsCompleted: 8 },
+      { rank: 8, studentId: 'student_008', studentName: 'Sable', points: 2900, badges: 4, missionsCompleted: 7 },
+      { rank: 9, studentId: 'student_009', studentName: 'Raymond', points: 2600, badges: 3, missionsCompleted: 6 },
+      { rank: 10, studentId: 'student_010', studentName: 'Marshal', points: 2300, badges: 2, missionsCompleted: 5 },
+    ];
+
+    return {
+      data: mockLeaderboard.slice(offset, offset + limit),
+      total: mockLeaderboard.length
+    };
+  }
+
   async getAllMissions(): Promise<Mission[]> {
     try {
       const files = await fs.readdir(this.missionsPath);
