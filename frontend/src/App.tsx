@@ -6,6 +6,7 @@ import { persistenceService } from './services/PersistenceService';
 import { store } from './store';
 import EntryPage from './pages/EntryPage';
 import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
 
 import IDEPage from './pages/IDEPage';
 import MissionPage from './pages/MissionPage';
@@ -65,6 +66,12 @@ function AppWithPersistence() {
       <Routes>
         <Route path="/entry" element={<EntryPage />} />
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Main Hub Page */}
+        <Route path="/main" element={<MainPage />} />
+
+        {/* Redirect deleted /story to /main */}
+        <Route path="/story" element={<Navigate to="/main" replace />} />
 
         <Route path="/ide" element={<IDEPage />} />
         <Route path="/mission/:missionId" element={<MissionPage />} />

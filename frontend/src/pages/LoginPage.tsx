@@ -63,7 +63,7 @@ const LoginPage: React.FC = () => {
     if (now - lastTypingSoundTime.current > 100) {
       if (sfxTypingRef.current) {
         sfxTypingRef.current.currentTime = 0;
-        sfxTypingRef.current.play().catch(() => {});
+        sfxTypingRef.current.play().catch(() => { });
       }
       lastTypingSoundTime.current = now;
     }
@@ -76,7 +76,7 @@ const LoginPage: React.FC = () => {
     // 클릭 효과음 재생
     if (sfxClickRef.current) {
       sfxClickRef.current.currentTime = 0;
-      sfxClickRef.current.play().catch(() => {});
+      sfxClickRef.current.play().catch(() => { });
     }
 
     if (!username.trim() || !password.trim()) {
@@ -104,13 +104,13 @@ const LoginPage: React.FC = () => {
         localStorage.setItem('authToken', 'demo-token-' + Date.now());
       }
 
-      // 어느 경우든 스토리 페이지로 이동
-      navigate('/story', { replace: true });
+      // 어느 경우든 메인 페이지로 이동
+      navigate('/main', { replace: true });
     } catch (error) {
       console.error('로그인 에러:', error);
       // 에러 발생해도 계속 진행 (프로토타입 모드)
       localStorage.setItem('authToken', 'demo-token-' + Date.now());
-      navigate('/story', { replace: true });
+      navigate('/main', { replace: true });
     }
   };
 

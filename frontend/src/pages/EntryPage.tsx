@@ -16,7 +16,7 @@ const EntryPage: React.FC = () => {
     setTimeout(() => {
       console.log('🎬 EntryPage: navigate 호출 직전');
       console.log('🎬 navigate 함수:', typeof navigate);
-      navigate('/story');
+      navigate('/login');
       console.log('🎬 EntryPage: navigate 호출 완료');
     }, 300);
   };
