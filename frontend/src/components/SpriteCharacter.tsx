@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Direction } from '../hooks/useCharacterMovement';
-import { makeImageTransparent } from '../utils/imageUtils';
 
 interface SpriteCharacterProps {
     position: { x: number; y: number };
@@ -13,8 +12,7 @@ interface SpriteCharacterProps {
 const FRAME_COUNT = 4; // 가로 4프레임 가정
 const ANIMATION_SPEED = 150; // ms per frame
 
-// 스프라이트 시트의 행(Row) 매핑 (생성된 이미지에 따라 조절 필요)
-// 보통: 0: Down, 1: Left, 2: Right, 3: Up
+// 스프라이트 시트의 행(Row) 매핑
 const DIRECTION_ROW: Record<Direction, number> = {
     down: 0,
     left: 1,
@@ -30,26 +28,6 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
     scale = 2,
 }) => {
     const [frame, setFrame] = useState(0);
-    const [processedUrl, setProcessedUrl] = useState<string>(spriteUrl);
-
-    // 이미지 투명화 처리
-    useEffect(() => {
-        let isMounted = true;
-
-        // 기본 URL 먼저 설정 (로딩 중 깜빡임 방지용, 혹은 로딩 상태 표시)
-        // setProcessedUrl(spriteUrl); 
-
-        makeImageTransparent(spriteUrl)
-            .then(url => {
-                if (isMounted) setProcessedUrl(url);
-            })
-            .catch(err => {
-                console.error('Failed to process sprite transparency:', err);
-                if (isMounted) setProcessedUrl(spriteUrl); // Fallback
-            });
-
-        return () => { isMounted = false; };
-    }, [spriteUrl]);
 
     // 애니메이션 루프
     useEffect(() => {
@@ -64,7 +42,6 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
         return () => clearInterval(interval);
     }, [isMoving]);
 
-    // background-position 계산
     const spriteSize = 64; // 화면에 표시될 픽셀 크기
     const bgPosX = frame * (100 / (FRAME_COUNT - 1));
     const bgPosY = DIRECTION_ROW[direction] * (100 / 3);
@@ -77,15 +54,15 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
                 top: position.y,
                 width: `${spriteSize}px`,
                 height: `${spriteSize}px`,
-                backgroundImage: `url(${processedUrl})`, // Use processedUrl
-                backgroundSize: '400% 400%', // 4 columns, 4 rows
+                backgroundImage: `url(${spriteUrl})`, // Direct URL usage
+                backgroundSize: '400% 400%',
                 backgroundPosition: `${bgPosX}% ${bgPosY}%`,
                 backgroundRepeat: 'no-repeat',
                 transform: `scale(${scale})`,
                 transformOrigin: 'top left',
-                imageRendering: 'pixelated', // 픽셀 아트 선명하게
+                imageRendering: 'pixelated',
                 zIndex: 10,
-                transition: 'left 0.1s linear, top 0.1s linear', // 부드러운 위치 이동
+                transition: 'left 0.1s linear, top 0.1s linear',
             }}
         />
     );

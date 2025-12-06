@@ -37,9 +37,11 @@ export const makeImageTransparent = (imageUrl: string, tolerance: number = 30): 
                 const g = data[i + 1];
                 const b = data[i + 2];
 
-                // 흰색에 가까운지 확인 (RGB 모두 255 - tolerance 이상)
-                if (r >= 255 - tolerance && g >= 255 - tolerance && b >= 255 - tolerance) {
-                    data[i + 3] = 0; // Alpha 값을 0으로 설정 (투명)
+                // 녹색 배경(크로마키) 제거 로직
+                // 조건: G가 높고, R과 B가 낮을 때
+                // 예: G > 150, R < 100, B < 100
+                if (g > 100 && r < 150 && b < 150 && g > r + 30 && g > b + 30) {
+                    data[i + 3] = 0; // Alpha = 0
                 }
             }
 
