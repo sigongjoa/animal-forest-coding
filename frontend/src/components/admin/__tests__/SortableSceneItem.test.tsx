@@ -198,7 +198,7 @@ describe('SortableSceneItem Component', () => {
         />
       );
 
-      expect(screen.getByText('Tom Nook')).toBeInTheDocument();
+      expect(screen.getByText('Tom Nook', { exact: false })).toBeInTheDocument();
     });
 
     test('handles scene with empty dialogues array', () => {

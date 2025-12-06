@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MissionScenario, ScriptAction } from '../types/Mission';
 import SpriteCharacter from './SpriteCharacter';
 import { Direction } from '../hooks/useCharacterMovement';
@@ -130,6 +130,7 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
             {/* Dialogue Box */}
             {currentDialogue && (
                 <div
+                    data-testid="dialogue-box"
                     className="absolute bottom-4 left-4 right-4 bg-white/90 border-4 border-amber-800 p-4 rounded-xl cursor-pointer hover:bg-white transition-colors"
                     onClick={handleDialogueClick}
                 >

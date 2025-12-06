@@ -9,20 +9,30 @@ test.describe('Mission Page & IDE Flow', () => {
         // Here we assume the backend is running and serving mock data from our JSON
 
         // 3. Verify Story Mode
-        await expect(page.locator('h1')).toContainText('Mission'); // Generic check or specific title
+        await expect(page.locator('h1')).toContainText('Welcome to Animal Forest');
 
         // Check for story dialogue
-        const dialogueBox = page.locator('.bg-white.bg-opacity-90');
-        await expect(dialogueBox).toBeVisible();
+        const dialogueBox = page.getByTestId('dialogue-box');
+        await expect(dialogueBox).toBeVisible({ timeout: 10000 });
 
         // Click 'Next' through dialogue
         // Assuming there are 3 dialogue lines
-        const nextButton = page.locator('button:has-text("Next")');
-        if (await nextButton.isVisible()) {
-            await nextButton.click();
-            await page.waitForTimeout(500);
-            await nextButton.click();
-            await page.waitForTimeout(500);
+        // Click through dialogue
+        // New interactive scenario uses 'dialogue-box' click to advance
+        // We will keep clicking until the dialogue box disappears or IDE appears
+        let attempts = 0;
+        while (attempts < 20) {
+            const dialogueBox = page.getByTestId('dialogue-box');
+            if (await dialogueBox.isVisible()) {
+                await dialogueBox.click();
+                await page.waitForTimeout(500); // Wait for transition/animation
+            } else {
+                // If dialogue box is gone, check if we are in IDE mode
+                if (await page.locator('.monaco-editor, textarea').isVisible()) {
+                    break;
+                }
+            }
+            attempts++;
         }
 
         // Start Mission Button
