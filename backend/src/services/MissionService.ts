@@ -11,7 +11,7 @@ import { Mission, MissionAttempt, MissionCompletion } from '../models/Mission';
  * - Record mission completions and rewards
  * - Provide mission progression and analytics
  */
-class MissionService {
+export class MissionService {
   private missionsPath: string;
   private missionsCache: Map<string, Mission> = new Map();
   private isLoaded: boolean = false;

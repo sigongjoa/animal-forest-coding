@@ -31,7 +31,7 @@ interface ProgressionState {
   lastSyncedAt: number | null;
 }
 
-const initialState: ProgressionState = {
+export const initialState: ProgressionState = {
   studentId: null,
   episodeId: null,
   completedMissions: [],
