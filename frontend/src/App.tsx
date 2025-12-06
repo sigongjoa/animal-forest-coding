@@ -11,6 +11,7 @@ import IDEPage from './pages/IDEPage';
 import MissionPage from './pages/MissionPage';
 import ProgressPage from './pages/ProgressPage';
 import AdminDashboard from './pages/AdminDashboard';
+import PlaygroundPage from './pages/PlaygroundPage';
 import './App.css';
 
 function AppWithPersistence() {
@@ -68,6 +69,7 @@ function AppWithPersistence() {
         <Route path="/ide" element={<IDEPage />} />
         <Route path="/mission/:missionId" element={<MissionPage />} />
         <Route path="/dashboard" element={<ProgressPage />} />
+        <Route path="/playground" element={<PlaygroundPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/" element={<Navigate to="/entry" replace />} />
       </Routes>
