@@ -74,9 +74,21 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                 if (action.mode === 'IDE') {
                     onComplete();
                 }
+                nextStep();
                 break;
         }
     };
+
+    // Skip on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onComplete();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onComplete]);
 
     const nextStep = () => {
         setCurrentStep((prev) => prev + 1);
@@ -145,6 +157,13 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                     </div>
                 </div>
             )}
+            {/* Skip Button */}
+            <button
+                onClick={onComplete}
+                className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white px-3 py-1 rounded-full text-sm font-bold z-50 transition-colors"
+            >
+                SKIP ⏩
+            </button>
         </div>
     );
 };
