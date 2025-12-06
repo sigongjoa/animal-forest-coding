@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { Mission, MissionAttempt, MissionCompletion } from '../models/Mission';
+import { databaseService } from './DatabaseService';
 
 /**
  * MissionService
@@ -56,26 +57,23 @@ export class MissionService {
   }
 
   /**
-   * Get leaderboard data (mock)
+   * Get leaderboard data (Real DB)
    */
   async getLeaderboard(limit: number = 10, offset: number = 0) {
-    const mockLeaderboard = [
-      { rank: 1, studentId: 'student_001', studentName: 'Isabelle', points: 5200, badges: 12, missionsCompleted: 15 },
-      { rank: 2, studentId: 'student_002', studentName: 'Tom Nook', points: 4800, badges: 10, missionsCompleted: 14 },
-      { rank: 3, studentId: 'student_003', studentName: 'K.K. Slider', points: 4500, badges: 9, missionsCompleted: 12 },
-      { rank: 4, studentId: 'student_004', studentName: 'Blathers', points: 4100, badges: 8, missionsCompleted: 11 },
-      { rank: 5, studentId: 'student_005', studentName: 'Timmy', points: 3800, badges: 7, missionsCompleted: 10 },
-      { rank: 6, studentId: 'student_006', studentName: 'Tommy', points: 3500, badges: 6, missionsCompleted: 9 },
-      { rank: 7, studentId: 'student_007', studentName: 'Mabel', points: 3200, badges: 5, missionsCompleted: 8 },
-      { rank: 8, studentId: 'student_008', studentName: 'Sable', points: 2900, badges: 4, missionsCompleted: 7 },
-      { rank: 9, studentId: 'student_009', studentName: 'Raymond', points: 2600, badges: 3, missionsCompleted: 6 },
-      { rank: 10, studentId: 'student_010', studentName: 'Marshal', points: 2300, badges: 2, missionsCompleted: 5 },
-    ];
+    try {
+      const topPlayers = await databaseService.getTopPlayers(limit + offset);
 
-    return {
-      data: mockLeaderboard.slice(offset, offset + limit),
-      total: mockLeaderboard.length
-    };
+      // Slice for pagination (though limit is usually small)
+      const data = topPlayers.slice(offset, offset + limit);
+
+      return {
+        data,
+        total: topPlayers.length
+      };
+    } catch (error) {
+      console.error('Failed to get leaderboard:', error);
+      return { data: [], total: 0 };
+    }
   }
 
   async getAllMissions(): Promise<Mission[]> {

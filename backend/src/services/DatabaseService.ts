@@ -256,6 +256,43 @@ class DatabaseService {
   }
 
   /**
+   * Get top players sorted by points
+   */
+  async getTopPlayers(limit: number = 10): Promise<Array<{
+    rank: number;
+    studentId: string;
+    points: number;
+    badges: number;
+    missionsCompleted: number;
+  }>> {
+    try {
+      // 1. Get stats from DB
+      const stmt = this.db.prepare(`
+        SELECT student_id, points, badges, completed_missions
+        FROM progression
+        ORDER BY points DESC, updated_at DESC
+        LIMIT ?
+      `);
+
+      const rows = stmt.all(limit) as any[];
+
+      // 2. Map to return format
+      return rows.map((row, index) => ({
+        rank: index + 1,
+        studentId: row.student_id,
+        // Mock name for privacy, or could be stored in a users table
+        studentName: `Student ${row.student_id.substring(0, 4)}`,
+        points: row.points,
+        badges: JSON.parse(row.badges).length,
+        missionsCompleted: JSON.parse(row.completed_missions).length
+      }));
+    } catch (error) {
+      console.error('❌ Failed to get leaderboard:', error);
+      return [];
+    }
+  }
+
+  /**
    * Graceful shutdown - close database connection
    */
   close(): void {
