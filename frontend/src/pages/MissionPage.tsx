@@ -4,13 +4,14 @@ import { useSelector } from 'react-redux';
 import { useMissionProgress } from '../hooks/useMissionProgress';
 import { MissionStoryDisplay } from '../components/MissionStoryDisplay';
 import { MissionIDEEditor } from '../components/MissionIDEEditor';
+import MissionScenarioPlayer from '../components/MissionScenarioPlayer';
 import { selectProgression } from '../store/slices/progressionSlice';
 
 const MissionPage: React.FC = () => {
     const { missionId } = useParams<{ missionId: string }>();
     const navigate = useNavigate();
     const progression = useSelector(selectProgression);
-    const studentId = progression.studentId || 'guest'; // Fallback for testing
+    const studentId = progression.studentId || 'guest';
 
     const {
         mission,
@@ -81,56 +82,74 @@ const MissionPage: React.FC = () => {
             <main className="flex-1 overflow-hidden relative">
                 {viewMode === 'story' ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-20">
-                        <MissionStoryDisplay
-                            introImage={mission.storyContext?.introImage}
-                            dialogue={mission.storyContext?.introDialogue}
-                            onComplete={() => setViewMode('ide')}
-                        />
+                        {mission.scenario ? (
+                            <div className="w-full max-w-4xl p-4">
+                                <MissionScenarioPlayer
+                                    scenario={mission.scenario}
+                                    onComplete={() => setViewMode('ide')}
+                                />
+                            </div>
+                        ) : mission.storyContext ? (
+                            <MissionStoryDisplay
+                                introImage={mission.storyContext.introImage}
+                                dialogue={mission.storyContext.introDialogue}
+                                onComplete={() => setViewMode('ide')}
+                            />
+                        ) : (
+                            (() => {
+                                // Immediate shift if no story
+                                // Use timeout to avoid render-phase state update warning
+                                setTimeout(() => setViewMode('ide'), 0);
+                                return null;
+                            })()
+                        )}
                     </div>
                 ) : null}
 
-                <div className="flex h-full">
-                    {/* Left Panel: Instructions */}
-                    <div className="w-1/3 bg-white border-r border-gray-200 p-6 overflow-y-auto">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                            {currentStep?.title}
-                        </h2>
-                        <div className="prose prose-green max-w-none mb-8">
-                            <p className="text-gray-600 leading-relaxed">
-                                {currentStep?.description}
-                            </p>
-                        </div>
-
-                        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                            <h3 className="font-bold text-blue-700 mb-2">Mission Goal</h3>
-                            <p className="text-blue-600 text-sm">
-                                {currentStep?.prompt}
-                            </p>
-                        </div>
-
-                        {feedback?.passed && (
-                            <div className="mt-8">
-                                <button
-                                    onClick={isLastStep ? () => navigate('/dashboard') : nextStep}
-                                    className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg transform transition hover:-translate-y-1"
-                                >
-                                    {isLastStep ? 'Complete Mission 🎉' : 'Next Step →'}
-                                </button>
+                {viewMode === 'ide' ? (
+                    <div className="flex h-full">
+                        {/* Left Panel: Instructions */}
+                        <div className="w-1/3 bg-white border-r border-gray-200 p-6 overflow-y-auto">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                {currentStep?.title}
+                            </h2>
+                            <div className="prose prose-green max-w-none mb-8">
+                                <p className="text-gray-600 leading-relaxed">
+                                    {currentStep?.description}
+                                </p>
                             </div>
-                        )}
-                    </div>
 
-                    {/* Right Panel: IDE */}
-                    <div className="w-2/3 p-4 bg-gray-900">
-                        <MissionIDEEditor
-                            code={code}
-                            onChange={setCode}
-                            onValidate={submitCode}
-                            isValidating={validating}
-                            feedback={feedback}
-                        />
+                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                                <h3 className="font-bold text-blue-700 mb-2">Mission Goal</h3>
+                                <p className="text-blue-600 text-sm">
+                                    {currentStep?.prompt}
+                                </p>
+                            </div>
+
+                            {feedback?.passed && (
+                                <div className="mt-8">
+                                    <button
+                                        onClick={isLastStep ? () => navigate('/dashboard') : nextStep}
+                                        className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg transform transition hover:-translate-y-1"
+                                    >
+                                        {isLastStep ? 'Complete Mission 🎉' : 'Next Step →'}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Right Panel: IDE */}
+                        <div className="w-2/3 p-4 bg-gray-900">
+                            <MissionIDEEditor
+                                code={code}
+                                onChange={setCode}
+                                onValidate={submitCode}
+                                isValidating={validating}
+                                feedback={feedback}
+                            />
+                        </div>
                     </div>
-                </div>
+                ) : null}
             </main>
         </div>
     );

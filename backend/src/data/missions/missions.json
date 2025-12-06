@@ -42,7 +42,100 @@
         "unlocks": [
             "mission-002"
         ],
-        "prerequisites": []
+        "prerequisites": [],
+        "scenario": {
+            "setting": {
+                "background": "/assets/background/beach_sunset.png",
+                "characters": [
+                    {
+                        "id": "player",
+                        "initialPosition": {
+                            "x": 100,
+                            "y": 200
+                        },
+                        "sprite": "/assets/character/player.png",
+                        "direction": "right",
+                        "scale": 2
+                    },
+                    {
+                        "id": "nook",
+                        "initialPosition": {
+                            "x": 400,
+                            "y": 200
+                        },
+                        "sprite": "/assets/character/nook.png",
+                        "direction": "left",
+                        "scale": 2
+                    }
+                ]
+            },
+            "script": [
+                {
+                    "type": "wait",
+                    "duration": 1000
+                },
+                {
+                    "type": "move",
+                    "target": "nook",
+                    "to": {
+                        "x": 150,
+                        "y": 200
+                    },
+                    "speed": "walk"
+                },
+                {
+                    "type": "emote",
+                    "target": "nook",
+                    "emoji": "🧮"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "Welcome to Coding Island! Yes, yes!",
+                    "emotion": "happy"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "I'm Tom Nook. And now... it's time to settle the bill."
+                },
+                {
+                    "type": "move",
+                    "target": "nook",
+                    "to": {
+                        "x": 140,
+                        "y": 200
+                    },
+                    "speed": "run"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "Tent fee, NookPhone fee, Tax... Total is 49,800 Bells!"
+                },
+                {
+                    "type": "emote",
+                    "target": "player",
+                    "emoji": "⚡"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "player",
+                    "text": "I... I don't have any money!",
+                    "emotion": "shocked"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "No bells? Then you'll have to code your own bank account on this laptop.",
+                    "emotion": "normal"
+                },
+                {
+                    "type": "transition",
+                    "mode": "IDE"
+                }
+            ]
+        }
     },
     {
         "id": "mission-002",
