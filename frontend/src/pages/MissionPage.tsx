@@ -43,7 +43,7 @@ const MissionPage: React.FC = () => {
             <div className="flex flex-col items-center justify-center h-screen bg-red-50">
                 <div className="text-xl text-red-600 mb-4">{error || 'Mission not found'}</div>
                 <button
-                    onClick={() => navigate('/story')}
+                    onClick={() => navigate('/dashboard')}
                     className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
                 >
                     Back to Map
@@ -57,7 +57,7 @@ const MissionPage: React.FC = () => {
             {/* Header */}
             <header className="bg-white shadow-sm px-6 py-3 flex items-center justify-between z-10">
                 <div className="flex items-center space-x-4">
-                    <button onClick={() => navigate('/story')} className="text-gray-500 hover:text-gray-700">
+                    <button onClick={() => navigate('/dashboard')} className="text-gray-500 hover:text-gray-700">
                         ← Back
                     </button>
                     <h1 className="text-xl font-bold text-gray-800">{mission.title}</h1>
