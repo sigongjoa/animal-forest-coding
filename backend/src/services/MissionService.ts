@@ -14,60 +14,51 @@ import { Mission, MissionAttempt, MissionCompletion } from '../models/Mission';
 class MissionService {
   private missionsPath: string;
   private missionsCache: Map<string, Mission> = new Map();
-  private maxCacheSize: number = 20;
+  private isLoaded: boolean = false;
 
   constructor() {
-    // Fix: Remove double 'backend' in path
-    const cwd = process.cwd();
-    const basePath = cwd.endsWith('backend')
-      ? path.join(cwd, 'data', 'missions')
-      : path.join(cwd, 'backend', 'data', 'missions');
-    this.missionsPath = basePath;
-    console.log(`📚 MissionService initialized with path: ${this.missionsPath}`);
+    // backend/src/services/MissionService.ts -> ../data/missions/missions.json (in src/data)
+    this.missionsPath = path.join(__dirname, '../data/missions/missions.json');
+    console.log(`📚 MissionService initialized with file: ${this.missionsPath}`);
   }
 
   /**
-   * Load mission by ID with LRU caching
+   * Ensure missions are loaded from the single JSON file
    */
-  async getMission(missionId: string): Promise<Mission | null> {
+  private async ensureLoaded(): Promise<void> {
+    if (this.isLoaded) return;
+
     try {
-      // Check cache first
-      if (this.missionsCache.has(missionId)) {
-        console.log(`📦 Mission ${missionId} loaded from cache`);
-        return this.missionsCache.get(missionId) || null;
+      const fileContent = await fs.readFile(this.missionsPath, 'utf-8');
+      const missions: Mission[] = JSON.parse(fileContent);
+
+      this.missionsCache.clear();
+      for (const mission of missions) {
+        this.validateMission(mission);
+        this.missionsCache.set(mission.id, mission);
       }
 
-      // Load from file system
-      const filePath = path.join(this.missionsPath, `${missionId}.json`);
-      const fileContent = await fs.readFile(filePath, 'utf-8');
-      const mission: Mission = JSON.parse(fileContent);
-
-      // Validate mission structure
-      this.validateMission(mission);
-
-      // Add to cache with LRU eviction
-      if (this.missionsCache.size >= this.maxCacheSize) {
-        const firstKey = this.missionsCache.keys().next().value as string;
-        this.missionsCache.delete(firstKey);
-        console.log(`♻️ Evicted ${firstKey} from cache`);
-      }
-      this.missionsCache.set(missionId, mission);
-
-      console.log(`✅ Loaded mission ${missionId}`);
-      return mission;
+      this.isLoaded = true;
+      console.log(`✅ Loaded ${this.missionsCache.size} missions from ${this.missionsPath}`);
     } catch (error) {
-      console.error(`❌ Failed to load mission ${missionId}:`, error);
-      return null;
+      console.error(`❌ Failed to load missions from ${this.missionsPath}:`, error);
+      // 404/500 에러를 방지하기 위해 빈 상태 유지하지 않도록 주의, 빈 배열이라도 로드된 것으로 처리할지 고민
+      // 여기서는 일단 실패 로그만 남김
     }
   }
 
   /**
-   * Load all missions from directory
-   * Sorted by order field
+   * Load mission by ID
+   */
+  async getMission(missionId: string): Promise<Mission | null> {
+    await this.ensureLoaded();
+    return this.missionsCache.get(missionId) || null;
+  }
+
+  /**
+   * Get leaderboard data (mock)
    */
   async getLeaderboard(limit: number = 10, offset: number = 0) {
-    // TODO: In a real app, this would query the database
-    // For now, return mock data sorted by points
     const mockLeaderboard = [
       { rank: 1, studentId: 'student_001', studentName: 'Isabelle', points: 5200, badges: 12, missionsCompleted: 15 },
       { rank: 2, studentId: 'student_002', studentName: 'Tom Nook', points: 4800, badges: 10, missionsCompleted: 14 },
@@ -88,30 +79,10 @@ class MissionService {
   }
 
   async getAllMissions(): Promise<Mission[]> {
-    try {
-      const files = await fs.readdir(this.missionsPath);
-      const jsonFiles = files
-        .filter(f => f.startsWith('mission-') && f.endsWith('.json'))
-        .sort();
-
-      const missions: Mission[] = [];
-      for (const file of jsonFiles) {
-        const missionId = file.replace('.json', '');
-        const mission = await this.getMission(missionId);
-        if (mission) {
-          missions.push(mission);
-        }
-      }
-
-      // Sort by order field
-      missions.sort((a, b) => a.order - b.order);
-
-      console.log(`✅ Loaded ${missions.length} missions total`);
-      return missions;
-    } catch (error) {
-      console.error('❌ Failed to load missions:', error);
-      return [];
-    }
+    await this.ensureLoaded();
+    const missions = Array.from(this.missionsCache.values());
+    // Sort by order field
+    return missions.sort((a, b) => a.order - b.order);
   }
 
   /**

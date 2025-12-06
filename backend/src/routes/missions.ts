@@ -25,34 +25,7 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * GET /api/missions/:missionId
- * Get a specific mission by ID
- */
-router.get('/:missionId', async (req: Request, res: Response) => {
-  try {
-    const { missionId } = req.params;
-    const mission = await missionService.getMission(missionId);
 
-    if (!mission) {
-      return res.status(404).json({
-        success: false,
-        error: `Mission ${missionId} not found`,
-      });
-    }
-
-    res.json({
-      success: true,
-      data: mission,
-    });
-  } catch (error) {
-    console.error('Error fetching mission:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch mission',
-    });
-  }
-});
 
 /**
  * GET /api/missions/difficulty/:difficulty
@@ -344,6 +317,35 @@ router.get('/leaderboard', async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch leaderboard',
+    });
+  }
+});
+
+/**
+ * GET /api/missions/:missionId
+ * Get a specific mission by ID
+ */
+router.get('/:missionId', async (req: Request, res: Response) => {
+  try {
+    const { missionId } = req.params;
+    const mission = await missionService.getMission(missionId);
+
+    if (!mission) {
+      return res.status(404).json({
+        success: false,
+        error: `Mission ${missionId} not found`,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: mission,
+    });
+  } catch (error) {
+    console.error('Error fetching mission:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch mission',
     });
   }
 });

@@ -4,7 +4,9 @@
         "title": "Welcome to Animal Forest",
         "description": "Learn the basics of coding with Tom Nook.",
         "difficulty": "beginner",
+        "language": "javascript",
         "order": 1,
+        "points": 100,
         "steps": [
             {
                 "id": 1,
@@ -12,7 +14,8 @@
                 "description": "Print your first message to the console.",
                 "prompt": "Use console.log() to print 'Hello, Animal Forest!'",
                 "template": "// Write your code here\n",
-                "solution": "console.log('Hello, Animal Forest!');"
+                "solution": "console.log('Hello, Animal Forest!');",
+                "estimatedTimeMinutes": 5
             }
         ],
         "storyContext": {
@@ -31,16 +34,24 @@
                 "Remember to use console.log() and check your spelling."
             ]
         },
+        "rewards": {
+            "basePoints": 100,
+            "speedBonus": 50,
+            "perfectBonus": 50
+        },
         "unlocks": [
             "mission-002"
-        ]
+        ],
+        "prerequisites": []
     },
     {
         "id": "mission-002",
         "title": "Collecting Shells",
         "description": "Learn about variables and numbers.",
         "difficulty": "beginner",
+        "language": "javascript",
         "order": 2,
+        "points": 150,
         "steps": [
             {
                 "id": 1,
@@ -48,7 +59,8 @@
                 "description": "Store the number of shells in a variable.",
                 "prompt": "Create a variable named 'shells' and assign it the value 5.",
                 "template": "// Create a variable named 'shells'\n",
-                "solution": "let shells = 5;"
+                "solution": "let shells = 5;",
+                "estimatedTimeMinutes": 10
             }
         ],
         "storyContext": {
@@ -67,8 +79,16 @@
                 "Use 'let shells = 5;' to store the number."
             ]
         },
+        "rewards": {
+            "basePoints": 150,
+            "speedBonus": 50,
+            "perfectBonus": 50
+        },
         "unlocks": [
             "mission-003"
+        ],
+        "prerequisites": [
+            "mission-001"
         ]
     }
 ]
