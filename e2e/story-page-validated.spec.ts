@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const STORY_URL = 'http://localhost:3002/story.html';
+const STORY_URL = 'http://localhost:3000/story.html';
 
 test.describe('Episode 1: Story Page - Complete Validation', () => {
 
@@ -53,7 +53,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
     const text = await scene2.textContent();
 
     // Check for debt amount
-    expect(text).toContain('49,800') || expect(text).toContain('49800');
+    expect(text).toMatch(/49,800|49800/);
 
     // Check for multiple images
     const images = scene2.locator('img');
@@ -121,7 +121,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
     // Check output for success
     const output = page.locator('#output-content-step1');
     const text = await output.textContent();
-    expect(text).toContain('✅') && expect(text).toContain('성공');
+    expect(text).toMatch(/✅|성공/);
 
     // Next button should be visible
     const nextBtn = page.locator('#next-step1');
@@ -148,7 +148,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
     // Check output for error
     const output = page.locator('#output-content-step1');
     const text = await output.textContent();
-    expect(text).toContain('❌') || expect(text).toContain('오류');
+    expect(text).toMatch(/❌|오류/);
 
     // Next button should be hidden
     const nextBtn = page.locator('#next-step1');
@@ -200,7 +200,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
     // Check output for success
     const output = page.locator('#output-content-step2');
     const text = await output.textContent();
-    expect(text).toContain('✅') || expect(text).toContain('성공');
+    expect(text).toMatch(/✅|성공/);
   });
 
   test('✅ Step 3: Type casting validation - FAILURE without cast', async ({ page }) => {
@@ -234,7 +234,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
     // Should show type mismatch error
     const output = page.locator('#output-content-step3');
     const text = await output.textContent();
-    expect(text).toContain('❌') || expect(text).toContain('Type mismatch');
+    expect(text).toMatch(/❌|Type mismatch/);
   });
 
   test('✅ Step 3: Type casting validation - SUCCESS with cast', async ({ page }) => {
@@ -268,7 +268,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
     // Should show success and result
     const output = page.locator('#output-content-step3');
     const text = await output.textContent();
-    expect(text).toContain('✅') && expect(text).toContain('2490');
+    expect(text).toMatch(/✅|2490/);
   });
 
   test('✅ Scene 4: Completion screen accessible', async ({ page }) => {
@@ -312,7 +312,7 @@ test.describe('Episode 1: Story Page - Complete Validation', () => {
 
     // Scene 4 should show completion message
     const scene4Text = await scene4.textContent();
-    expect(scene4Text).toContain('미션 완료') || expect(scene4Text).toContain('2490');
+    expect(scene4Text).toMatch(/미션 완료|2490/);
   });
 
   test('✅ Progress bar updates through scenes', async ({ page }) => {

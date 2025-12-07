@@ -1,46 +1,16 @@
 {
-  "timestamp": "2025-12-06T16:14:09.681Z",
-  "totalScreenshots": 7,
+  "timestamp": "2025-12-07T14:01:31.061Z",
+  "totalScreenshots": 1,
   "screenshots": [
     {
-      "filename": "uc3_mission_1_completed.png",
-      "hash": "8fe58c292de95cebe8ddd35dd0faae6e",
-      "size": 205555
-    },
-    {
-      "filename": "uc3_mission_2_completed.png",
-      "hash": "7e854baa62c8086b241ac15f6121a9e3",
-      "size": 232062
-    },
-    {
-      "filename": "uc3_mission_3_completed.png",
-      "hash": "3c97370109c035d6ef47a61ba0c45435",
-      "size": 219079
-    },
-    {
-      "filename": "uc3_mission_4_completed.png",
-      "hash": "a5a6a21730b2578b7fc45284abc9ba96",
-      "size": 228269
-    },
-    {
-      "filename": "uc3_mission_5_completed.png",
-      "hash": "04193f2159e60839dcd69939447bfa5d",
-      "size": 209044
-    },
-    {
-      "filename": "uc3_mission_6_completed.png",
-      "hash": "4280250ead40dc811be44ad720a154c0",
-      "size": 242855
-    },
-    {
-      "filename": "uc3_final_progress_dashboard.png",
-      "hash": "0b3eca664d764149e722e450f4b649a5",
-      "size": 208447
+      "filename": "tc3_01_before_compilation.png",
+      "hash": "e965201ac372622be0bfb0f3d5b33747",
+      "size": 353971
     }
   ],
-  "uniqueHashes": 7,
+  "uniqueHashes": 1,
   "verification": {
     "allDifferent": true,
-    "message": "7개 스크린샷 중 7개가 고유함"
+    "message": "1개 스크린샷 중 1개가 고유함"
   }
 }

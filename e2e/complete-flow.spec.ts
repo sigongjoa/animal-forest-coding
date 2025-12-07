@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () => {
   test('E2E-1: EntryPage should display title and start button', async ({ page }) => {
-    await page.goto('http://localhost:3002/');
+    await page.goto('http://localhost:3000/');
 
     // EntryPage가 표시되는지 확인
     await expect(page).toHaveURL(/entry|\/$/);
@@ -19,7 +19,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-2: Click start button and navigate to LoginPage', async ({ page }) => {
-    await page.goto('http://localhost:3002/');
+    await page.goto('http://localhost:3000/');
 
     // 시작 버튼 클릭
     const startButton = page.locator('img[alt="시작하기"]').first();
@@ -30,7 +30,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
     await page.waitForTimeout(300);
 
     // LoginPage로 이동했는지 확인 (또는 StoryPage로 직접 이동)
-    await page.waitForURL(/login|story/, { timeout: 5000 }).catch(() => {});
+    await page.waitForURL(/login|story/, { timeout: 5000 }).catch(() => { });
 
     const url = page.url();
     console.log(`✅ EntryPage 클릭 후 이동: ${url}`);
@@ -38,7 +38,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-3: LoginPage form and login functionality', async ({ page }) => {
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:3000/login');
 
     // 로그인 폼 요소 확인
     const usernameInput = page.locator('input[type="text"]').first();
@@ -60,7 +60,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-4: Navigate to StoryPage after login', async ({ page }) => {
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:3000/login');
 
     // 로그인 진행
     const usernameInput = page.locator('input[type="text"]').first();
@@ -81,7 +81,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-5: StoryPage displays Scene 1 with img1.jpg', async ({ page }) => {
-    await page.goto('http://localhost:3002/story');
+    await page.goto('http://localhost:3000/story');
 
     // StoryPage가 로드되었는지 확인
     await expect(page).toHaveURL(/story/);
@@ -106,7 +106,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-6: Text typing animation', async ({ page }) => {
-    await page.goto('http://localhost:3002/story');
+    await page.goto('http://localhost:3000/story');
 
     // 타이핑 애니메이션 확인
     const dialogText = page.locator('p.text-yellow-900');
@@ -129,7 +129,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-7: Next button progresses dialogue', async ({ page }) => {
-    await page.goto('http://localhost:3002/story');
+    await page.goto('http://localhost:3000/story');
 
     // 진행도 초기값 확인
     const progressBefore = await page.getByText(/1 \/ 2/).textContent();
@@ -153,7 +153,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-8: Scene transitions from Scene 1 to Scene 2', async ({ page }) => {
-    await page.goto('http://localhost:3002/story');
+    await page.goto('http://localhost:3000/story');
 
     // Scene 1의 모든 대사를 진행 (5개)
     const nextButton = page.locator('button').filter({ hasText: /다음|시작하기/ }).first();
@@ -179,7 +179,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-9: Complete story and navigate to IDE', async ({ page }) => {
-    await page.goto('http://localhost:3002/story');
+    await page.goto('http://localhost:3000/story');
 
     const nextButton = page.locator('button').filter({ hasText: /다음|시작하기/ }).first();
 
@@ -204,7 +204,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
   });
 
   test('E2E-10: Skip button navigates directly to IDE', async ({ page }) => {
-    await page.goto('http://localhost:3002/story');
+    await page.goto('http://localhost:3000/story');
 
     // 스킵 버튼 찾기
     const skipButton = page.locator('button').filter({ hasText: /스킵/ });
@@ -224,7 +224,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
     // 모바일 뷰포트 설정
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await page.goto('http://localhost:3002/');
+    await page.goto('http://localhost:3000/');
 
     // EntryPage 요소 확인
     const titleImage = page.locator('img[alt="오여봐요 코딩의 숲"]');
@@ -250,7 +250,7 @@ test.describe('Complete App Flow - EntryPage → LoginPage → StoryPage', () =>
     console.log('\n========== 완전한 플로우 테스트 시작 ==========');
 
     // 1. EntryPage 진입
-    await page.goto('http://localhost:3002/');
+    await page.goto('http://localhost:3000/');
     await expect(page).toHaveURL(/entry|\/$/);
     console.log('1️⃣ EntryPage 도착');
 

@@ -41,6 +41,8 @@ describe('Integration Test: Leaderboard System', () => {
                 currentMissionIndex: 0,
                 points: p.points,
                 badges: p.badges,
+                perfectMissionCount: 0,
+                speedRunCount: 0,
                 lastModified: Date.now()
             });
         }
@@ -75,6 +77,8 @@ describe('Integration Test: Leaderboard System', () => {
                 currentMissionIndex: 0,
                 points: p.points,
                 badges: p.badges,
+                perfectMissionCount: 0,
+                speedRunCount: 0,
                 lastModified: Date.now()
             });
         }

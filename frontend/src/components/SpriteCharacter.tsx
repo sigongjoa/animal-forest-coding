@@ -7,6 +7,7 @@ interface SpriteCharacterProps {
     isMoving: boolean;
     spriteUrl?: string; // override default
     scale?: number;
+    transitionDuration?: number;
 }
 
 const FRAME_COUNT = 4; // 가로 4프레임 가정
@@ -26,6 +27,7 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
     isMoving,
     spriteUrl = '/assets/character/player.png',
     scale = 2,
+    transitionDuration = 100,
 }) => {
     const [frame, setFrame] = useState(0);
 
@@ -62,7 +64,7 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
                 transformOrigin: 'top left',
                 imageRendering: 'pixelated',
                 zIndex: 10,
-                transition: 'left 0.1s linear, top 0.1s linear',
+                transition: `left ${transitionDuration}ms linear, top ${transitionDuration}ms linear`,
             }}
         />
     );

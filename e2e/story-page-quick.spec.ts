@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const STORY_URL = 'http://localhost:3002/story.html';
+const STORY_URL = 'http://localhost:3000/story.html';
 
 test.describe('Episode 1: Story Page Quick Verification', () => {
 
