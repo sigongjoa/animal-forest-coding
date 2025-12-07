@@ -19,6 +19,8 @@ interface ProgressionState {
   currentMissionIndex: number;
   points: number;
   badges: string[];
+  perfectMissionCount: number;
+  speedRunCount: number;
 
   // UI 상태
   loading: boolean;
@@ -38,6 +40,8 @@ export const initialState: ProgressionState = {
   currentMissionIndex: 0,
   points: 0,
   badges: [],
+  perfectMissionCount: 0,
+  speedRunCount: 0,
   loading: false,
   saving: false,
   error: null,
@@ -87,8 +91,10 @@ const progressionSlice = createSlice({
       missionId: string;
       points: number;
       badge?: string;
+      isPerfect?: boolean;
+      isSpeedRun?: boolean;
     }>) => {
-      const { missionId, points, badge } = action.payload;
+      const { missionId, points, badge, isPerfect, isSpeedRun } = action.payload;
 
       // 중복 방지
       if (!state.completedMissions.includes(missionId)) {
@@ -98,6 +104,9 @@ const progressionSlice = createSlice({
         if (badge && !state.badges.includes(badge)) {
           state.badges.push(badge);
         }
+
+        if (isPerfect) state.perfectMissionCount++;
+        if (isSpeedRun) state.speedRunCount++;
 
         // 다음 미션으로
         state.currentMissionIndex++;
@@ -126,13 +135,15 @@ const progressionSlice = createSlice({
 
     // 전체 진행 상황 설정 (복원 후)
     setProgression: (state, action: PayloadAction<GameState>) => {
-      const { completedMissions, currentMissionIndex, points, badges, studentId, episodeId } = action.payload;
+      const { completedMissions, currentMissionIndex, points, badges, studentId, episodeId, perfectMissionCount, speedRunCount } = action.payload;
       state.completedMissions = completedMissions;
       state.currentMissionIndex = currentMissionIndex;
       state.points = points;
       state.badges = badges;
       state.studentId = studentId;
       state.episodeId = episodeId;
+      state.perfectMissionCount = perfectMissionCount || 0;
+      state.speedRunCount = speedRunCount || 0;
       state.isSynced = true;
       state.lastSyncedAt = Date.now();
     },
@@ -153,6 +164,8 @@ const progressionSlice = createSlice({
           state.badges = action.payload.badges;
           state.studentId = action.payload.studentId;
           state.episodeId = action.payload.episodeId;
+          state.perfectMissionCount = action.payload.perfectMissionCount || 0;
+          state.speedRunCount = action.payload.speedRunCount || 0;
           state.isSynced = true;
           state.lastSyncedAt = Date.now();
         }
@@ -219,3 +232,27 @@ export const selectProgressionLoading = (state: { progression: ProgressionState 
 
 export const selectProgressionError = (state: { progression: ProgressionState }) =>
   state.progression.error;
+
+export const selectLevelStats = (state: { progression: ProgressionState }) => {
+  const points = state.progression.points;
+  const milestones = [1000, 3000, 5000, 8700];
+  let level = 'Novice Coder';
+
+  if (points >= 5000) level = 'Master Programmer';
+  else if (points >= 3000) level = 'Expert Developer';
+  else if (points >= 1000) level = 'Apprentice Coder';
+
+  const nextMilestone = milestones.find(m => m > points) || 8700;
+  const pointsToNext = Math.max(0, nextMilestone - points);
+
+  // Progress calculation for the current level bar (simplified)
+  // For extensive level bars, might need previous milestone logic
+  const progressPercent = Math.round(((nextMilestone - pointsToNext) / nextMilestone) * 100);
+
+  return {
+    level,
+    nextLevelPoints: nextMilestone,
+    pointsToNext,
+    progressPercent
+  };
+};

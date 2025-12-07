@@ -289,9 +289,13 @@ test.describe('Edge Cases', () => {
   test('should handle localStorage quota exceeded', async ({ page }) => {
     // localStorage가 가득 찬 상황 시뮬레이션
     await page.evaluate(() => {
-      // 큰 데이터로 localStorage 채우기
-      for (let i = 0; i < 100; i++) {
-        localStorage.setItem(`dummy_${i}`, 'x'.repeat(1024 * 100)); // 100KB
+      try {
+        // 큰 데이터로 localStorage 채우기
+        for (let i = 0; i < 200; i++) {
+          localStorage.setItem(`dummy_${i}`, 'x'.repeat(1024 * 100)); // 100KB
+        }
+      } catch (e) {
+        // Ignored: Expected to hit quota
       }
     });
 

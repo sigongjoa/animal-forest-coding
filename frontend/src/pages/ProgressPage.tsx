@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { selectProgression } from '../store/slices/progressionSlice';
+import { selectProgression, selectLevelStats } from '../store/slices/progressionSlice';
 import apiClient from '../services/apiClient';
 
 interface LeaderboardEntry {
@@ -36,12 +36,13 @@ const ProgressPage: React.FC = () => {
         fetchLeaderboard();
     }, []);
 
-    // Mock data for display if progression is empty
+    const levelStats = useSelector(selectLevelStats);
+
     const stats = {
         totalPoints: progression.points || 0,
         completedMissions: progression.completedMissions?.length || 0,
-        level: 'Novice Coder',
-        nextLevelPoints: 1000
+        level: levelStats.level,
+        nextLevelPoints: levelStats.nextLevelPoints
     };
 
     return (

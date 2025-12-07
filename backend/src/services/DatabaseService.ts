@@ -14,6 +14,8 @@ interface GameState {
   points: number;
   badges: string[];
   lastModified: number;
+  perfectMissionCount: number;
+  speedRunCount: number;
 }
 
 /**
@@ -68,9 +70,19 @@ class DatabaseService {
           badges TEXT NOT NULL DEFAULT '[]',
           last_modified INTEGER NOT NULL,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          perfect_mission_count INTEGER DEFAULT 0,
+          speed_run_count INTEGER DEFAULT 0
         );
       `);
+
+      // Try to add columns if they don't exist (for existing DBs)
+      try {
+        this.db.exec("ALTER TABLE progression ADD COLUMN perfect_mission_count INTEGER DEFAULT 0");
+      } catch (e) { /* Column likely exists */ }
+      try {
+        this.db.exec("ALTER TABLE progression ADD COLUMN speed_run_count INTEGER DEFAULT 0");
+      } catch (e) { /* Column likely exists */ }
 
       // Create audit log table for fraud detection
       this.db.exec(`
@@ -105,8 +117,9 @@ class DatabaseService {
       const stmt = this.db.prepare(`
         INSERT INTO progression (
           student_id, episode_id, completed_missions,
-          current_mission_index, points, badges, last_modified
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+          current_mission_index, points, badges, last_modified,
+          perfect_mission_count, speed_run_count
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(student_id) DO UPDATE SET
           episode_id = ?,
           completed_missions = ?,
@@ -114,6 +127,8 @@ class DatabaseService {
           points = ?,
           badges = ?,
           last_modified = ?,
+          perfect_mission_count = ?,
+          speed_run_count = ?,
           updated_at = CURRENT_TIMESTAMP
       `);
 
@@ -125,13 +140,17 @@ class DatabaseService {
         state.points,
         JSON.stringify(state.badges),
         state.lastModified,
-        // Update values (duplicate parameters for ON CONFLICT clause)
+        state.perfectMissionCount || 0,
+        state.speedRunCount || 0,
+        // Update values
         state.episodeId,
         JSON.stringify(state.completedMissions),
         state.currentMissionIndex,
         state.points,
         JSON.stringify(state.badges),
-        state.lastModified
+        state.lastModified,
+        state.perfectMissionCount || 0,
+        state.speedRunCount || 0
       );
 
       console.log(`✅ Saved progression for student ${state.studentId}`);
@@ -168,6 +187,8 @@ class DatabaseService {
         points: row.points,
         badges: JSON.parse(row.badges),
         lastModified: row.last_modified,
+        perfectMissionCount: row.perfect_mission_count || 0,
+        speedRunCount: row.speed_run_count || 0,
       };
 
       console.log(`✅ Loaded progression for student ${studentId}`);

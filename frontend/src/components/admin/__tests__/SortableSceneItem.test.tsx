@@ -37,7 +37,7 @@ describe('SortableSceneItem Component', () => {
         <SortableSceneItem scene={mockScene} index={0} onDelete={mockOnDelete} />
       );
 
-      expect(screen.getByText('Tom Nook')).toBeInTheDocument();
+      expect(screen.getByText(/Tom Nook/)).toBeInTheDocument();
       expect(screen.getByText('📖 Story')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
     });

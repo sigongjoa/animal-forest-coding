@@ -37,25 +37,27 @@ function AppWithPersistence() {
       if (token) {
         console.log('[App] Starting auto-save for user:', progression.studentId);
 
-        const unsubscribe = store.subscribe(() => {
-          const currentState = store.getState().progression;
-          persistenceService.startAutoSave(
-            () => ({
-              studentId: progression.studentId!,
+        // Start auto-save once
+        persistenceService.startAutoSave(
+          () => {
+            const currentState = store.getState().progression;
+            return {
+              studentId: currentState.studentId!,
               episodeId: currentState.episodeId || 'ep_1',
               completedMissions: currentState.completedMissions,
               currentMissionIndex: currentState.currentMissionIndex,
               points: currentState.points,
               badges: currentState.badges,
+              perfectMissionCount: currentState.perfectMissionCount,
+              speedRunCount: currentState.speedRunCount,
               lastModified: Date.now(),
-            }),
-            token
-          );
-        });
+            };
+          },
+          token
+        );
 
         return () => {
           persistenceService.stopAutoSave();
-          unsubscribe();
         };
       }
     }

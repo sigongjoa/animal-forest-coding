@@ -10,6 +10,18 @@ export const apiClient: AxiosInstance = axios.create({
   },
 });
 
+// 요청 인터셉터
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // 응답 인터셉터
 apiClient.interceptors.response.use(
   (response) => response,

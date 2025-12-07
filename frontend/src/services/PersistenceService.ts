@@ -15,6 +15,8 @@ export interface GameState {
   points: number;
   badges: string[];
   lastModified: number; // timestamp
+  perfectMissionCount: number;
+  speedRunCount: number;
 }
 
 export interface SyncResult {
@@ -216,6 +218,8 @@ export class PersistenceService {
       points: mergedPoints,
       badges: mergedBadges,
       lastModified: Date.now(),
+      perfectMissionCount: Math.max(serverState.perfectMissionCount || 0, localState.perfectMissionCount || 0),
+      speedRunCount: Math.max(serverState.speedRunCount || 0, localState.speedRunCount || 0),
     };
 
     console.log(

@@ -182,6 +182,93 @@
         ],
         "prerequisites": [
             "mission-001"
-        ]
+        ],
+        "scenario": {
+            "setting": {
+                "background": "/assets/background/beach_day.png",
+                "characters": [
+                    {
+                        "id": "player",
+                        "initialPosition": {
+                            "x": 100,
+                            "y": 250
+                        },
+                        "sprite": "/assets/character/player.png",
+                        "direction": "right",
+                        "scale": 2
+                    },
+                    {
+                        "id": "nook",
+                        "initialPosition": {
+                            "x": 400,
+                            "y": 250
+                        },
+                        "sprite": "/assets/character/nook.png",
+                        "direction": "left",
+                        "scale": 2
+                    }
+                ]
+            },
+            "script": [
+                {
+                    "type": "wait",
+                    "duration": 800
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "Now that you're settled, we need to make some bells.",
+                    "emotion": "happy"
+                },
+                {
+                    "type": "move",
+                    "target": "player",
+                    "to": {
+                        "x": 200,
+                        "y": 250
+                    },
+                    "speed": "walk"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "See these shells? They are quite valuable."
+                },
+                {
+                    "type": "emote",
+                    "target": "player",
+                    "emoji": "🐚"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "But we can't just pick them up randomly. We need to COUNT them."
+                },
+                {
+                    "type": "move",
+                    "target": "nook",
+                    "to": {
+                        "x": 300,
+                        "y": 250
+                    },
+                    "speed": "run"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "In coding, we use 'Variables' to store numbers like this.",
+                    "emotion": "normal"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "Let's create a variable called 'shells' and put the number 5 in it!"
+                },
+                {
+                    "type": "transition",
+                    "mode": "IDE"
+                }
+            ]
+        }
     }
 ]

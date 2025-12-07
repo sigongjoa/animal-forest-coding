@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { Mission, MissionAttempt, MissionCompletion } from '../models/Mission';
 import { databaseService } from './DatabaseService';
@@ -19,8 +20,36 @@ export class MissionService {
 
   constructor() {
     // backend/src/services/MissionService.ts -> ../data/missions/missions.json (in src/data)
-    this.missionsPath = path.join(__dirname, '../data/missions/missions.json');
-    console.log(`📚 MissionService initialized with file: ${this.missionsPath}`);
+
+    // Explicitly check possible paths
+    const pathsToCheck = [
+      // 1. Source directory (most likely in dev/local)
+      path.join(process.cwd(), 'src', 'data', 'missions', 'missions.json'),
+      // 2. Root data directory
+      path.join(process.cwd(), 'data', 'missions', 'missions.json'),
+      // 3. Dist directory (if copied)
+      path.join(process.cwd(), 'dist', 'data', 'missions', 'missions.json'),
+      // 4. Relative to file (fallback)
+      path.join(__dirname, '../../data/missions/missions.json')
+    ];
+
+
+    let foundPath = '';
+    for (const p of pathsToCheck) {
+      if (fsSync.existsSync(p)) {
+        foundPath = p;
+        break;
+      }
+    }
+
+    if (foundPath) {
+      this.missionsPath = foundPath;
+      console.log(`📚 MissionService initialized with file: ${this.missionsPath}`);
+    } else {
+      console.error(`❌ Mission file not found! Checked:`, pathsToCheck);
+      // Default fallback even if valid path not found to prevent immediate crash, though loading will fail
+      this.missionsPath = pathsToCheck[0];
+    }
   }
 
   /**
@@ -43,8 +72,7 @@ export class MissionService {
       console.log(`✅ Loaded ${this.missionsCache.size} missions from ${this.missionsPath}`);
     } catch (error) {
       console.error(`❌ Failed to load missions from ${this.missionsPath}:`, error);
-      // 404/500 에러를 방지하기 위해 빈 상태 유지하지 않도록 주의, 빈 배열이라도 로드된 것으로 처리할지 고민
-      // 여기서는 일단 실패 로그만 남김
+      throw error;
     }
   }
 

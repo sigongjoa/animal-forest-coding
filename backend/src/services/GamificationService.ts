@@ -22,14 +22,14 @@ export interface Badge {
 
 export interface BadgeCondition {
   type:
-    | 'missions_completed'
-    | 'perfect_attempts'
-    | 'speed_completion'
-    | 'difficulty_streak'
-    | 'consecutive_days'
-    | 'total_points'
-    | 'specific_mission'
-    | 'learning_path_complete';
+  | 'missions_completed'
+  | 'perfect_attempts'
+  | 'speed_completion'
+  | 'difficulty_streak'
+  | 'consecutive_days'
+  | 'total_points'
+  | 'specific_mission'
+  | 'learning_path_complete';
   value: number | string;
 }
 
@@ -41,6 +41,8 @@ export interface StudentProgress {
   currentStreak: number; // consecutive days
   lastMissionCompletedAt: string;
   rankPercentile: number; // 0-100
+  perfectMissionCount: number;
+  speedRunCount: number;
 }
 
 export interface LeaderboardEntry {
@@ -53,7 +55,7 @@ export interface LeaderboardEntry {
   avatar?: string;
 }
 
-class GamificationService {
+export class GamificationService {
   private badges: Map<string, Badge> = new Map();
   private leaderboardCache: Map<string, { data: LeaderboardEntry[]; timestamp: number }> =
     new Map();
@@ -258,23 +260,21 @@ class GamificationService {
       }
 
       case 'perfect_attempts': {
-        // This would need to be tracked in student progress
-        // For now, simplified check
-        return Number(condition.value) <= studentProgress.missionsCompleted / 2;
+        return studentProgress.perfectMissionCount >= Number(condition.value);
       }
 
       case 'difficulty_streak': {
+        // Checks if current difficulty streak meets the target
         return studentProgress.currentStreak >= Number(condition.value);
       }
 
       case 'consecutive_days': {
-        // Would need proper implementation with date tracking
+        // Check consecutive days based on currentStreak, assuming it tracks daily login/completion streaks
         return studentProgress.currentStreak >= Number(condition.value);
       }
 
       case 'speed_completion': {
-        // Would need proper implementation
-        return true;
+        return studentProgress.speedRunCount >= Number(condition.value);
       }
 
       case 'specific_mission': {

@@ -21,6 +21,8 @@ interface GameState {
   points: number;
   badges: string[];
   lastModified: number;
+  perfectMissionCount: number;
+  speedRunCount: number;
 }
 
 interface AuthRequest extends Request {
@@ -120,7 +122,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const studentId = req.user!.id;
-      const { episodeId, completedMissions, currentMissionIndex, points, badges } =
+      const { episodeId, completedMissions, currentMissionIndex, points, badges, perfectMissionCount, speedRunCount } =
         req.body;
 
       console.log(`💾 [Progression] Saving for student ${studentId}`);
@@ -162,6 +164,8 @@ router.post(
         points,
         badges,
         lastModified: Date.now(),
+        perfectMissionCount: perfectMissionCount || 0,
+        speedRunCount: speedRunCount || 0,
       };
 
       // 임시: 메모리 저장 (나중에 DB로 교체)
