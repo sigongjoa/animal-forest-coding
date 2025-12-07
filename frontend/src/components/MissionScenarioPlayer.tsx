@@ -8,6 +8,8 @@ interface MissionScenarioPlayerProps {
     onComplete: () => void;
 }
 
+import { useAudio } from '../hooks/useAudio';
+
 const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
     scenario,
     onComplete,
@@ -15,9 +17,16 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
     const [currentStep, setCurrentStep] = useState(0);
     const [characters, setCharacters] = useState(scenario.setting.characters);
     const [currentDialogue, setCurrentDialogue] = useState<{ speaker: string; text: string } | null>(null);
+    const [displayedText, setDisplayedText] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
     const [activeEmotes, setActiveEmotes] = useState<{ [key: string]: string }>({});
+    const [movingCharacters, setMovingCharacters] = useState<Set<string>>(new Set());
+    const [charTransitionTimes, setCharTransitionTimes] = useState<{ [key: string]: number }>({});
+
+    const { generateAudio, playAudio, stopAudio, audioRef } = useAudio();
 
     const processAction = async (action: ScriptAction) => {
+        // ... (existing processAction logic, no changes needed inside) ...
         switch (action.type) {
             case 'wait':
                 await new Promise((resolve) => setTimeout(resolve, action.duration));
@@ -25,6 +34,16 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                 break;
 
             case 'move':
+                const duration = action.speed === 'run' ? 500 : 1000;
+
+                // Start movement animation
+                setCharTransitionTimes(prev => ({ ...prev, [action.target]: duration }));
+                setMovingCharacters((prev) => {
+                    const next = new Set(prev);
+                    next.add(action.target);
+                    return next;
+                });
+
                 // Update character position
                 setCharacters((prev) =>
                     prev.map((char) => {
@@ -48,8 +67,17 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                         return char;
                     })
                 );
-                // movement duration simulation (simple)
-                await new Promise((resolve) => setTimeout(resolve, 800));
+
+                // Wait for movement to finish
+                await new Promise((resolve) => setTimeout(resolve, duration));
+
+                // Stop movement animation
+                setMovingCharacters((prev) => {
+                    const next = new Set(prev);
+                    next.delete(action.target);
+                    return next;
+                });
+
                 nextStep();
                 break;
 
@@ -83,12 +111,13 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
+                stopAudio();
                 onComplete();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [onComplete]);
+    }, [onComplete, stopAudio]);
 
     const nextStep = () => {
         setCurrentStep((prev) => prev + 1);
@@ -101,10 +130,58 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
         }
     }, [currentStep]);
 
+    // Typewriter effect & Audio
+    useEffect(() => {
+        if (currentDialogue) {
+            setDisplayedText('');
+            setIsTyping(true);
+
+            // Play audio
+            const playDialogueAudio = async () => {
+                const url = await generateAudio(currentDialogue.text, currentDialogue.speaker);
+                if (url) {
+                    playAudio(url);
+                }
+            };
+            playDialogueAudio();
+
+            let index = 0;
+            const fullText = currentDialogue.text;
+
+            const timer = setInterval(() => {
+                if (index < fullText.length) {
+                    setDisplayedText(prev => prev + fullText.charAt(index));
+                    index++;
+                } else {
+                    setIsTyping(false);
+                    clearInterval(timer);
+                }
+            }, 30); // Speed: 30ms per char
+
+            return () => {
+                clearInterval(timer);
+                stopAudio();
+            };
+        } else {
+            setDisplayedText('');
+            setIsTyping(false);
+            stopAudio();
+        }
+    }, [currentDialogue, generateAudio, playAudio, stopAudio]);
+
     const handleDialogueClick = () => {
         if (currentDialogue) {
-            setCurrentDialogue(null);
-            nextStep();
+            if (isTyping) {
+                // Instant complete
+                setDisplayedText(currentDialogue.text);
+                setIsTyping(false);
+                // We keep audio playing even if text completes instantly, or we could stop it.
+                // Animal crossing usually keeps sound unless next dialogue starts.
+            } else {
+                // Next
+                setCurrentDialogue(null);
+                nextStep();
+            }
         }
     };
 
@@ -113,15 +190,17 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
             className="relative w-full h-[600px] bg-cover bg-center overflow-hidden rounded-lg shadow-lg"
             style={{ backgroundImage: `url(${scenario.setting.background})` }}
         >
+            <audio ref={audioRef} />
             {/* Characters */}
             {characters.map((char) => (
                 <div key={char.id} className="relative">
                     <SpriteCharacter
                         position={char.initialPosition}
                         direction={char.direction || 'down'}
-                        isMoving={false} // Script based movement is snappy for now, or use css transition wrapper
+                        isMoving={movingCharacters.has(char.id)}
                         spriteUrl={char.sprite}
                         scale={char.scale || 2}
+                        transitionDuration={charTransitionTimes[char.id] || 100}
                     />
                     {/* Emote Bubble */}
                     {activeEmotes[char.id] && (
@@ -149,17 +228,23 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                     <div className="font-bold text-amber-900 mb-1 uppercase">
                         {currentDialogue.speaker}
                     </div>
-                    <div className="text-lg text-gray-900 font-medium">
-                        {currentDialogue.text}
+                    <div className="text-lg text-gray-900 font-medium min-h-[1.75em]">
+                        {displayedText}
+                        {isTyping && <span className="animate-pulse">|</span>}
                     </div>
-                    <div className="absolute bottom-2 right-4 text-amber-600 animate-pulse">
-                        ▼ Click to continue
-                    </div>
+                    {!isTyping && (
+                        <div className="absolute bottom-2 right-4 text-amber-600 animate-pulse">
+                            ▼ Click to continue
+                        </div>
+                    )}
                 </div>
             )}
             {/* Skip Button */}
             <button
-                onClick={onComplete}
+                onClick={() => {
+                    stopAudio();
+                    onComplete();
+                }}
                 className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white px-3 py-1 rounded-full text-sm font-bold z-50 transition-colors"
             >
                 SKIP ⏩

@@ -5,7 +5,9 @@ import { useMissionProgress } from '../hooks/useMissionProgress';
 import { MissionStoryDisplay } from '../components/MissionStoryDisplay';
 import { MissionIDEEditor } from '../components/MissionIDEEditor';
 import MissionScenarioPlayer from '../components/MissionScenarioPlayer';
+import NookCompanion from '../components/NookCompanion';
 import { selectProgression } from '../store/slices/progressionSlice';
+import { MissionScenario, ScriptAction } from '../types/Mission';
 
 const MissionPage: React.FC = () => {
     const { missionId } = useParams<{ missionId: string }>();
@@ -29,6 +31,65 @@ const MissionPage: React.FC = () => {
     } = useMissionProgress({ missionId: missionId || '', studentId });
 
     const [viewMode, setViewMode] = useState<'story' | 'ide'>('story');
+    const [activeScenario, setActiveScenario] = useState<MissionScenario | null>(null);
+
+    // Initial Scenario Load
+    React.useEffect(() => {
+        const isCompleted = progression.completedMissions.includes(missionId || '');
+
+        if (mission?.scenario && !isCompleted) {
+            setActiveScenario(mission.scenario);
+            setViewMode('story');
+        } else if (mission) {
+            // If no story or already completed, go straight to IDE
+            setViewMode('ide');
+        }
+    }, [mission, progression.completedMissions, missionId]);
+
+    // Feedback Reaction System
+    React.useEffect(() => {
+        if (feedback && mission?.scenario?.setting) {
+            const isSuccess = feedback.passed;
+            const dialogues = isSuccess
+                ? mission.storyContext?.successDialogue
+                : mission.storyContext?.failureDialogue;
+
+            if (dialogues && dialogues.length > 0) {
+                const feedbackScript: ScriptAction[] = [
+                    { type: 'wait', duration: 500 },
+                    { type: 'move', target: 'nook', to: { x: 300, y: 200 }, speed: 'run' },
+                    { type: 'emote', target: 'nook', emoji: isSuccess ? '😊' : '😱' },
+                    ...dialogues.map(text => ({
+                        type: 'dialogue',
+                        speaker: 'nook',
+                        text: text,
+                        emotion: isSuccess ? 'happy' : 'shocked'
+                    } as ScriptAction)),
+                    { type: 'transition', mode: 'IDE' }
+                ];
+
+                setActiveScenario({
+                    setting: mission.scenario.setting,
+                    script: feedbackScript
+                });
+                setViewMode('story');
+            }
+        }
+    }, [feedback, mission]);
+
+    const getNookStatus = () => {
+        if (validating) return 'thinking';
+        if (feedback?.passed) return 'happy';
+        if (feedback && !feedback.passed) return 'concerned';
+        return 'idle';
+    };
+
+    const getNookMessage = () => {
+        if (validating) return "Let me check your code, yes, yes...";
+        if (feedback?.passed) return "Wonderful! That's exactly right!";
+        if (feedback && !feedback.passed) return feedback.message || "Hmm... something is not quite right.";
+        return undefined;
+    };
 
     if (loading) {
         return (
@@ -80,36 +141,29 @@ const MissionPage: React.FC = () => {
 
             {/* Main Content */}
             <main className="flex-1 overflow-hidden relative">
-                {viewMode === 'story' ? (
+                {viewMode === 'story' && activeScenario ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-20">
-                        {mission.scenario ? (
-                            <div className="w-full max-w-4xl p-4">
-                                <MissionScenarioPlayer
-                                    scenario={mission.scenario}
-                                    onComplete={() => setViewMode('ide')}
-                                />
-                            </div>
-                        ) : mission.storyContext ? (
-                            <MissionStoryDisplay
-                                introImage={mission.storyContext.introImage}
-                                dialogue={mission.storyContext.introDialogue}
+                        <div className="w-full max-w-4xl p-4">
+                            <MissionScenarioPlayer
+                                scenario={activeScenario}
                                 onComplete={() => setViewMode('ide')}
                             />
-                        ) : (
-                            (() => {
-                                // Immediate shift if no story
-                                // Use timeout to avoid render-phase state update warning
-                                setTimeout(() => setViewMode('ide'), 0);
-                                return null;
-                            })()
-                        )}
+                        </div>
+                    </div>
+                ) : viewMode === 'story' && mission?.storyContext ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-20">
+                        <MissionStoryDisplay
+                            introImage={mission.storyContext.introImage}
+                            dialogue={mission.storyContext.introDialogue}
+                            onComplete={() => setViewMode('ide')}
+                        />
                     </div>
                 ) : null}
 
                 {viewMode === 'ide' ? (
-                    <div className="flex h-full">
+                    <div className="flex h-full relative">
                         {/* Left Panel: Instructions */}
-                        <div className="w-1/3 bg-white border-r border-gray-200 p-6 overflow-y-auto">
+                        <div className="w-1/3 bg-white border-r border-gray-200 p-6 overflow-y-auto pb-40">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">
                                 {currentStep?.title}
                             </h2>
@@ -148,6 +202,13 @@ const MissionPage: React.FC = () => {
                                 feedback={feedback}
                             />
                         </div>
+
+                        {/* Nook Companion Overlay */}
+                        <NookCompanion
+                            visible={true}
+                            status={getNookStatus()}
+                            message={getNookMessage()}
+                        />
                     </div>
                 ) : null}
             </main>

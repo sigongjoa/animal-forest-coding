@@ -22,13 +22,17 @@ export const useAudio = () => {
         const response = await apiClient.post('/tts', {
           text,
           character,
+        }, {
+          responseType: 'blob'
         });
 
-        if (response.data.success) {
-          setAudioUrl(response.data.data.audioUrl);
-          return response.data.data.audioUrl;
+        if (response.status === 200) {
+          const blob = new Blob([response.data], { type: 'audio/wav' });
+          const url = URL.createObjectURL(blob);
+          setAudioUrl(url);
+          return url;
         } else {
-          throw new Error(response.data.error.message);
+          throw new Error('Failed to generate audio');
         }
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Failed to generate audio';

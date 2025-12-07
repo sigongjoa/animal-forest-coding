@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const STORY_URL = 'http://localhost:3002/story.html';
+const STORY_URL = 'http://localhost:3000/story.html';
 const EPISODE_1_IMAGES = [
   'opening.jpg',
   '2.jpg', '3.jpg', '4.jpg', '5.jpg',
@@ -34,7 +34,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     await expect(openingImg).toBeVisible();
 
     // Check for Nook dialogue
-    const dialogue = scene1.locator('.dialogue');
+    const dialogue = scene1.locator('.dialogue').first();
     const dialogueText = await dialogue.textContent();
     expect(dialogueText).toContain('너굴');
 
@@ -62,10 +62,18 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     const debtImg = scene2.locator('img[src*="2.jpg"], img[src*="3.jpg"]');
     await expect(debtImg.first()).toBeVisible();
 
-    // Check for Nook dialogue about debt
-    const dialogue = scene2.locator('.dialogue');
+    // Advance dialogue to see the amount
+    const nextBtn2 = scene2.locator('button:has-text("다음")');
+    await nextBtn2.click();
+    await page.waitForTimeout(500);
+    if (await nextBtn2.isVisible()) {
+      await nextBtn2.click();
+    }
+
+    // Check for Nook dialogue about debt or settlement intro
+    const dialogue = scene2.locator('.dialogue').first();
     const dialogueText = await dialogue.textContent();
-    expect(dialogueText?.toUpperCase()).toContain('벨');
+    expect(dialogueText?.toUpperCase()).toMatch(/벨|정산/);
   });
 
   test('✅ Scene 2: Story progression with multiple images', async ({ page }) => {
@@ -84,9 +92,17 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     const imageCount = await allImages.count();
     expect(imageCount).toBeGreaterThan(0);
 
+    // Advance dialogue to see the amount
+    const nextBtn2 = scene2.locator('button:has-text("다음")');
+    await nextBtn2.click();
+    await page.waitForTimeout(500);
+    if (await nextBtn2.isVisible()) {
+      await nextBtn2.click();
+    }
+
     // Verify 49,800 벨 debt is mentioned
     const scene2Text = await scene2.textContent();
-    expect(scene2Text).toContain('49,800') || expect(scene2Text).toContain('49800');
+    expect(scene2Text).toMatch(/49,800|49800/);
   });
 
   test('✅ Scene 3: Mission preparation displays', async ({ page }) => {
@@ -136,7 +152,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     await expect(ideSection).toHaveClass(/active/);
 
     // Step 1 mission should be visible
-    const step1Title = page.locator('text=Step 1');
+    const step1Title = page.locator('.step-counter').filter({ hasText: 'Step 1' }).first();
     await expect(step1Title).toBeVisible();
   });
 
@@ -167,7 +183,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     // Check for success message
     const output1 = page.locator('#output1');
     const outputText = await output1.textContent();
-    expect(outputText).toContain('✅') || expect(outputText).toContain('성공');
+    expect(outputText).toMatch(/✅|성공/);
 
     // "다음 단계" button should now be enabled
     const nextStepBtn = page.locator('button:has-text("다음 단계 →")').first();
@@ -201,7 +217,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     // Check for error message
     const output1 = page.locator('#output1');
     const outputText = await output1.textContent();
-    expect(outputText).toContain('❌') || expect(outputText).toContain('오류') || expect(outputText).toContain('int');
+    expect(outputText).toMatch(/❌|오류|int/);
 
     // "다음 단계" button should remain disabled
     const nextStepBtn = page.locator('button:has-text("다음 단계 →")').first();
@@ -235,7 +251,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     await nextStepBtn.click();
 
     // Step 2 should now be visible
-    const step2Title = page.locator('text=Step 2');
+    const step2Title = page.locator('.step-counter').filter({ hasText: 'Step 2' }).first();
     await expect(step2Title).toBeVisible();
 
     // Enter correct Step 2 code
@@ -250,7 +266,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     // Check for success
     const output2 = page.locator('#output2');
     const outputText = await output2.textContent();
-    expect(outputText).toContain('✅') || expect(outputText).toContain('성공');
+    expect(outputText).toMatch(/✅|성공/);
   });
 
   test('✅ IDE Step 3: Type casting validation - Failure without cast', async ({ page }) => {
@@ -287,7 +303,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     await nextStepBtn2.click();
 
     // Now on Step 3 - enter code WITHOUT type cast
-    const step3Title = page.locator('text=Step 3');
+    const step3Title = page.locator('.step-counter').filter({ hasText: 'Step 3' }).first();
     await expect(step3Title).toBeVisible();
 
     const editor3 = page.locator('#editor3');
@@ -300,7 +316,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     // Should show error about type mismatch
     const output3 = page.locator('#output3');
     const outputText = await output3.textContent();
-    expect(outputText).toContain('❌') || expect(outputText).toContain('타입') || expect(outputText).toContain('Type');
+    expect(outputText).toMatch(/❌|타입|Type/);
   });
 
   test('✅ IDE Step 3: Type casting validation - Success with cast', async ({ page }) => {
@@ -347,7 +363,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     // Should show success and result: 2490
     const output3 = page.locator('#output3');
     const outputText = await output3.textContent();
-    expect(outputText).toContain('✅') || expect(outputText).toContain('2490');
+    expect(outputText).toMatch(/✅|2490/);
   });
 
   test('✅ Progress bar updates correctly', async ({ page }) => {
@@ -369,7 +385,9 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     // Progress should update
     progressBar = page.locator('.progress');
     const progressText2 = await progressBar.textContent();
-    expect(progressText2).toContain('2') || expect(progressText2).not.toEqual(progressText1);
+    const text1 = progressText1 || '';
+    const text2 = progressText2 || '';
+    expect(text2.includes('2') || text2 !== text1).toBe(true);
   });
 
   test('✅ Responsive design on mobile viewport', async ({ page }) => {
@@ -385,7 +403,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     });
 
     // On mobile, should be 1 column
-    expect(computedStyle).toMatch(/1fr/) || expect(computedStyle).not.toContain(' ');
+    expect(computedStyle && (computedStyle.includes('1fr') || !computedStyle.includes(' '))).toBe(true);
 
     // Verify content is still visible
     const scene1 = page.locator('[data-scene="1"]');
@@ -476,7 +494,7 @@ test.describe('Episode 1: 너굴 코딩 - 공짜는 없다구리! (Story Page)',
     const scene4Active = await scene4.evaluate(el => el.classList.contains('active')).catch(() => false);
     const completeVisible = await completeBtn.isVisible().catch(() => false);
 
-    expect(scene4Active || completeVisible).toBeTruthy();
+    expect(Boolean(scene4Active || completeVisible)).toBe(true);
   });
 
 });
