@@ -4,32 +4,25 @@
 **Severity: Critical (P0)**
 
 ### 🚫 Problem Definition
-Currently, the **Code Execution Engine** (specifically `JavaExecutionService.ts` and the Python implementation) executes user-submitted code directly on the host server's operating system using Node.js `child_process`.
+Currently, the **Code Execution Engine** (specifically `JavaExecutionService.ts`) executes user-submitted Java code directly on the host server's operating system using Node.js `child_process`.
 
 *   **Vulnerability:** Run-Command-Execution (RCE). The system lacks a robust isolation layer.
 *   **Attack Vectors:**
-    *   **System Destruction:** `import os; os.system('rm -rf /')`
+    *   **System Destruction:** `System.exit(0)`, `Runtime.getRuntime().exec("rm -rf /")` reflection attacks.
     *   **Data Exfiltration:** Reading `.env` files or database credentials.
-    *   **Resource Exhaustion (DoS):** Infinite loops (`while(true)`), memory bombs, or Fork bombs.
+    *   **Resource Exhaustion (DoS):** Infinite loops (`while(true)`), memory bombs (Heap space exhaustion), or Thread bombing.
 
 ### 🛡️ Mitigation Strategy
 
 #### A. Containerization & Isolation (Backend Approach)
 Code execution **MUST** be moved out of the main application context into strictly isolated environments.
 
-1.  **Docker / Podman Containers:** Spin up ephemeral containers for each execution request.
+1.  **Docker Containers (Recommended):** Spin up ephemeral containers for each execution request.
     *   Limit CPU/Memory usage via Cgroups.
     *   Disable network access (unless specifically required and whitelisted).
     *   Mount read-only file systems.
-2.  **MicroVMs (Firecracker):** For higher security, use AWS Firecracker to run code in lightweight micro-virtual machines.
-3.  **Sandbox Libraries:** Use `gVisor` (Google) to provide a secure kernel interface for containers.
-
-#### B. Client-Side Execution (Frontend Approach)
-Offload execution to the user's browser where possible.
-
-1.  **WebAssembly (Wasm):** Run languages like C/C++/Rust directly in the browser.
-2.  **Pyodide:** Run a full Python kernel inside the browser via Wasm. This completely removes the security risk from the server.
-    *   *Trade-off:* Users can see the "secret tests" if not handled carefully.
+2.  **Java Security Manager (Legacy but useful):** Use a custom SecurityManager to block sensitive calls (File I/O, Network, System exit) at the JVM level.
+3.  **MicroVMs (Firecracker):** For higher security, use AWS Firecracker to run code in lightweight micro-virtual machines.
 
 ---
 
@@ -37,16 +30,16 @@ Offload execution to the user's browser where possible.
 **Severity: High (P1)**
 
 ### 🚫 Problem Definition
-Node.js operates on a **Single-Threaded Event Loop**. The current architecture processes code compilation and execution synchronously or blindly asynchronously within the main thread context.
+Node.js operates on a **Single-Threaded Event Loop**. The current architecture processes code compilation (`javac`) and execution (`java`) synchronously or blindly asynchronously within the main thread context.
 
-*   **Operational Risk:** Heavy computational tasks (like compiling Java or running complex Python scripts) block the event loop.
+*   **Operational Risk:** Heavy computational tasks block the event loop.
 *   **Impact:** While one user's code is running, **ALL** other users utilize the server (login, navigation, chat) experience freezing or timeouts. "One heavy user kills the server for everyone."
 
 ### 🛡️ Mitigation Strategy (Asynchronous Architecture)
 
 Decouple **Request Reception** from **Task Processing**.
 
-1.  **Message Queue:** Introduce a broker like **RabbitMQ**, **Redis Streams**, or **Apache Kafka**.
+1.  **Message Queue:** Introduce a broker like **Redis Streams** or **Apache Kafka**.
     *   API Server receives code -> Pushes job to Queue -> Returns "Job ID" to client immediately.
 2.  **Worker Nodes:** Separate "Execution Servers" (Workers) consume jobs from the Queue.
     *   Workers perform the heavy lifting (Docker compilation, etc.).
@@ -78,9 +71,7 @@ The current "Gamification" elements (Bells, Items, Mission Clearance) rely heavi
     *   The server sends back the **Result** (new balance, unlocked status).
 2.  **Immutability & Logs:**
     *   Record every transaction (Reward History table).
-    *   Implement rate limiting and anomaly detection (e.g., checking if a user cleared a hard mission in 2 seconds).
-3.  **Obfuscation (Defense in Depth):**
-    *   While not a cure-all, obfuscating frontend code makes casual tampering harder.
+    *   Implement rate limiting and anomaly detection.
 
 ---
 
@@ -89,6 +80,6 @@ The current "Gamification" elements (Bells, Items, Mission Clearance) rely heavi
 | Phase | Task | Priority | Tech Stack |
 | :--- | :--- | :--- | :--- |
 | **Phase 4.1** | **Docker Sandbox Impl** | 🚨 **Critical** | Docker API, Node.js Streams |
-| **Phase 4.2** | **Server-Authoritative Refactor** | 🔥 **High** | Express.js, SQLite Transaction |
+| **Phase 4.2** | **Server-Authoritative Refactor** | 🔥 **High** | Express.js, PostgreSQL Transaction |
 | **Phase 4.3** | **Async Queue Architecture** | ⚡ **Medium** | Redis (BullMQ) |
-| **Phase 4.4** | **Client-Side Python (Pyodide)** | 🧪 **Experimental** | Pyodide, WebWorker |
+| **Phase 4.4** | **Advanced Isolation (Firecracker)** | 🧪 **Experimental** | AWS Firecracker |

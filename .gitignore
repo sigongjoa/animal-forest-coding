@@ -108,3 +108,4 @@ out/
 # Additional dependencies (if accidentally committed)
 backend/node_modules/
 frontend/node_modules/
+.venv/
