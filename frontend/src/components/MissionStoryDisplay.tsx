@@ -25,16 +25,22 @@ export const MissionStoryDisplay: React.FC<MissionStoryDisplayProps> = ({
 
     return (
         <div className="flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-lg max-w-2xl mx-auto">
-            {introImage && (
+            {introImage ? (
                 <div className="mb-6 w-full h-64 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                     <img
                         src={introImage}
                         alt="Mission Scene"
                         className="object-cover w-full h-full"
                         onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Scene+Image';
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement?.classList.add('bg-gradient-to-br', 'from-amber-100', 'to-amber-200');
+                            e.currentTarget.parentElement?.insertAdjacentHTML('beforeend', '<div class="text-4xl">🏝️</div>');
                         }}
                     />
+                </div>
+            ) : (
+                <div className="mb-6 w-full h-64 bg-gradient-to-br from-blue-100 to-green-100 rounded-lg overflow-hidden flex items-center justify-center">
+                    <div className="text-6xl">🌲</div>
                 </div>
             )}
 

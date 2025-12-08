@@ -145,7 +145,7 @@ router.post(
       // Step 1: 서버 사이드 검증 (중요!)
       // 실제로 학생이 이 미션들을 풀었는지 확인해야 함
       // 지금은 간단한 구현, 나중에 코드 검증 로직과 연결
-      const validationResult = validateMissionCompletion(
+      const validationResult = await validateMissionCompletion(
         completedMissions,
         points
       );
@@ -303,12 +303,50 @@ router.delete('/clear', authenticateUser, async (req: AuthRequest, res: Response
  * 2. 포인트 총합 확인
  * 3. 미션 순서 확인
  */
-function validateMissionCompletion(
+/**
+ * 진행 상황 검증
+ *
+ * 규칙:
+ * 1. 미션별 포인트 검증
+ * 2. 포인트 총합 확인
+ * 3. 미션 순서 확인
+ */
+async function validateMissionCompletion(
   completedMissions: string[],
   reportedPoints: number
-): { valid: boolean; reason?: string } {
-  // 개발 중에는 검증을 완화하여 테스트를 용이하게 함
-  // 추후 MissionService.getMissionPoints(id) 등을 통해 실제 포인트와 대조해야 함
+): Promise<{ valid: boolean; reason?: string }> {
+  // 1. 미션 목록이 유효한지 확인
+  if (!Array.isArray(completedMissions)) {
+    return { valid: false, reason: 'Invalid completedMissions format' };
+  }
+
+  // 2. 보고된 총 포인트가 "가능한 최대 포인트" 이내인지 확인
+  // (정확한 계산은 완료 시점의 보너스 등 변수가 많아, 최대치 기준으로 이상 여부 판별)
+  // 예: 지금까지 깬 미션들의 (기본 점수 + 최대 보너스) 합보다 reportedPoints가 월등히 높으면 의심
+
+  let maxPossiblePoints = 0;
+
+  // Note: This logic assumes missionService.getMission is available.
+  // Since we are in the same process, we can use the imported MissionService instance.
+  // We need to make sure `missionService` is imported at the top of the file.
+
+  for (const missionId of completedMissions) {
+    const mission = await import('../services/MissionService').then(m => m.missionService.getMission(missionId));
+    if (mission) {
+      // Base + Speed + Perfect
+      maxPossiblePoints += (mission.rewards.basePoints + mission.rewards.speedBonus + mission.rewards.perfectBonus);
+    }
+  }
+
+  // Allow a small buffer or identical check. 
+  // If reported points is significantly higher than maxPossiblePoints (e.g. hack), reject.
+  if (reportedPoints > maxPossiblePoints + 100) { // +100 buffer just in case of events or adjustments
+    return {
+      valid: false,
+      reason: `Reported points (${reportedPoints}) exceed calculated max possible (${maxPossiblePoints})`
+    };
+  }
+
   return { valid: true };
 }
 
@@ -336,15 +374,14 @@ async function recordAuditLog(
   eventType: string,
   details: Record<string, unknown>
 ): Promise<void> {
-  const log = {
-    studentId,
-    eventType,
-    timestamp: new Date().toISOString(),
-    details,
-  };
-
-  // TODO: 감시 로그를 별도 데이터베이스에 저장
-  console.log('📊 [Audit]', JSON.stringify(log, null, 2));
+  // SQLite DB에 감시 로그 저장
+  try {
+    await databaseService.recordAuditLog(studentId, eventType, details);
+  } catch (error) {
+    console.error('Failed to record audit log:', error);
+    // Fallback if DB fails
+    console.log('📊 [Audit Fallback]', JSON.stringify({ studentId, eventType, details }, null, 2));
+  }
 }
 
 export default router;

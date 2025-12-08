@@ -474,4 +474,21 @@ describe('API Integration Tests - Express Routes', () => {
       expect(duration).toBeLessThan(100); // 100ms 이내
     });
   });
+
+  afterAll(() => {
+    // Import databaseService dynamically or via require/import if available in scope
+    // Since 'databaseService' is the singleton used by 'progression.ts' and others,
+    // we should try to close it here to prevent open handles.
+    // However, createServer() doesn't expose it directly.
+    // Ideally, we should import { databaseService } from '../services/DatabaseService';
+    // and call databaseService.close().
+
+    // Using require for simplicity in this replacement context if import isn't at top
+    try {
+      const { databaseService } = require('../services/DatabaseService');
+      databaseService.close();
+    } catch (e) {
+      console.warn('Failed to close database in afterAll:', e);
+    }
+  });
 });

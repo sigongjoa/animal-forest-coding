@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SettingsModal } from '../components/SettingsModal';
+import { StoryLogModal } from '../components/StoryLogModal';
 
 const MainPage: React.FC = () => {
     const navigate = useNavigate();
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isStoryLogOpen, setIsStoryLogOpen] = useState(false);
+    const [userName, setUserName] = useState('Traveler');
+
+    useEffect(() => {
+        // Attempt to get user info from localStorage or session
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                const parsed = JSON.parse(storedUser);
+                if (parsed.name) setUserName(parsed.name);
+            } catch (e) {
+                // Invalid JSON, ignore
+            }
+        }
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-300 to-green-200 flex flex-col items-center justify-center p-4">
@@ -45,18 +63,18 @@ const MainPage: React.FC = () => {
                     <div className="absolute inset-0 border-4 border-transparent group-hover:border-blue-400 rounded-3xl transition-colors pointer-events-none" />
                 </button>
 
-                {/* 3. Settings (Placeholder) */}
+                {/* 3. Settings */}
                 <button
-                    onClick={() => alert('Settings coming soon!')}
+                    onClick={() => setIsSettingsOpen(true)}
                     className="group relative bg-white/60 hover:bg-white/80 p-6 rounded-3xl shadow-lg transition-all transform hover:-translate-y-1 flex flex-col items-center"
                 >
                     <div className="text-4xl mb-2">⚙️</div>
                     <h3 className="text-xl font-bold text-gray-700">Settings</h3>
                 </button>
 
-                {/* 4. Story Log (Placeholder) */}
+                {/* 4. Story Log */}
                 <button
-                    onClick={() => alert('Story Log coming soon!')}
+                    onClick={() => setIsStoryLogOpen(true)}
                     className="group relative bg-white/60 hover:bg-white/80 p-6 rounded-3xl shadow-lg transition-all transform hover:-translate-y-1 flex flex-col items-center"
                 >
                     <div className="text-4xl mb-2">📖</div>
@@ -66,8 +84,12 @@ const MainPage: React.FC = () => {
 
             {/* User Info / Footer */}
             <div className="mt-12 text-center text-green-800 font-medium">
-                <p>Welcome back, Traveler!</p>
+                <p>Welcome back, {userName}!</p>
             </div>
+
+            {/* Modals */}
+            <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+            <StoryLogModal isOpen={isStoryLogOpen} onClose={() => setIsStoryLogOpen(false)} />
         </div>
     );
 };
