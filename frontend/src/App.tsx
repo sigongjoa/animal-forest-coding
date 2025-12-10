@@ -13,6 +13,8 @@ import MissionPage from './pages/MissionPage';
 import ProgressPage from './pages/ProgressPage';
 import AdminDashboard from './pages/AdminDashboard';
 import PlaygroundPage from './pages/PlaygroundPage';
+import APCSACurriculumPage from './pages/APCSACurriculumPage';
+import ProloguePage from './pages/ProloguePage';
 import './App.css';
 
 function AppWithPersistence() {
@@ -74,6 +76,9 @@ function AppWithPersistence() {
 
         {/* Redirect deleted /story to /main */}
         <Route path="/story" element={<Navigate to="/main" replace />} />
+
+        <Route path="/curriculum" element={<APCSACurriculumPage />} />
+        <Route path="/prologue" element={<ProloguePage />} />
 
         <Route path="/ide" element={<IDEPage />} />
         <Route path="/mission/:missionId" element={<MissionPage />} />

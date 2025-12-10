@@ -6,13 +6,14 @@ export interface MissionStep {
   template: string;
   solution: string;
   prerequisites: string[]; // IDs of missions that must be completed first
+  scenario?: MissionScenario;
 }
 
 // 스크립트 액션 타입 정의
 export type ScriptAction =
-  | { type: 'dialogue'; speaker: 'nook' | 'player' | 'system'; text: string; emotion?: 'happy' | 'angry' | 'shocked' | 'normal'; }
-  | { type: 'move'; target: 'player' | 'nook'; to: { x: number; y: number }; speed?: 'walk' | 'run'; }
-  | { type: 'emote'; target: 'player' | 'nook'; emoji: string; }
+  | { type: 'dialogue'; speaker: 'nook' | 'player' | 'system' | 'justin' | 'daisy'; text: string; emotion?: 'happy' | 'angry' | 'shocked' | 'normal' | 'sad' | 'neutral' | 'thinking' | 'concerned'; }
+  | { type: 'move'; target: 'player' | 'nook' | 'justin' | 'daisy'; to: { x: number; y: number }; speed?: 'walk' | 'run'; }
+  | { type: 'emote'; target: 'player' | 'nook' | 'justin' | 'daisy'; emoji: string; }
   | { type: 'transition'; mode: 'IDE' | 'STORY'; }
   | { type: 'wait'; duration: number; };
 
@@ -21,7 +22,7 @@ export interface MissionScenario {
     background: string;
     bgm?: string;
     characters: {
-      id: 'player' | 'nook';
+      id: 'player' | 'nook' | 'justin' | 'daisy';
       initialPosition: { x: number; y: number };
       sprite: string;
       direction: 'down' | 'left' | 'right' | 'up';

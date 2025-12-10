@@ -105,6 +105,58 @@ const ProgressPage: React.FC = () => {
                     )}
                 </section>
 
+                {/* Mission Mission Board */}
+                <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-10">
+                    <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span className="mr-2">🗺️</span> Mission Board
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Unit 1 Card */}
+                        <div
+                            onClick={() => navigate('/mission/unit-1-economics')}
+                            className="group cursor-pointer border rounded-2xl p-6 hover:shadow-lg transition-all hover:bg-yellow-50 border-yellow-200 relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 p-2 bg-yellow-200 text-yellow-800 text-xs font-bold rounded-bl-xl">
+                                BEGINNER
+                            </div>
+                            <div className="flex items-start space-x-4">
+                                <div className="text-4xl">💰</div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-yellow-700">Unit 1: Economics 101</h3>
+                                    <p className="text-sm text-gray-600 mt-2">
+                                        Tom Nook needs help managing his bells! Learn basic variables and arithmetic in this economy simulation.
+                                    </p>
+                                    <button className="mt-4 px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                                        Start Mission
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Unit 2 Card */}
+                        <div
+                            onClick={() => navigate('/mission/unit-2-fishing')}
+                            className="group cursor-pointer border rounded-2xl p-6 hover:shadow-lg transition-all hover:bg-blue-50 border-blue-200 relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 p-2 bg-blue-200 text-blue-800 text-xs font-bold rounded-bl-xl">
+                                INTERMEDIATE
+                            </div>
+                            <div className="flex items-start space-x-4">
+                                <div className="text-4xl">🎣</div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-700">Unit 2: King of Fishing</h3>
+                                    <p className="text-sm text-gray-600 mt-2">
+                                        Join Justin's fishing tournament! Master `if-else` logic and `loops` to catch the legendary Gyarados.
+                                    </p>
+                                    <button className="mt-4 px-4 py-2 bg-blue-400 text-blue-900 rounded-lg text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                                        Start Mission
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Recent Activity / Leaderboard Placeholder */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">

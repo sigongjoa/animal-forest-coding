@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAudio } from '../hooks/useAudio';
+import SpriteCharacter from './SpriteCharacter';
 
 interface NookCompanionProps {
     status: 'idle' | 'thinking' | 'talking' | 'happy' | 'concerned';
@@ -88,28 +89,30 @@ const NookCompanion: React.FC<NookCompanionProps> = ({ status, message, visible 
                     <div className="absolute -bottom-3 right-8 w-4 h-4 bg-white border-b-4 border-r-4 border-amber-800 transform rotate-45"></div>
                 </div>
             )}
-
-            {/* Avatar */}
+            {/* Avatar using SpriteCharacter for animation */}
             <div className={`relative w-32 h-32 transition-transform duration-300 ${getAnimationClass()}`}>
                 {/* Shadow */}
-                <div className="absolute bottom-0 w-24 h-4 bg-black/20 rounded-full blur-sm left-4"></div>
+                <div className="absolute bottom-6 w-16 h-4 bg-black/20 rounded-full blur-sm left-8"></div>
 
-                <img
-                    src={getSpriteUrl()}
-                    alt="Nook"
-                    className="w-full h-full object-contain drop-shadow-lg filter"
-                    style={{ imageRendering: 'pixelated' }}
-                />
+                <div className="absolute top-0 left-4">
+                    <SpriteCharacter
+                        position={{ x: 0, y: 0 }}
+                        direction='left'
+                        isMoving={status === 'talking' || isTyping} // Walk/Move animation when talking
+                        spriteUrl='/assets/character/nook.png'
+                        scale={2} // Adjust scale as needed
+                    />
+                </div>
 
                 {/* Status Indicator (Optional) */}
                 {status === 'thinking' && (
-                    <div className="absolute top-0 right-0 text-3xl animate-bounce">💭</div>
+                    <div className="absolute top-0 right-8 text-3xl animate-bounce">💭</div>
                 )}
                 {status === 'happy' && (
-                    <div className="absolute top-0 right-0 text-3xl animate-bounce">💰</div>
+                    <div className="absolute top-0 right-8 text-3xl animate-bounce">💰</div>
                 )}
                 {status === 'concerned' && (
-                    <div className="absolute top-0 right-0 text-3xl animate-pulse">💦</div>
+                    <div className="absolute top-0 right-8 text-3xl animate-pulse">💦</div>
                 )}
             </div>
 
@@ -129,7 +132,7 @@ const NookCompanion: React.FC<NookCompanionProps> = ({ status, message, visible 
                     50% { opacity: 0; }
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 

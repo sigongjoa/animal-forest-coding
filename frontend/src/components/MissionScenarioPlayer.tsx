@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { MissionScenario, ScriptAction } from '../types/Mission';
 import SpriteCharacter from './SpriteCharacter';
 import { Direction } from '../hooks/useCharacterMovement';
+import { useAudio } from '../hooks/useAudio';
 
 interface MissionScenarioPlayerProps {
     scenario: MissionScenario;
     onComplete: () => void;
 }
 
-import { useAudio } from '../hooks/useAudio';
+
 
 const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
     scenario,

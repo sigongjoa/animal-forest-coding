@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mission, MissionStep } from '../types/Mission';
+import { Mission } from '../types/Mission';
 import apiClient from '../services/apiClient';
 
 interface UseMissionProgressProps {
@@ -20,40 +20,88 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
         loadMission();
     }, [missionId]);
 
+    const loadLocalUnit1 = async () => {
+        console.log('📦 Loading Local Unit 1 Data...');
+        try {
+            const { unit1Mission } = await import('../data/missions/unit1');
+            setMission(unit1Mission as any);
+            if (unit1Mission.steps.length > 0) {
+                setCode(unit1Mission.steps[0].template);
+            }
+            setLoading(false);
+            setError(null);
+            return true;
+        } catch (err) {
+            console.error('Failed to import local unit 1:', err);
+            return false;
+        }
+    };
+
+    const loadLocalUnit2 = async () => {
+        console.log('📦 Loading Local Unit 2 Data (Fishing)...');
+        try {
+            const { unit2Mission } = await import('../data/missions/unit2');
+            setMission(unit2Mission as any);
+            if (unit2Mission.steps.length > 0) {
+                setCode(unit2Mission.steps[0].template);
+            }
+            setLoading(false);
+            setError(null);
+            return true;
+        } catch (err) {
+            console.error('Failed to import local unit 2:', err);
+            return false;
+        }
+    };
+
     const loadMission = async () => {
+        // 1. Check for Unit Match (Local)
+        const path = window.location.pathname;
+        const isUnit1 = (missionId && (missionId.includes('unit-1') || missionId.includes('economics'))) || (path && path.includes('unit-1'));
+        const isUnit2 = (missionId && (missionId.includes('unit-2') || missionId.includes('fishing') || missionId.includes('mission-002'))) || (path && (path.includes('unit-2') || path.includes('mission-002')));
+
+        if (isUnit1) {
+            if (await loadLocalUnit1()) return;
+        }
+
+        if (isUnit2) {
+            if (await loadLocalUnit2()) {
+                return;
+            } else {
+                // If local loading fails for Unit 2, do NOT fallback to remote.
+                // This prevents showing stale/dummy data from the backend.
+                setLoading(false);
+                setError('Failed to load local Unit 2 mission. Check console for details.');
+                return;
+            }
+        }
+
+        if (!missionId) return;
+
+        // 2. Remote Load
         try {
             setLoading(true);
+            setError(null);
+            console.log('🌍 Loading remote mission:', missionId);
+
             const response = await apiClient.get(`/missions/${missionId}`);
             if (response.data.success) {
                 setMission(response.data.data);
-                // Load initial template for the first step
                 if (response.data.data.steps.length > 0) {
                     setCode(response.data.data.steps[0].template);
                 }
             }
         } catch (err: any) {
-            console.error('❌ Failed to load mission:', err);
+            console.error('❌ Remote load failed:', err);
 
-            if (err.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
-                console.error('Response Status:', err.response.status);
-                console.error('Response Data:', err.response.data);
-                console.error('Response Headers:', err.response.headers);
-            } else if (err.request) {
-                // The request was made but no response was received
-                console.error('No response received (Network Error?):', err.request);
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                console.error('Error Message:', err.message);
+            // 3. Fallback for Locals (Double Check on 404)
+            if (err.response?.status === 404) {
+                if (isUnit1 && await loadLocalUnit1()) return;
+                if (isUnit2 && await loadLocalUnit2()) return;
             }
 
-            if (err.config) {
-                console.error('Request URL:', err.config.url);
-                console.error('Request Headers:', err.config.headers);
-            }
-
-            setError(`Failed to load mission: ${err.message || 'Unknown error'}`);
+            const msg = err.response?.data?.message || err.message || 'Unknown error';
+            setError(`Failed to load mission: ${msg}`);
         } finally {
             setLoading(false);
         }
@@ -66,22 +114,36 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
             setValidating(true);
             setFeedback(null);
 
-            // 1. Validate code (Client-side or Server-side)
-            // For Phase 3, we use the NookAIService via backend
+            // SPECIAL: Unit 1 Local Validation
+            if (mission.id === 'unit-1-economics') {
+                const { unit1Mission } = await import('../data/missions/unit1');
+                await new Promise(resolve => setTimeout(resolve, 800));
+                const result = unit1Mission.validator(code);
+                setFeedback(result);
+                setValidating(false);
+                return;
+            }
+
+            // SPECIAL: Unit 2 Local Validation
+            if (mission.id === 'unit-2-fishing') {
+                const { unit2Mission } = await import('../data/missions/unit2');
+                await new Promise(resolve => setTimeout(resolve, 800));
+                const result = unit2Mission.validator(code);
+                setFeedback(result);
+                setValidating(false);
+                return;
+            }
+
+            // Remote Validation
             const response = await apiClient.post(`/missions/${missionId}/submit`, {
                 studentId,
                 code,
                 stepId: mission.steps[currentStepIndex].id,
-                language: 'javascript' // Default to JS for now
+                language: 'javascript'
             });
 
             if (response.data.success) {
                 setFeedback(response.data.data);
-
-                // If passed, allow moving to next step
-                if (response.data.data.passed) {
-                    // Logic to unlock next step or complete mission
-                }
             }
         } catch (err) {
             console.error('Code submission failed:', err);

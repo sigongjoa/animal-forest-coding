@@ -33,18 +33,29 @@ const MissionPage: React.FC = () => {
     const [viewMode, setViewMode] = useState<'story' | 'ide'>('story');
     const [activeScenario, setActiveScenario] = useState<MissionScenario | null>(null);
 
-    // Initial Scenario Load
+    // Scenario Management (Intro & Per-Step)
     React.useEffect(() => {
         const isCompleted = progression.completedMissions.includes(missionId || '');
 
-        if (mission?.scenario && !isCompleted) {
+        // Priority 1: Current Step Scenario (triggers on step change)
+        if (currentStep?.scenario) {
+            setActiveScenario(currentStep.scenario);
+            setViewMode('story');
+            return;
+        }
+
+        // Priority 2: Mission Global Intro (only on first step/load)
+        if (mission?.scenario && !isCompleted && currentStepIndex === 0) {
             setActiveScenario(mission.scenario);
             setViewMode('story');
-        } else if (mission) {
-            // If no story or already completed, go straight to IDE
-            setViewMode('ide');
+        } else if (mission && !currentStep?.scenario) {
+            // Default to IDE if no story
+            // Only force IDE if we are not already in story mode from valid feedback? 
+            // Actually, this runs on mount/update. 
+            // We should be careful not to override "Feedback Story".
+            // But Feedback Story sets 'activeScenario' separately.
         }
-    }, [mission, progression.completedMissions, missionId]);
+    }, [mission, currentStep, currentStepIndex, progression.completedMissions, missionId]);
 
     // Feedback Reaction System
     React.useEffect(() => {
@@ -203,14 +214,17 @@ const MissionPage: React.FC = () => {
                             />
                         </div>
 
-                        {/* Nook Companion Overlay */}
-                        <NookCompanion
-                            visible={true}
-                            status={getNookStatus()}
-                            message={getNookMessage()}
-                        />
                     </div>
                 ) : null}
+
+                {/* Nook Companion Overlay - Moved outside to prevent clipping */}
+                {viewMode === 'ide' && (
+                    <NookCompanion
+                        visible={true}
+                        status={getNookStatus()}
+                        message={getNookMessage()}
+                    />
+                )}
             </main>
         </div>
     );

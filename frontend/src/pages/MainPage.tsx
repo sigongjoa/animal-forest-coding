@@ -82,6 +82,38 @@ const MainPage: React.FC = () => {
                 </button>
             </div>
 
+            {/* Mission Selection Area */}
+            <div className="mt-12 w-full max-w-4xl">
+                <h2 className="text-2xl font-bold text-green-900 mb-4 text-center">Available Missions</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Unit 1 */}
+                    <button
+                        onClick={() => navigate('/mission/unit-1-economics')}
+                        className="bg-white/90 p-6 rounded-2xl shadow-md hover:shadow-xl hover:bg-white transition-all text-left flex items-start space-x-4 border-l-8 border-yellow-400"
+                    >
+                        <div className="bg-yellow-100 p-3 rounded-full text-2xl">💰</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800">Unit 1: Economics 101</h3>
+                            <p className="text-sm text-gray-600 mt-1">Learn basic arithmetic operators with Tom Nook.</p>
+                            <span className="inline-block mt-2 text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded">Beginner</span>
+                        </div>
+                    </button>
+
+                    {/* Unit 2 */}
+                    <button
+                        onClick={() => navigate('/mission/unit-2-fishing')}
+                        className="bg-white/90 p-6 rounded-2xl shadow-md hover:shadow-xl hover:bg-white transition-all text-left flex items-start space-x-4 border-l-8 border-blue-400"
+                    >
+                        <div className="bg-blue-100 p-3 rounded-full text-2xl">🎣</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800">Unit 2: King of Fishing</h3>
+                            <p className="text-sm text-gray-600 mt-1">Master selection & iteration with Justin.</p>
+                            <span className="inline-block mt-2 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Intermediate</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
             {/* User Info / Footer */}
             <div className="mt-12 text-center text-green-800 font-medium">
                 <p>Welcome back, {userName}!</p>

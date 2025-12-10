@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import titleImg from '../assets/title.png';
+import startBtn from '../assets/start_btn.png';
+import startBtnClick from '../assets/start_btn_click.png';
 
 const EntryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -49,8 +52,8 @@ const EntryPage: React.FC = () => {
         {/* 타이틀 */}
         <div className="mb-16 md:mb-24 animate-bounce" style={{ animationDuration: '2s' }}>
           <img
-            src="/assets/title.jpg"
-            alt="오여봐요 코딩의 숲"
+            src={titleImg}
+            alt="모여봐요 코딩의 숲"
             className="w-64 md:w-96 h-auto drop-shadow-2xl"
           />
         </div>
@@ -69,7 +72,7 @@ const EntryPage: React.FC = () => {
           }}
         >
           <img
-            src={isButtonPressed ? '/assets/start_btn_click.jpg' : '/assets/start_btn.jpg'}
+            src={isButtonPressed ? startBtnClick : startBtn}
             alt="시작하기"
             className="w-56 md:w-80 h-auto drop-shadow-2xl cursor-pointer hover:drop-shadow-lg transition-all duration-100"
           />
