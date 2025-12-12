@@ -178,10 +178,56 @@ const MissionPage: React.FC = () => {
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">
                                 {currentStep?.title}
                             </h2>
-                            <div className="prose prose-green max-w-none mb-8">
-                                <p className="text-gray-600 leading-relaxed">
-                                    {currentStep?.description}
-                                </p>
+                            {/* Rich Chat-Style Description Renderer */}
+                            <div className="space-y-4 mb-8">
+                                {currentStep?.description.split('\n\n').map((line, idx) => {
+                                    // 1. Check for Dialogue: **Speaker:** "Text"
+                                    const dialogueMatch = line.match(/^\*\*(.+?):\*\*\s*(.*)$/);
+                                    if (dialogueMatch) {
+                                        const speaker = dialogueMatch[1].trim();
+                                        const text = dialogueMatch[2].replace(/^"|"$/g, ''); // Remove quotes
+                                        const isPlayer = speaker === 'Noob' || speaker === 'Me';
+
+                                        return (
+                                            <div key={idx} className={`flex ${isPlayer ? 'justify-end' : 'justify-start'}`}>
+                                                {!isPlayer && (
+                                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2 text-xs font-bold shrink-0 shadow-sm border border-gray-300">
+                                                        {speaker[0]}
+                                                    </div>
+                                                )}
+                                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm shadow-sm ${isPlayer
+                                                    ? 'bg-blue-100 text-blue-900 rounded-tr-none'
+                                                    : 'bg-white border border-gray-100 text-gray-800 rounded-tl-none'
+                                                    }`}>
+                                                    <div className="font-bold text-xs mb-1 opacity-70">{speaker}</div>
+                                                    <div>{text}</div>
+                                                </div>
+                                                {isPlayer && (
+                                                    <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center ml-2 text-xs font-bold shrink-0 shadow-sm border border-blue-300">
+                                                        N
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+
+                                    // 2. Check for Scene Direction: **(Text)**
+                                    const sceneMatch = line.match(/^\*\*\((.+?)\)\*\*$/);
+                                    if (sceneMatch) {
+                                        return (
+                                            <div key={idx} className="text-center text-xs text-gray-400 italic my-4 bg-gray-50 py-1 rounded-full">
+                                                {sceneMatch[1]}
+                                            </div>
+                                        );
+                                    }
+
+                                    // 3. Fallback for plain text
+                                    return (
+                                        <p key={idx} className="text-gray-600 text-sm leading-relaxed whitespace-pre-line bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                            {line}
+                                        </p>
+                                    );
+                                })}
                             </div>
 
                             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">

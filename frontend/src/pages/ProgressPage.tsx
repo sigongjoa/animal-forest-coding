@@ -54,7 +54,7 @@ const ProgressPage: React.FC = () => {
                         <p className="text-gray-600 mt-2">Welcome back, {progression.studentId || 'Student'}!</p>
                     </div>
                     <button
-                        onClick={() => navigate('/mission/mission-001')}
+                        onClick={() => navigate('/mission/unit-1-economics')}
                         className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow"
                     >
                         Continue Adventure

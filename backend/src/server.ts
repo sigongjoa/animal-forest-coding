@@ -16,7 +16,7 @@ export function createServer(): Express {
 
   // CORS 설정
   const corsOptions = {
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
+    origin: true, // Allow any origin, reflects request origin
     credentials: true,
     optionsSuccessStatus: 200,
   };

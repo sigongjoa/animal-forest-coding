@@ -57,8 +57,8 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
     const loadMission = async () => {
         // 1. Check for Unit Match (Local)
         const path = window.location.pathname;
-        const isUnit1 = (missionId && (missionId.includes('unit-1') || missionId.includes('economics'))) || (path && path.includes('unit-1'));
-        const isUnit2 = (missionId && (missionId.includes('unit-2') || missionId.includes('fishing') || missionId.includes('mission-002'))) || (path && (path.includes('unit-2') || path.includes('mission-002')));
+        const isUnit1 = (missionId && (missionId.includes('unit-1') || missionId.includes('economics') || missionId === 'mission-001')) || (path && (path.includes('unit-1') || path.includes('mission-001')));
+        const isUnit2 = (missionId && (missionId.includes('unit-2') || missionId.includes('fish') || missionId === 'mission-002')) || (path && (path.includes('unit-2') || path.includes('mission-002')));
 
         if (isUnit1) {
             if (await loadLocalUnit1()) return;
@@ -95,10 +95,10 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
             console.error('❌ Remote load failed:', err);
 
             // 3. Fallback for Locals (Double Check on 404)
-            if (err.response?.status === 404) {
-                if (isUnit1 && await loadLocalUnit1()) return;
-                if (isUnit2 && await loadLocalUnit2()) return;
-            }
+            // 3. Fallback for Locals (Double Check on 404 OR Network Error)
+            // If the backend is down or not found, try to load local content if it matches.
+            if (isUnit1 && await loadLocalUnit1()) return;
+            if (isUnit2 && await loadLocalUnit2()) return;
 
             const msg = err.response?.data?.message || err.message || 'Unknown error';
             setError(`Failed to load mission: ${msg}`);
