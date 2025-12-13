@@ -124,22 +124,13 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
                 return;
             }
 
-            // SPECIAL: Unit 2 Local Validation
-            if (mission.id === 'unit-2-fishing') {
-                const { unit2Mission } = await import('../data/missions/unit2');
-                await new Promise(resolve => setTimeout(resolve, 800));
-                const result = unit2Mission.validator(code);
-                setFeedback(result);
-                setValidating(false);
-                return;
-            }
-
-            // Remote Validation
-            const response = await apiClient.post(`/missions/${missionId}/submit`, {
-                studentId,
-                code,
+            // Remote Validation (JavaRunner API)
+            // Use the new /api/java/validate endpoint which handles real execution/test wrapper
+            // apiClient already has '/api' base, so we just use '/java/validate'
+            const response = await apiClient.post(`/java/validate`, {
+                missionId: mission.id,
                 stepId: mission.steps[currentStepIndex].id,
-                language: 'javascript'
+                code
             });
 
             if (response.data.success) {
