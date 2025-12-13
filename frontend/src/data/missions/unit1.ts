@@ -1,6 +1,6 @@
 import { Mission } from '../../types/Mission';
 
-export const unit1Mission: Mission & { validator: (code: string) => { passed: boolean; message: string } } = {
+export const unit1Mission: Mission & { validator: (code: string) => { passed: boolean; message: string; output?: string[] } } = {
     id: 'unit-1-economics',
     title: 'Unit 1: Nook\'s Economics',
     description: 'Master the basics of variables, primitive types, and state management in the Bank of Nook.',
@@ -84,6 +84,9 @@ export const unit1Mission: Mission & { validator: (code: string) => { passed: bo
         ]
     },
     validator: (code: string) => {
+        const output: string[] = [];
+        output.push("Compiling NookAccount.java...");
+
         // Validation logic needs to handle multiple steps based on *current step index*?
         // Ideally validator should take step index, but the interface checks code string only.
         // We will infer the step based on the content or try to validate loosely.
@@ -94,25 +97,40 @@ export const unit1Mission: Mission & { validator: (code: string) => { passed: bo
 
         // Check for Step 2 completion criteria (Fixing shadowing)
         const hasShadowing = /int\s+bellBalance\s*=\s*0/.test(code);
-        const fixedShadowing = !hasShadowing && /bellBalance\s*=\s*0/.test(code);
 
         // Heuristic to detect which step we are on or if validation passes general criteria
-        if (!hasBellBalance) return { passed: false, message: "Missing 'private int bellBalance' declaration." };
-        if (!hasInterestRate) return { passed: false, message: "Missing 'private double interestRate' declaration." };
+        if (!hasBellBalance) {
+            output.push("Error: Missing 'private int bellBalance' declaration.");
+            return { passed: false, message: "Missing 'private int bellBalance' declaration.", output };
+        }
+        if (!hasInterestRate) {
+            output.push("Error: Missing 'private double interestRate' declaration.");
+            return { passed: false, message: "Missing 'private double interestRate' declaration.", output };
+        }
 
         // If the code contains the constructor with logic, we validate step 2
         if (code.includes("initialLoan")) {
+            output.push("Parsing constructor NookAccount(int)...");
+
             if (hasShadowing) {
-                return { passed: false, message: "You are still re-declaring 'int bellBalance' inside the constructor (Shadowing)!" };
+                output.push("Warning: The local variable 'bellBalance' is hiding the field 'bellBalance'.");
+                output.push("Error: Instance variable 'bellBalance' was not updated.");
+                return { passed: false, message: "You are still re-declaring 'int bellBalance' inside the constructor (Shadowing)!", output };
             }
             // Allow variations like 'this.bellBalance = 0' or 'bellBalance = 0'
             if (/bellBalance\s*=\s*0/.test(code) || /this\.bellBalance\s*=\s*0/.test(code)) {
-                return { passed: true, message: "Excellent! You fixed the shadowing bug and correctly initialized the state." };
+                output.push("State initialization verified: bellBalance = 0");
+                output.push("Build Successful.");
+                return { passed: true, message: "Excellent! You fixed the shadowing bug and correctly initialized the state.", output };
             }
-            return { passed: false, message: "Make sure to initialize bellBalance to 0 inside the constructor." };
+
+            output.push("Error: bellBalance initialization logic missing.");
+            return { passed: false, message: "Make sure to initialize bellBalance to 0 inside the constructor.", output };
         }
 
         // Otherwise assume step 1 validation
-        return { passed: true, message: "Great! You defined the primitive types correctly." };
+        output.push("Variable declarations verified.");
+        output.push("Build Successful.");
+        return { passed: true, message: "Great! You defined the primitive types correctly.", output };
     }
 };

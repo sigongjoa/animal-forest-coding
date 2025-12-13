@@ -1,6 +1,6 @@
 import { Mission } from '../../types/Mission';
 
-export const unit2Mission: Mission & { validator: (code: string) => { passed: boolean; message: string } } = {
+export const unit2Mission: Mission & { validator: (code: string) => { passed: boolean; message: string; output?: string[] } } = {
     id: 'unit-2-fishing',
     title: 'Unit 2: 낚시 대회의 제왕 - 저스틴의 챌린지',
     description: '제어 구조 (Selection & Iteration)를 마스터하여 낚시 대회에서 우승하세요!',
@@ -350,9 +350,13 @@ while (dumplings < 10) { // 만두를 10개 먹을 때까지
 
         // 2. Remove whitespace/newlines for flexible parsing
         const cleanCode = noComments.replace(/\s+/g, '');
+        const output: string[] = [];
 
         // Step 1: Check Eligibility
         if (code.includes("checkEligibility")) {
+            output.push("Configuring FishingTournament class...");
+            output.push("Running checkEligibility(500, false)...");
+
             const hasBellCheck = cleanCode.includes("myBells>=500") || cleanCode.includes("500<=myBells");
             const hasPocketCheck = cleanCode.includes("!isPocketFull") || cleanCode.includes("isPocketFull==false");
             const hasAndLogic = cleanCode.includes("&&");
@@ -361,43 +365,106 @@ while (dumplings < 10) { // 만두를 10개 먹을 때까지
             const hasReturn = cleanCode.includes("returncanJoin;") || cleanCode.includes("returntrue;");
 
             if (hasBellCheck && hasPocketCheck && hasAndLogic) {
-                return { passed: true, message: "참가 등록 완료! 완벽한 조건문이다구리!" };
+                output.push("Input: myBells=500, isPocketFull=false");
+                output.push("Condition Met: (500 >= 500) && (!false) => TRUE");
+                output.push("System.out: 참가 등록 완료! 낚싯대를 챙기라구!");
+                return {
+                    passed: true,
+                    message: "참가 등록 완료! 완벽한 조건문이다구리!",
+                    output
+                };
             }
-            return { passed: false, message: "조건을 다시 확인해봐! (돈은 500벨 이상, 그리고 주머니는 비워야 해)" };
+
+            output.push("Input: myBells=500, isPocketFull=false");
+            output.push("Condition Failed: Requirements not met.");
+            if (!hasBellCheck) output.push("Error: Missing or incorrect 'myBells >= 500' check.");
+            if (!hasPocketCheck) output.push("Error: Missing or incorrect '!isPocketFull' check.");
+            if (!hasAndLogic) output.push("Error: Missing '&&' (AND) operator.");
+
+            return {
+                passed: false,
+                message: "조건을 다시 확인해봐! (돈은 500벨 이상, 그리고 주머니는 비워야 해)",
+                output
+            };
         }
 
         // Step 2: Fishing Bot
         if (code.includes("startFishingBot")) {
+            output.push("Booting FishingBot v2.0...");
+
             const hasForLoop = cleanCode.includes("for(inti=0;i<10;i++)") || cleanCode.includes("i<=9") || (noComments.includes("for") && noComments.includes("int i") && noComments.includes("10"));
             const hasWhileLoop = cleanCode.includes("while(fishCount<10)") || cleanCode.includes("fishCount<=9") || (noComments.includes("while") && noComments.includes("fishCount") && noComments.includes("10"));
 
-            if (hasForLoop && hasWhileLoop) {
-                return { passed: true, message: "오토 로봇 가동! 물고기가 쏟아진다!" };
+            if (hasForLoop) {
+                output.push("=== For문 로봇 가동 ===");
+                for (let i = 0; i < 3; i++) output.push(`${i + 1}번째 캐스팅 완료!`);
+                output.push("... (생략) ...");
+                output.push("10번째 캐스팅 완료!");
+            } else {
+                output.push("Error: For loop implementation missing or incorrect.");
             }
-            return { passed: false, message: "로봇 모드를 두 개 다 완성해야 해. For(10번) & While(10마리)!" };
+
+            if (hasWhileLoop) {
+                output.push("=== While문 로봇 가동 ===");
+                output.push("현재 1마리 획득!");
+                output.push("놓쳤다! 다시 시도...");
+                output.push("현재 2마리 획득!");
+                output.push("... (생략) ...");
+                output.push("현재 10마리 획득!");
+                output.push("목표 달성! 퇴근!");
+            } else {
+                output.push("Error: While loop implementation missing or incorrect.");
+            }
+
+            if (hasForLoop && hasWhileLoop) {
+                return { passed: true, message: "오토 로봇 가동! 물고기가 쏟아진다!", output };
+            }
+            return { passed: false, message: "로봇 모드를 두 개 다 완성해야 해. For(10번) & While(10마리)!", output };
         }
 
         // Step 3: Nested Loops
         if (code.includes("GyaradosHunt")) {
+            output.push("Starting Gyarados Hunt...");
+
             const hasNested = noComments.includes("for") && noComments.includes("while") && cleanCode.includes("fishInBucket<5");
             if (hasNested) {
-                return { passed: true, message: "🎉 전설의 낚시왕 등극! 모든 낚시터를 정복했어!" };
+                for (let i = 1; i <= 3; i++) {
+                    output.push(`📍 ${i}번 낚시터 도착!`);
+                    output.push("  🐟 1마리째 낚음!");
+                    output.push("  ...");
+                    output.push("  🐟 5마리째 낚음!");
+                    output.push(`✅ ${i}번 낚시터 클리어!`);
+                }
+                output.push("🎉 전설의 낚시왕 등극!");
+                return { passed: true, message: "🎉 전설의 낚시왕 등극! 모든 낚시터를 정복했어!", output };
             }
-            return { passed: false, message: "3군데 낚시터(Outer)에서 각각 5마리(Inner)씩 잡아야 해!" };
+            output.push("Error: Nested loop structure incorrect.");
+            output.push("Hint: Use a 'while' loop inside the 'for' loop.");
+            return { passed: false, message: "3군데 낚시터(Outer)에서 각각 5마리(Inner)씩 잡아야 해!", output };
         }
 
         // Step 4: Security Fix
         if (code.includes("SecurityFix")) {
+            output.push("Analyzing Security Protocols...");
+
             const hasMod = cleanCode.includes("%10");
             const hasDiv = cleanCode.includes("/10");
             const hasCharCheck = noComments.includes("Character.isDigit");
 
             if (hasMod && hasDiv && hasCharCheck) {
-                return { passed: true, message: "무파니의 비밀번호를 찾았다! 보안 시스템 복구 완료!" };
+                output.push("Decoded Name: Sebas (S-e-b-a-s)");
+                output.push("Checking Password Hash...");
+                output.push("Calculated Sum: 16 (5+9+2)");
+                output.push("Access Granted.");
+                return { passed: true, message: "무파니의 비밀번호를 찾았다! 보안 시스템 복구 완료!", output };
             }
-            return { passed: false, message: "자릿수 합에는 % 10, / 10이 필요하고, 문자열엔 isDigit 확인이 필요해!" };
+
+            if (!hasCharCheck) output.push("Error: Failed to decode name (Use Character.isDigit)");
+            if (!hasMod || !hasDiv) output.push("Error: Incorrect password calculation algorithm");
+
+            return { passed: false, message: "자릿수 합에는 % 10, / 10이 필요하고, 문자열엔 isDigit 확인이 필요해!", output };
         }
 
-        return { passed: false, message: "코드를 다시 점검해봐!" };
+        return { passed: false, message: "코드를 다시 점검해봐!", output: ["Error: No valid method found or syntax error."] };
     }
 };
