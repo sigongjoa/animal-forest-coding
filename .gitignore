@@ -109,3 +109,13 @@ out/
 backend/node_modules/
 frontend/node_modules/
 .venv/
+
+# Binary Tools
+cloudflared
+
+# Large Assets/Artifacts
+test-screenshots/
+assets_raw/
+
+# Agent/Local
+.agent/

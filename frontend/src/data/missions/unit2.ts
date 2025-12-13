@@ -343,14 +343,22 @@ while (dumplings < 10) { // 만두를 10개 먹을 때까지
         ]
     },
     validator: (code: string) => {
-        // Remove whitespace for easier parsing
-        const cleanCode = code.replace(/\s+/g, '');
+        // 1. Remove comments (Single line // and Block /* */)
+        const noComments = code
+            .replace(/\/\/.*$/gm, '') // Remove // comments
+            .replace(/\/\*[\s\S]*?\*\//g, ''); // Remove /* */ comments
+
+        // 2. Remove whitespace/newlines for flexible parsing
+        const cleanCode = noComments.replace(/\s+/g, '');
 
         // Step 1: Check Eligibility
         if (code.includes("checkEligibility")) {
             const hasBellCheck = cleanCode.includes("myBells>=500") || cleanCode.includes("500<=myBells");
             const hasPocketCheck = cleanCode.includes("!isPocketFull") || cleanCode.includes("isPocketFull==false");
             const hasAndLogic = cleanCode.includes("&&");
+
+            // Ensure return statement is correct too
+            const hasReturn = cleanCode.includes("returncanJoin;") || cleanCode.includes("returntrue;");
 
             if (hasBellCheck && hasPocketCheck && hasAndLogic) {
                 return { passed: true, message: "참가 등록 완료! 완벽한 조건문이다구리!" };
@@ -360,8 +368,8 @@ while (dumplings < 10) { // 만두를 10개 먹을 때까지
 
         // Step 2: Fishing Bot
         if (code.includes("startFishingBot")) {
-            const hasForLoop = cleanCode.includes("for(inti=0;i<10;i++)") || cleanCode.includes("i<=9") || code.includes("for (int i");
-            const hasWhileLoop = cleanCode.includes("while(fishCount<10)") || cleanCode.includes("fishCount<=9");
+            const hasForLoop = cleanCode.includes("for(inti=0;i<10;i++)") || cleanCode.includes("i<=9") || (noComments.includes("for") && noComments.includes("int i") && noComments.includes("10"));
+            const hasWhileLoop = cleanCode.includes("while(fishCount<10)") || cleanCode.includes("fishCount<=9") || (noComments.includes("while") && noComments.includes("fishCount") && noComments.includes("10"));
 
             if (hasForLoop && hasWhileLoop) {
                 return { passed: true, message: "오토 로봇 가동! 물고기가 쏟아진다!" };
@@ -371,7 +379,7 @@ while (dumplings < 10) { // 만두를 10개 먹을 때까지
 
         // Step 3: Nested Loops
         if (code.includes("GyaradosHunt")) {
-            const hasNested = code.includes("for") && code.includes("while") && cleanCode.includes("fishInBucket<5");
+            const hasNested = noComments.includes("for") && noComments.includes("while") && cleanCode.includes("fishInBucket<5");
             if (hasNested) {
                 return { passed: true, message: "🎉 전설의 낚시왕 등극! 모든 낚시터를 정복했어!" };
             }
@@ -382,7 +390,7 @@ while (dumplings < 10) { // 만두를 10개 먹을 때까지
         if (code.includes("SecurityFix")) {
             const hasMod = cleanCode.includes("%10");
             const hasDiv = cleanCode.includes("/10");
-            const hasCharCheck = code.includes("Character.isDigit");
+            const hasCharCheck = noComments.includes("Character.isDigit");
 
             if (hasMod && hasDiv && hasCharCheck) {
                 return { passed: true, message: "무파니의 비밀번호를 찾았다! 보안 시스템 복구 완료!" };
