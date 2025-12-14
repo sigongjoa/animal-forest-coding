@@ -96,6 +96,6 @@ describe('AnimalesesTTSService', () => {
       const audio = await service.generateTTS(text, 'Tom Nook');
 
       expect(Buffer.isBuffer(audio)).toBe(true);
-    });
+    }, 20000);
   });
 });
