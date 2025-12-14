@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: Animal Forest Coding API
+  description: Backend API for code execution and game state management
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:5000/api
+
+paths:
+  /java/execute:
+    post:
+      summary: Execute arbitrary Java code
+      description: Compiles and runs Java code in a sandbox environment (Node.js child process)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                timeout:
+                  type: integer
+                  default: 5000
+      responses:
+        '200':
+          description: Execution result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionResult'
+
+  /java/validate:
+    post:
+      summary: Validate mission code
+      description: Executes code within a mission-specific test wrapper and triggers game updates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                missionId:
+                  type: string
+                stepId:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Validation result with game updates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      passed:
+                        type: boolean
+                      message:
+                        type: string
+                      output:
+                        type: array
+                        items:
+                          type: string
+                      gameUpdate:
+                        $ref: '#/components/schemas/GameStateUpdate'
+
+components:
+  schemas:
+    ExecutionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        output:
+          type: string
+        error:
+          type: string
+        compilationError:
+          type: string
+        executionTime:
+          type: number
+
+    GameStateUpdate:
+      type: object
+      properties:
+        bellsDelta:
+          type: integer
+        message:
+          type: string
+        missionComplete:
+          type: boolean
+        tileUpdates:
+          type: array
+          items:
+            type: object
+            properties:
+              x:
+                type: integer
+              y:
+                type: integer
+              type:
+                type: string
+              object:
+                type: string

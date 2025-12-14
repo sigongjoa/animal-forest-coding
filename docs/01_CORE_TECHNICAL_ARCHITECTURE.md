@@ -32,165 +32,53 @@ Visual Rendering (Dialogue, Map, etc.)
 ### 1.2 세 가지 핵심 서브모듈
 
 #### 1.2.1 코드 샌드박스 (Code Sandbox)
-**목적**: 웹 브라우저 또는 백엔드에서 학생의 Java 코드를 안전하게 실행
+**목적**: 백엔드에서 학생의 Java 코드를 실행하고 결과를 반환
 
 **선택지별 비교**:
 
-| 선택지 | 장점 | 단점 | 추천 상태 |
+| 선택지 | 장점 | 단점 | 현재 상태 |
 |--------|------|------|----------|
-| **Java Backend (Process)** | 구현 용이, 즉시 실행 가능 | 보안 취약 (개발 환경용) | **현재 단계** |
-| **Docker Isolation** | 완벽한 보안, 환경 격리 | 리소스 소모, 복잡성 | **배포 단계 (권장)** |
-| **AWS Lambda** | 서버리스, 오토스케일링 | Cold Start 지연 | 확장 단계 |
+| **Java Backend (Process)** | 구현 용이, 즉시 실행 가능 | 보안 취약 (개발 환경용) | **✅ 개발 완료 (JavaExecutionService)** |
+| **Docker Isolation** | 완벽한 보안, 환경 격리 | 리소스 소모, 복잡성 | **⏳ 배포 예정 (설계 완료)** |
 
-**Phase 1 권장 방향**: 백엔드 API 기반
-- `POST /api/code/execute` 엔드포인트 구현
-- 입력: `{ code: string, mission: string, testCases: TestCase[] }`
-- 출력: `{ success: boolean, output: string, errors: string[] }`
-
-**구현 예시 (Node.js 백엔드)**:
-```typescript
-// backend/src/services/CodeExecutionService.ts
-export async function executeJavaCode(
-  code: string,
-  testCases: TestCase[]
-): Promise<ExecutionResult> {
-  // 1. Java 코드 컴파일
-  const compiled = await compileJava(code);
-
-  // 2. 각 Test Case 실행
-  const results = await Promise.all(
-    testCases.map(tc => runTest(compiled, tc))
-  );
-
-  // 3. 결과 집계
-  return aggregateResults(results);
-}
-```
-
----
+**Phase 1 구현 현황**: Node.js `child_process` + JDK
+- `POST /api/java/validate`: 코드와 메인 클래스를 받아 실행
+- `GameBridgeService`: 실행 결과를 게임 상태 로직으로 변환
 
 #### 1.2.2 유효성 검사기 (Code Validator)
-**목적**: 기획서의 '디지털 결정 규칙'에 따라, 학생의 코드가 정답인지 판별
-
-**예시 시나리오**:
-- Mission: "2차원 배열 순회"
-- Success Condition: `for(int r=0; r<length; r++)` 문법을 사용했는가?
-- 학생 코드가 같은 결과를 내도 `while` 루프를 썼으면 부분 점수
-
-**구현 전략**:
-
-1. **정적 분석 (Static Analysis)**
-   - AST(Abstract Syntax Tree) 파싱
-   - 코드 구조를 트리로 분석
-   - 예: `for` 루프 개수, 변수 선언식 등
-
-2. **동적 검증 (Dynamic Validation)**
-   - 코드 실행 후 결과 비교
-   - `expected output == actual output`
-
-3. **하이브리드 검증**
-   - 정적 + 동적 결합
-   - 최고 신뢰도
-
-**구현 도구**:
-```typescript
-// backend/src/services/CodeValidatorService.ts
-import * as parser from "@babel/parser"; // JavaScript AST 파서
-
-export function validateCodeStructure(code: string): ValidationResult {
-  const ast = parser.parse(code, { sourceType: "module" });
-
-  // 규칙 1: for 루프 사용 여부
-  const hasForLoop = checkNodeType(ast, "ForStatement");
-
-  // 규칙 2: 2D 배열 순회 (중첩 for)
-  const hasNestedFor = checkNesting(ast, "ForStatement");
-
-  // 규칙 3: 특정 변수명 사용
-  const usesRVariable = checkIdentifier(ast, "r");
-
-  return {
-    hasForLoop,
-    hasNestedFor,
-    usesRVariable,
-    score: calculateScore(hasForLoop, hasNestedFor, usesRVariable)
-  };
-}
-```
-
----
+**현재 구현**: `MISSION_TESTS` (Scenario-based Validation)
+- 정적 분석(AST) 대신, 사전 정의된 **Test Wrapper Class**로 코드를 감싸서 실행
+- 결과 문자열("TEST_PASSED")을 파싱하여 성공 여부 판단
+- 장점: Java의 복잡한 문법 분석 없이 로직 검증 가능
 
 #### 1.2.3 게임 브릿지 (Game Bridge)
-**목적**: 코드 실행 결과가 게임 상태를 변경
+**목적**: 코드 실행 결과(`ExecutionResult`)를 게임 상태 변화(`GameStateUpdate`)로 변환
 
-**예시 매핑**:
-```
-User Code (Java):
-  villager.talk();
-  friendship += 5;
-
-↓ (Game Bridge)
-
-Game Logic:
-  dispatch(villageActions.updateFriendship({
-    villagerId: "isabelle",
-    delta: 5
-  }));
-  dispatch(dialogueActions.show({
-    characterId: "isabelle",
-    text: "Oh, hi! How are you?"
-  }));
-
-↓ (UI Rendering)
-
-Visual Output:
-  [Dialogue Overlay 표시]
-  [Friendship 게이지 업데이트]
-```
-
-**구현 구조**:
+**구현 완료 (`GameBridgeService.ts`)**:
 ```typescript
-// backend/src/services/GameBridgeService.ts
-export async function bridgeCodeToGame(
-  executionResult: ExecutionResult,
-  missionContext: MissionContext
-): Promise<GameStateUpdate> {
-  const updates: GameStateUpdate = {
-    inventory: [],
-    friendship: {},
-    bells: 0
-  };
-
-  // 코드 실행 결과 파싱
-  const effects = parseExecutionOutput(executionResult.output);
-
-  // 각 effect를 게임 상태로 변환
-  for (const effect of effects) {
-    if (effect.type === "TALK") {
-      updates.friendship[effect.villagerId] += 5;
-    }
-    if (effect.type === "SELL") {
-      updates.bells += effect.amount;
-    }
-    if (effect.type === "CATCH") {
-      updates.inventory.push(effect.item);
-    }
-  }
-
-  return updates;
+interface GameStateUpdate {
+    bellsDelta?: number;
+    tileUpdates?: GameTileUpdate[];
+    message?: string;
 }
+
+// 작동 방식
+// 1. Log Parsing: "Removed weed at 3,4" 감지
+// 2. State Mapping: mapSlice.setTile(3, 4, grass)
+// 3. Economy Mapping: economySlice.addBells(50)
 ```
 
 ---
 
-### 1.3 Phase 1 MVP (최소 기능 제품)
+### 1.3 Phase 1 MVP (최소 기능 제품) 현황
 
-| 항목 | 요구사항 | 구현 우선순위 |
+| 항목 | 요구사항 | 상태 |
 |------|--------|------------|
-| 코드 컴파일/실행 | JavaScript 기반 (Java 제외) | 높음 (Week 1) |
-| 기본 테스트 케이스 | Simple input/output 비교 | 높음 (Week 1) |
-| 게임 브릿지 | Bells 변경만 구현 | 높음 (Week 1) |
-| 정적 분석 | 최소한의 AST 검증 | 중간 (Week 2) |
+| 코드 컴파일/실행 | Java 코드 실행 지원 | ✅ 완료 |
+| 유효성 검사 | 테스트 케이스 기반 검증 | ✅ 완료 |
+| 게임 브릿지 | Bells, Tile 변경 연동 | ✅ 완료 |
+| 월드 렌더링 | TileGridRenderer | ✅ 완료 |
+
 
 ---
 

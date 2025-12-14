@@ -1,0 +1,73 @@
+.tile-grid-container {
+    display: inline-block;
+    border: 2px solid #8B4513;
+    padding: 10px;
+    background-color: #f0e68c;
+    border-radius: 8px;
+    user-select: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tile-row {
+    display: flex;
+}
+
+.tile-cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.tile-cell:hover {
+    filter: brightness(1.1);
+    z-index: 10;
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+/* Tile Types */
+.tile-grass {
+    background-color: #98FB98;
+    background-image: url('/assets/tiles/grass.png');
+}
+
+/* PaleGreen */
+.tile-water {
+    background-color: #87CEEB;
+}
+
+/* SkyBlue */
+.tile-sand {
+    background-color: #F4A460;
+}
+
+/* SandyBrown */
+.tile-stone {
+    background-color: #D3D3D3;
+}
+
+/* LightGray */
+.tile-dirt {
+    background-color: #8B4513;
+}
+
+/* SaddleBrown */
+.tile-weed {
+    background-color: #556B2F;
+}
+
+/* DarkOliveGreen (If used as type) */
+
+/* Objects */
+.tile-object {
+    font-size: 24px;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}

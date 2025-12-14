@@ -6,6 +6,7 @@
 
 import { Router, Request, Response } from 'express';
 import { javaExecutionService } from '../services/JavaExecutionService';
+import { gameBridgeService } from '../services/GameBridgeService';
 import { MISSION_TESTS } from '../data/MissionTestScenarios';
 
 const router = Router();
@@ -109,12 +110,18 @@ router.post('/validate', async (req: Request, res: Response) => {
       outputLines.push(result.error);
     }
 
+    // Bridge Logic
+    // We treat "TEST_PASSED" as the success criteria for the "Game Physics" too
+    const bridgeResult = { ...result, success: passed };
+    const gameUpdate = gameBridgeService.calculateGameUpdate(missionId, bridgeResult);
+
     res.json({
       success: true,
       data: {
         passed: passed,
-        message: passed ? "Test Passed! Great job." : "Tests Failed. Check the output.",
-        output: outputLines
+        message: passed ? (gameUpdate.message || "Test Passed! Great job.") : "Tests Failed. Check the output.",
+        output: outputLines,
+        gameUpdate
       }
     });
 

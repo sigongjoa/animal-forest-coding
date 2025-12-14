@@ -11,7 +11,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { persistenceService, GameState } from '../../services/PersistenceService';
 
-interface ProgressionState {
+export interface ProgressionState {
   // 게임 상태
   studentId: string | null;
   episodeId: string | null;

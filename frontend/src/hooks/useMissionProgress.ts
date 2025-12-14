@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Mission } from '../types/Mission';
 import apiClient from '../services/apiClient';
+import { addBells } from '../store/slices/economySlice';
+import { setTile } from '../store/slices/worldSlice';
 
 interface UseMissionProgressProps {
     missionId: string;
@@ -8,6 +11,7 @@ interface UseMissionProgressProps {
 }
 
 export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressProps) => {
+    const dispatch = useDispatch();
     const [mission, setMission] = useState<Mission | null>(null);
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [code, setCode] = useState('');
@@ -68,8 +72,6 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
             if (await loadLocalUnit2()) {
                 return;
             } else {
-                // If local loading fails for Unit 2, do NOT fallback to remote.
-                // This prevents showing stale/dummy data from the backend.
                 setLoading(false);
                 setError('Failed to load local Unit 2 mission. Check console for details.');
                 return;
@@ -94,9 +96,7 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
         } catch (err: any) {
             console.error('❌ Remote load failed:', err);
 
-            // 3. Fallback for Locals (Double Check on 404)
-            // 3. Fallback for Locals (Double Check on 404 OR Network Error)
-            // If the backend is down or not found, try to load local content if it matches.
+            // 3. Fallback
             if (isUnit1 && await loadLocalUnit1()) return;
             if (isUnit2 && await loadLocalUnit2()) return;
 
@@ -120,13 +120,15 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
                 await new Promise(resolve => setTimeout(resolve, 800));
                 const result = unit1Mission.validator(code);
                 setFeedback(result);
+                // Unit 1 Local doesn't have GameBridge support yet unless we mock it here
+                if (result.passed) {
+                    dispatch(addBells(100));
+                }
                 setValidating(false);
                 return;
             }
 
-            // Remote Validation (JavaRunner API)
-            // Use the new /api/java/validate endpoint which handles real execution/test wrapper
-            // apiClient already has '/api' base, so we just use '/java/validate'
+            // Remote Validation
             const response = await apiClient.post(`/java/validate`, {
                 missionId: mission.id,
                 stepId: mission.steps[currentStepIndex].id,
@@ -134,7 +136,25 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
             });
 
             if (response.data.success) {
-                setFeedback(response.data.data);
+                const data = response.data.data;
+                setFeedback(data);
+
+                // Handle Game State Updates from Backend
+                if (data.gameUpdate) {
+                    if (data.gameUpdate.bellsDelta) {
+                        dispatch(addBells(data.gameUpdate.bellsDelta));
+                    }
+                    if (data.gameUpdate.tileUpdates) {
+                        data.gameUpdate.tileUpdates.forEach((update: any) => {
+                            dispatch(setTile({
+                                x: update.x,
+                                y: update.y,
+                                type: update.type || 'grass',
+                                object: update.object
+                            }));
+                        });
+                    }
+                }
             }
         } catch (err) {
             console.error('Code submission failed:', err);

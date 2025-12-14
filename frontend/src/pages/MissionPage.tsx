@@ -8,6 +8,7 @@ import MissionScenarioPlayer from '../components/MissionScenarioPlayer';
 import NookCompanion from '../components/NookCompanion';
 import { selectProgression } from '../store/slices/progressionSlice';
 import { MissionScenario, ScriptAction } from '../types/Mission';
+import { TileGridRenderer } from '../components/TileGridRenderer';
 
 const MissionPage: React.FC = () => {
     const { missionId } = useParams<{ missionId: string }>();
@@ -31,6 +32,7 @@ const MissionPage: React.FC = () => {
     } = useMissionProgress({ missionId: missionId || '', studentId });
 
     const [viewMode, setViewMode] = useState<'story' | 'ide'>('story');
+    const [leftTab, setLeftTab] = useState<'info' | 'island'>('info');
     const [activeScenario, setActiveScenario] = useState<MissionScenario | null>(null);
 
     // Scenario Management (Intro & Per-Step)
@@ -48,12 +50,6 @@ const MissionPage: React.FC = () => {
         if (mission?.scenario && !isCompleted && currentStepIndex === 0) {
             setActiveScenario(mission.scenario);
             setViewMode('story');
-        } else if (mission && !currentStep?.scenario) {
-            // Default to IDE if no story
-            // Only force IDE if we are not already in story mode from valid feedback? 
-            // Actually, this runs on mount/update. 
-            // We should be careful not to override "Feedback Story".
-            // But Feedback Story sets 'activeScenario' separately.
         }
     }, [mission, currentStep, currentStepIndex, progression.completedMissions, missionId]);
 
@@ -173,80 +169,107 @@ const MissionPage: React.FC = () => {
 
                 {viewMode === 'ide' ? (
                     <div className="flex h-full relative">
-                        {/* Left Panel: Instructions */}
-                        <div className="w-1/3 bg-white border-r border-gray-200 p-6 overflow-y-auto pb-40">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                                {currentStep?.title}
-                            </h2>
-                            {/* Rich Chat-Style Description Renderer */}
-                            <div className="space-y-4 mb-8">
-                                {currentStep?.description.split('\n\n').map((line, idx) => {
-                                    // 1. Check for Dialogue: **Speaker:** "Text"
-                                    const dialogueMatch = line.match(/^\*\*(.+?):\*\*\s*(.*)$/);
-                                    if (dialogueMatch) {
-                                        const speaker = dialogueMatch[1].trim();
-                                        const text = dialogueMatch[2].replace(/^"|"$/g, ''); // Remove quotes
-                                        const isPlayer = speaker === 'Noob' || speaker === 'Me';
+                        {/* Left Panel */}
+                        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col z-10">
+                            {/* Tabs */}
+                            <div className="flex border-b border-gray-200">
+                                <button
+                                    onClick={() => setLeftTab('info')}
+                                    className={`flex-1 py-3 text-sm font-bold ${leftTab === 'info' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    Mission Info
+                                </button>
+                                <button
+                                    onClick={() => setLeftTab('island')}
+                                    className={`flex-1 py-3 text-sm font-bold ${leftTab === 'island' ? 'text-green-600 border-b-2 border-green-600 bg-green-50' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    My Island 🏝️
+                                </button>
+                            </div>
 
-                                        return (
-                                            <div key={idx} className={`flex ${isPlayer ? 'justify-end' : 'justify-start'}`}>
-                                                {!isPlayer && (
-                                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2 text-xs font-bold shrink-0 shadow-sm border border-gray-300">
-                                                        {speaker[0]}
-                                                    </div>
-                                                )}
-                                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm shadow-sm ${isPlayer
-                                                    ? 'bg-blue-100 text-blue-900 rounded-tr-none'
-                                                    : 'bg-white border border-gray-100 text-gray-800 rounded-tl-none'
-                                                    }`}>
-                                                    <div className="font-bold text-xs mb-1 opacity-70">{speaker}</div>
-                                                    <div>{text}</div>
-                                                </div>
-                                                {isPlayer && (
-                                                    <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center ml-2 text-xs font-bold shrink-0 shadow-sm border border-blue-300">
-                                                        N
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    }
-
-                                    // 2. Check for Scene Direction: **(Text)**
-                                    const sceneMatch = line.match(/^\*\*\((.+?)\)\*\*$/);
-                                    if (sceneMatch) {
-                                        return (
-                                            <div key={idx} className="text-center text-xs text-gray-400 italic my-4 bg-gray-50 py-1 rounded-full">
-                                                {sceneMatch[1]}
-                                            </div>
-                                        );
-                                    }
-
-                                    // 3. Fallback for plain text
-                                    return (
-                                        <p key={idx} className="text-gray-600 text-sm leading-relaxed whitespace-pre-line bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                            {line}
+                            {/* Content Area */}
+                            <div className="flex-1 overflow-y-auto p-6 pb-40">
+                                {leftTab === 'island' ? (
+                                    <div className="flex flex-col items-center justify-center min-h-[300px]">
+                                        <TileGridRenderer />
+                                        <p className="mt-4 text-xs text-gray-400 text-center">
+                                            Your code affects this island.<br />Try running code to see changes!
                                         </p>
-                                    );
-                                })}
-                            </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                            {currentStep?.title}
+                                        </h2>
+                                        {/* Rich Chat-Style Description Renderer */}
+                                        <div className="space-y-4 mb-8">
+                                            {currentStep?.description.split('\n\n').map((line, idx) => {
+                                                const dialogueMatch = line.match(/^\*\*(.+?):\*\*\s*(.*)$/);
+                                                if (dialogueMatch) {
+                                                    const speaker = dialogueMatch[1].trim();
+                                                    const text = dialogueMatch[2].replace(/^"|"$/g, '');
+                                                    const isPlayer = speaker === 'Noob' || speaker === 'Me';
 
-                            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                                <h3 className="font-bold text-blue-700 mb-2">Mission Goal</h3>
-                                <p className="text-blue-600 text-sm">
-                                    {currentStep?.prompt}
-                                </p>
-                            </div>
+                                                    return (
+                                                        <div key={idx} className={`flex ${isPlayer ? 'justify-end' : 'justify-start'}`}>
+                                                            {!isPlayer && (
+                                                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2 text-xs font-bold shrink-0 shadow-sm border border-gray-300">
+                                                                    {speaker[0]}
+                                                                </div>
+                                                            )}
+                                                            <div className={`max-w-[80%] p-3 rounded-2xl text-sm shadow-sm ${isPlayer
+                                                                ? 'bg-blue-100 text-blue-900 rounded-tr-none'
+                                                                : 'bg-white border border-gray-100 text-gray-800 rounded-tl-none'
+                                                                }`}>
+                                                                <div className="font-bold text-xs mb-1 opacity-70">{speaker}</div>
+                                                                <div>{text}</div>
+                                                            </div>
+                                                            {isPlayer && (
+                                                                <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center ml-2 text-xs font-bold shrink-0 shadow-sm border border-blue-300">
+                                                                    N
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                }
 
-                            {feedback?.passed && (
-                                <div className="mt-8">
-                                    <button
-                                        onClick={isLastStep ? () => navigate('/dashboard') : nextStep}
-                                        className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg transform transition hover:-translate-y-1"
-                                    >
-                                        {isLastStep ? 'Complete Mission 🎉' : 'Next Step →'}
-                                    </button>
-                                </div>
-                            )}
+                                                const sceneMatch = line.match(/^\*\*\((.+?)\)\*\*$/);
+                                                if (sceneMatch) {
+                                                    return (
+                                                        <div key={idx} className="text-center text-xs text-gray-400 italic my-4 bg-gray-50 py-1 rounded-full">
+                                                            {sceneMatch[1]}
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <p key={idx} className="text-gray-600 text-sm leading-relaxed whitespace-pre-line bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                                        {line}
+                                                    </p>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                                            <h3 className="font-bold text-blue-700 mb-2">Mission Goal</h3>
+                                            <p className="text-blue-600 text-sm">
+                                                {currentStep?.prompt}
+                                            </p>
+                                        </div>
+
+                                        {feedback?.passed && (
+                                            <div className="mt-8">
+                                                <button
+                                                    onClick={isLastStep ? () => navigate('/dashboard') : nextStep}
+                                                    className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg transform transition hover:-translate-y-1"
+                                                >
+                                                    {isLastStep ? 'Complete Mission 🎉' : 'Next Step →'}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
 
                         {/* Right Panel: IDE */}
@@ -263,7 +286,7 @@ const MissionPage: React.FC = () => {
                     </div>
                 ) : null}
 
-                {/* Nook Companion Overlay - Moved outside to prevent clipping */}
+                {/* Nook Companion Overlay */}
                 {viewMode === 'ide' && (
                     <NookCompanion
                         visible={true}
