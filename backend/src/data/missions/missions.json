@@ -270,5 +270,53 @@
                 }
             ]
         }
+    },
+    {
+        "id": "mission-101",
+        "title": "Variable Declaration",
+        "description": "Declare a variable to earn your first Bells.",
+        "difficulty": "beginner",
+        "language": "java",
+        "order": 101,
+        "points": 100,
+        "steps": [
+            {
+                "id": "step-1",
+                "title": "Your First Wallet",
+                "description": "Create an integer variable named 'wallet' and assign it 100.",
+                "prompt": "int wallet = 100;",
+                "template": "public class Solution {\n    public static void main(String[] args) {\n        // Write your code here\n        \n    }\n}",
+                "solution": "int wallet = 100;",
+                "estimatedTimeMinutes": 5
+            }
+        ],
+        "storyContext": {
+            "introImage": "/assets/nook_intro.png",
+            "introDialogue": [
+                "Welcome to Java Island!",
+                "To get started, you need some money.",
+                "Declare a variable named 'wallet' with 100 bells."
+            ],
+            "successDialogue": [
+                "Great job! Here are 100 bells."
+            ],
+            "failureDialogue": [
+                "Make sure to use 'int wallet = 100;'"
+            ]
+        },
+        "rewards": {
+            "basePoints": 100,
+            "speedBonus": 10,
+            "perfectBonus": 10
+        },
+        "unlocks": [],
+        "prerequisites": [],
+        "scenario": {
+            "setting": {
+                "background": "/assets/bg.png",
+                "characters": []
+            },
+            "script": []
+        }
     }
 ]

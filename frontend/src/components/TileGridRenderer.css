@@ -35,17 +35,22 @@
 /* Tile Types */
 .tile-grass {
     background-color: #98FB98;
-    background-image: url('/assets/tiles/grass.png');
+    background-image: url('../assets/tiles/grass.png');
+    background-size: cover;
 }
 
 /* PaleGreen */
 .tile-water {
     background-color: #87CEEB;
+    background-image: url('../assets/tiles/water.png');
+    background-size: cover;
 }
 
 /* SkyBlue */
 .tile-sand {
     background-color: #F4A460;
+    background-image: url('../assets/tiles/sand.png');
+    background-size: cover;
 }
 
 /* SandyBrown */
