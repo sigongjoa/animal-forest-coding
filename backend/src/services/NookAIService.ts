@@ -11,6 +11,9 @@
  */
 
 import { FeedbackGuidance } from './FeedbackContextService';
+import { createLogger } from './Logger';
+
+const logger = createLogger('NookAIService');
 
 export interface CodeSubmission {
   studentId: string;
@@ -199,13 +202,13 @@ Please analyze this code and provide feedback in JSON format.`;
         // JSON 추출 (응답에 추가 텍스트가 있을 수 있으므로)
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-          console.warn('No JSON found in Ollama response, using default feedback');
+          logger.warn('No JSON found in Ollama response, using default feedback');
           feedbackData = this._createDefaultFeedback();
         } else {
           feedbackData = JSON.parse(jsonMatch[0]);
         }
       } catch (error) {
-        console.warn('JSON parsing failed, using default feedback:', error);
+        logger.warn('JSON parsing failed, using default feedback', { error });
         feedbackData = this._createDefaultFeedback();
       }
 
@@ -232,7 +235,7 @@ Please analyze this code and provide feedback in JSON format.`;
 
       return feedback;
     } catch (error) {
-      console.error('Error generating feedback:', error);
+      logger.error('Error generating feedback', error as Error);
       throw error;
     }
   }

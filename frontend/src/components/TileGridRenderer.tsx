@@ -1,19 +1,16 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectWorld, TileData, setTile } from '../store/slices/worldSlice';
 import { selectBells } from '../store/slices/economySlice';
 import './TileGridRenderer.css';
 
-export const TileGridRenderer: React.FC = () => {
+export const TileGridRenderer: React.FC = React.memo(() => {
     const { tiles } = useSelector(selectWorld);
     const bells = useSelector(selectBells);
     const dispatch = useDispatch();
 
-    if (!tiles || tiles.length === 0) {
-        return <div>No World Data</div>;
-    }
-
-    const getEmojiForObject = (obj: string | undefined) => {
+    // Memoize the emoji mapping function
+    const getEmojiForObject = useCallback((obj: string | undefined): string | null => {
         switch (obj) {
             case 'tree': return '🌲';
             case 'rock': return '🪨';
@@ -24,13 +21,19 @@ export const TileGridRenderer: React.FC = () => {
             case 'fossil': return '🦴';
             default: return null;
         }
-    };
+    }, []);
 
-    const handleTileClick = (x: number, y: number) => {
+    // Memoize the tile click handler
+    const handleTileClick = useCallback((x: number, y: number) => {
         // Simple Interaction Debugging
         // In real game, this would trigger an action based on tool selected
-        console.log(`Clicked tile at ${x}, ${y}`);
-    };
+        // Removed console.log for production code
+    }, []);
+
+    // Early return for empty tiles
+    if (!tiles || tiles.length === 0) {
+        return <div>No World Data</div>;
+    }
 
     return (
         <div className="flex flex-col items-center">
@@ -57,4 +60,4 @@ export const TileGridRenderer: React.FC = () => {
             </div>
         </div>
     );
-};
+});

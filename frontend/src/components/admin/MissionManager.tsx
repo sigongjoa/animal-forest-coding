@@ -289,13 +289,15 @@ const MissionManager: React.FC<MissionManagerProps> = ({ adminToken }) => {
   );
 };
 
+interface SolutionForm {
+  code: string;
+  explanation: string;
+  keyPoints: string[];
+}
+
 interface SolutionEditorProps {
-  solutionForm: {
-    code: string;
-    explanation: string;
-    keyPoints: string[];
-  };
-  setSolutionForm: (form: any) => void;
+  solutionForm: SolutionForm;
+  setSolutionForm: (form: SolutionForm) => void;
   onSave: () => void;
   onCancel: () => void;
 }

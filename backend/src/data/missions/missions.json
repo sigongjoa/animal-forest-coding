@@ -318,5 +318,123 @@
             },
             "script": []
         }
+    },
+    {
+        "id": "mission-003",
+        "title": "The Mystery of the Missing Bells",
+        "description": "Learn about variable scope, shadowing, and preconditions.",
+        "difficulty": "intermediate",
+        "language": "java",
+        "order": 3,
+        "points": 200,
+        "steps": [
+            {
+                "id": 1,
+                "title": "Fixing Scope",
+                "description": "Move 'myBells' to an instance variable so it persists.",
+                "prompt": "Change the local variable to an instance variable.",
+                "template": "public class Store {\n    // Declare instance variable here\n    \n    public void sellFish() {\n        int myBells = 4000; // This is a local variable! Fix it.\n        System.out.println(\"Earned 4000 bells!\");\n    }\n}",
+                "solution": "public class Store {\n    private int myBells = 0;\n    public void sellFish() {\n        this.myBells += 4000;\n        System.out.println(\"Earned 4000 bells!\");\n    }\n}",
+                "estimatedTimeMinutes": 10
+            },
+            {
+                "id": 2,
+                "title": "Shadowing & This",
+                "description": "Use 'this' to distinguish between instance variable and parameter.",
+                "prompt": "Fix the payLoan method to actually deduct money.",
+                "template": "public class Store {\n    private int myBells = 4000;\n    \n    public void payLoan(int myBells) {\n        myBells = myBells - myBells; // This is wrong!\n    }\n}",
+                "solution": "public class Store {\n    private int myBells = 4000;\n    public void payLoan(int amount) {\n        this.myBells -= amount;\n    }\n}",
+                "estimatedTimeMinutes": 10
+            },
+            {
+                "id": 3,
+                "title": "Preconditions",
+                "description": "Check if you have enough money before buying.",
+                "prompt": "Add an if statement to check balance.",
+                "template": "public class Store {\n    private int myBells = 1000;\n    \n    public void buyTool(int cost) {\n        this.myBells -= cost;\n    }\n}",
+                "solution": "public class Store {\n    private int myBells = 1000;\n    public void buyTool(int cost) {\n        if (this.myBells >= cost) {\n            this.myBells -= cost;\n        }\n    }\n}",
+                "estimatedTimeMinutes": 10
+            }
+        ],
+        "storyContext": {
+            "introImage": "/assets/mission3/nook_store_inside.png",
+            "introDialogue": [
+                "Welcome to Nook's Cranny!",
+                "You have a lot of fish to sell, yes, yes!",
+                "Let's turn those fish into Bells."
+            ],
+            "successDialogue": [
+                "Wonderful! You understand the value of a safe wallet.",
+                "Now you can buy anything... as long as you have the Bells!"
+            ],
+            "failureDialogue": [
+                "Oh no! Your money disappeared!",
+                "Remember, local variables are thrown away after the method ends."
+            ]
+        },
+        "rewards": {
+            "basePoints": 200,
+            "speedBonus": 50,
+            "perfectBonus": 50
+        },
+        "unlocks": [
+            "mission-004"
+        ],
+        "prerequisites": [
+            "mission-002"
+        ],
+        "scenario": {
+            "setting": {
+                "background": "/assets/mission3/nook_store_inside.png",
+                "characters": [
+                    {
+                        "id": "player",
+                        "initialPosition": {
+                            "x": 200,
+                            "y": 300
+                        },
+                        "sprite": "/assets/character/player.png",
+                        "direction": "right",
+                        "scale": 2
+                    },
+                    {
+                        "id": "nook",
+                        "initialPosition": {
+                            "x": 400,
+                            "y": 300
+                        },
+                        "sprite": "/assets/character/nook.png",
+                        "direction": "left",
+                        "scale": 2
+                    }
+                ]
+            },
+            "script": [
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "Welcome! You catch 10 Sea Bass? Impressive!",
+                    "emotion": "happy"
+                },
+                {
+                    "type": "move",
+                    "target": "nook",
+                    "to": {
+                        "x": 350,
+                        "y": 300
+                    },
+                    "speed": "walk"
+                },
+                {
+                    "type": "dialogue",
+                    "speaker": "nook",
+                    "text": "I will buy them for 4,000 Bells. Let's process the transaction."
+                },
+                {
+                    "type": "transition",
+                    "mode": "IDE"
+                }
+            ]
+        }
     }
 ]

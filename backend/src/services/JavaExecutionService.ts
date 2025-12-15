@@ -2,6 +2,9 @@ import { spawn } from 'child_process';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
+import { createLogger } from './Logger';
+
+const logger = createLogger('JavaExecutionService');
 
 interface ExecutionResult {
   success: boolean;
@@ -36,7 +39,7 @@ class JavaExecutionService {
       });
       this.hasJavac = true;
     } catch (e) {
-      console.warn("⚠️ javac not found. Falling back to simulation mode.");
+      logger.warn("javac not found. Falling back to simulation mode.");
       this.hasJavac = false;
     }
     return this.hasJavac;
@@ -52,19 +55,25 @@ class JavaExecutionService {
     timeout: number = 5000
   ): Promise<ExecutionResult> {
     const startTime = Date.now();
-    console.log(`[JavaExecution] Starting execution for target hint: ${targetClassName}`);
+    logger.info(`Starting execution for target hint: ${targetClassName}`);
 
     // 1. Check JDK availability
     try {
       const isJavaAvailable = await this.checkJavaAvailability();
-      console.log(`[JavaExecution] JDK Available: ${isJavaAvailable}`);
+      logger.info(`JDK Available: ${isJavaAvailable}`);
+
+      // Special case for 'Store' (Mission 3) which relies on static analysis of structure
+      if (targetClassName === 'Store') {
+        logger.info(`Using content validation for Store mission`);
+        return this.simulateExecution(userCode, targetClassName, startTime);
+      }
 
       if (!isJavaAvailable) {
-        console.log(`[JavaExecution] Falling back to simulation mode.`);
+        logger.info(`Falling back to simulation mode`);
         return this.simulateExecution(userCode, targetClassName, startTime);
       }
     } catch (e) {
-      console.error(`[JavaExecution] Error checking JDK:`, e);
+      logger.error(`Error checking JDK`, e as Error);
       return this.simulateExecution(userCode, targetClassName, startTime);
     }
 
@@ -74,7 +83,7 @@ class JavaExecutionService {
 
       const uniqueId = `Mission_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
       const runDir = path.join(this.tempDir, uniqueId);
-      console.log(`[JavaExecution] Working directory: ${runDir}`);
+      logger.debug(`Working directory: ${runDir}`);
 
       await fs.mkdir(runDir, { recursive: true });
 
@@ -91,25 +100,25 @@ class JavaExecutionService {
       // But based on the error "duplicate class: FishingTournament", user DID include the class wrapper.
 
       const distinctClassName = classNameMatch ? classNameMatch[1] : targetClassName;
-      console.log(`[JavaExecution] Detected class name: ${distinctClassName}`);
+      logger.debug(`Detected class name: ${distinctClassName}`);
 
       // Save User File
       const userFile = path.join(runDir, `${distinctClassName}.java`);
       await fs.writeFile(userFile, userCode, 'utf-8');
-      console.log(`[JavaExecution] Wrote user file: ${userFile}`);
+      logger.debug(`Wrote user file: ${userFile}`);
 
       // Save Main (Test) File
       const mainFile = path.join(runDir, 'Main.java');
       await fs.writeFile(mainFile, mainCode, 'utf-8');
-      console.log(`[JavaExecution] Wrote main file: ${mainFile}`);
+      logger.debug(`Wrote main file: ${mainFile}`);
 
       // Compile Both
-      console.log(`[JavaExecution] Compiling...`);
+      logger.info(`Compiling...`);
       // We compile *.java in the directory to handle dependencies automatically
       const compilationResult = await this.compileJava([userFile, mainFile], timeout);
 
       if (!compilationResult.success) {
-        console.error(`[JavaExecution] Compilation failed: ${compilationResult.error}`);
+        logger.error(`Compilation failed`, undefined, { error: compilationResult.error });
         await this.cleanup(runDir);
         return {
           success: false,
@@ -119,13 +128,13 @@ class JavaExecutionService {
           executionTime: Date.now() - startTime,
         };
       }
-      console.log(`[JavaExecution] Compilation success.`);
+      logger.info(`Compilation success`);
 
       // Execute Main
-      console.log(`[JavaExecution] Executing Main class...`);
+      logger.info(`Executing Main class...`);
       const executionResult = await this.runJava('Main', runDir, timeout);
-      console.log(`[JavaExecution] Execution finished. Success: ${executionResult.success}`);
-      if (executionResult.error) console.error(`[JavaExecution] Execution Output Error: ${executionResult.error}`);
+      logger.info(`Execution finished. Success: ${executionResult.success}`);
+      if (executionResult.error) logger.error(`Execution output error`, undefined, { error: executionResult.error });
 
       // Cleanup
       await this.cleanup(runDir);
@@ -138,7 +147,7 @@ class JavaExecutionService {
       };
 
     } catch (err) {
-      console.error(`[JavaExecution] Unexpected error:`, err);
+      logger.error(`Unexpected error`, err as Error);
       return {
         success: false,
         output: '',
@@ -183,6 +192,56 @@ class JavaExecutionService {
         success = true;
       } else {
         output.push("Validation Error: Missing loops");
+      }
+    } else if (targetClass === 'Store') {
+      output.push("Compiling Store.java...");
+
+      // Step 1: Scope - Instance Variable Check
+      const hasInstanceVar = /private\s+int\s+myBells\s*(=|;)/.test(code);
+      // Step 2: Shadowing/Logic - payLoan Check
+      const hasPayLoanLogic = /this\.myBells\s*-=|myBells\s*-=/.test(code);
+      const hasPayLoanShadowingFix = /this\.myBells\s*=\s*this\.myBells\s*-\s*myBells/.test(code) || /this\.myBells\s*-=\s*myBells/.test(code);
+      // Step 3: Preconditions - buyTool Check
+      const hasPrecondition = /if\s*\(\s*(this\.)?myBells\s*>=\s*cost\s*\)/.test(code);
+
+      if (code.includes("sellFish")) {
+        output.push("Running sellFish()...");
+        if (hasInstanceVar) {
+          output.push("Instance variable 'myBells' found.");
+        } else {
+          output.push("Error: 'myBells' is still a local variable? Move it to class level!");
+        }
+      }
+
+      if (code.includes("payLoan")) {
+        output.push("Running payLoan()...");
+        if (hasPayLoanLogic || hasPayLoanShadowingFix || code.includes("amount")) {
+          output.push("Loan payment logic looks correct.");
+        } else {
+          output.push("Error: value not changing? Check variable names!");
+        }
+      }
+
+      if (code.includes("buyTool")) {
+        output.push("Running buyTool()...");
+        if (hasPrecondition) {
+          output.push("Precondition check found. Secure transaction!");
+        } else {
+          output.push("Error: You can buy even with 0 bells! Add an 'if' check.");
+        }
+      }
+
+      if (hasInstanceVar && (hasPayLoanLogic || code.includes("amount")) && (hasPrecondition || !code.includes("buyTool"))) {
+        output.push("TEST_PASSED");
+        success = true;
+      } else if (code.includes("sellFish") && hasInstanceVar) {
+        // Partial pass for step 1
+        if (!code.includes("payLoan")) { // Only step 1
+          output.push("TEST_PASSED");
+          success = true;
+        }
+      } else {
+        output.push("TEST_FAILED");
       }
     } else {
       output.push("Simulating generic execution...");
@@ -331,7 +390,7 @@ class JavaExecutionService {
     try {
       await fs.rm(dir, { recursive: true, force: true });
     } catch (e) {
-      console.error(`Failed to cleanup dir ${dir}:`, e);
+      logger.error(`Failed to cleanup dir ${dir}`, e as Error);
     }
   }
 }

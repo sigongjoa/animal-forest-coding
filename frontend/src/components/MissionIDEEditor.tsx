@@ -1,16 +1,22 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-java';
 import 'prismjs/themes/prism-tomorrow.css'; // Dark theme
 
+interface FeedbackResult {
+    passed: boolean;
+    message: string;
+    output: string[];
+}
+
 interface MissionIDEEditorProps {
     code: string;
     onChange: (code: string) => void;
     onValidate: () => void;
     isValidating: boolean;
-    feedback?: any;
+    feedback?: FeedbackResult;
 }
 
 export const MissionIDEEditor: React.FC<MissionIDEEditorProps> = ({
@@ -20,7 +26,38 @@ export const MissionIDEEditor: React.FC<MissionIDEEditorProps> = ({
     isValidating,
     feedback
 }) => {
-    // We don't really need a ref for the Editor component itself unless we want manual focus handling in a specific way
+    // Memoize the highlight function to prevent unnecessary re-renders
+    const highlightCode = useCallback((code: string) => {
+        return highlight(code, languages.java, 'java');
+    }, []);
+
+    // Memoize the reset handler
+    const handleReset = useCallback(() => {
+        onChange('');
+    }, [onChange]);
+
+    // Memoize the feedback output rendering
+    const feedbackOutput = useMemo(() => {
+        if (!feedback?.output || feedback.output.length === 0) {
+            return <div className="text-gray-500 italic">No output generated.</div>;
+        }
+
+        return feedback.output.map((line: string, i: number) => (
+            <div
+                key={i}
+                className={`${
+                    line.startsWith('Error') ||
+                    line.startsWith('Exception') ||
+                    line.includes('error:')
+                        ? 'text-red-400'
+                        : 'text-gray-300'
+                } whitespace-pre-wrap`}
+            >
+                <span className="opacity-50 mr-2 select-none">$</span>
+                {line}
+            </div>
+        ));
+    }, [feedback]);
 
     return (
         <div className="flex flex-col h-full bg-gray-900 rounded-lg overflow-hidden text-white shadow-2xl">
@@ -33,7 +70,7 @@ export const MissionIDEEditor: React.FC<MissionIDEEditorProps> = ({
                 <div className="flex space-x-2">
                     <button
                         className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-gray-300 transition-colors"
-                        onClick={() => onChange('')}
+                        onClick={handleReset}
                     >
                         Reset
                     </button>
@@ -47,7 +84,7 @@ export const MissionIDEEditor: React.FC<MissionIDEEditorProps> = ({
                     <Editor
                         value={code}
                         onValueChange={onChange}
-                        highlight={code => highlight(code, languages.java, 'java')}
+                        highlight={highlightCode}
                         padding={20}
                         className="min-h-full font-mono text-sm leading-6"
                         style={{
@@ -76,24 +113,15 @@ export const MissionIDEEditor: React.FC<MissionIDEEditorProps> = ({
                             <div className="flex items-center text-yellow-400 animate-pulse">
                                 <span className="mr-2">⚡</span> Compiling and running code...
                             </div>
-                        ) : (
+                        ) : feedback ? (
                             <>
-                                {feedback?.output && feedback.output.length > 0 ? (
-                                    feedback.output.map((line: string, i: number) => (
-                                        <div key={i} className={`${line.startsWith('Error') || line.startsWith('Exception') || line.includes('error:') ? 'text-red-400' : 'text-gray-300'} whitespace-pre-wrap`}>
-                                            <span className="opacity-50 mr-2 select-none">$</span>
-                                            {line}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-gray-500 italic">No output generated.</div>
-                                )}
+                                {feedbackOutput}
 
                                 <div className={`mt-4 pt-2 border-t border-gray-800 ${feedback.passed ? 'text-green-400' : 'text-red-400'} font-semibold`}>
                                     {feedback.passed ? '✓' : '⚠'} {feedback.message}
                                 </div>
                             </>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             )}
