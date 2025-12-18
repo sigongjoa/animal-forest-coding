@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAssetPath } from '../../../utils/assetUtils';
 
 interface MissionStoryDisplayProps {
     introImage?: string;
@@ -28,7 +29,7 @@ export const MissionStoryDisplay: React.FC<MissionStoryDisplayProps> = ({
             {introImage ? (
                 <div className="mb-6 w-full h-64 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                     <img
-                        src={introImage}
+                        src={getAssetPath(introImage)}
                         alt="Mission Scene"
                         className="object-cover w-full h-full"
                         onError={(e) => {

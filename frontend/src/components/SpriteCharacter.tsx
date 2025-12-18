@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Direction } from '../hooks/useCharacterMovement';
+import { getAssetPath } from '../utils/assetUtils';
 
 interface SpriteCharacterProps {
     position: { x: number; y: number };
@@ -56,7 +57,7 @@ const SpriteCharacter: React.FC<SpriteCharacterProps> = ({
                 top: position.y,
                 width: `${spriteSize}px`,
                 height: `${spriteSize}px`,
-                backgroundImage: `url(${spriteUrl})`, // Direct URL usage
+                backgroundImage: `url(${getAssetPath(spriteUrl)})`, // Direct URL usage
                 backgroundSize: '400% 400%',
                 backgroundPosition: `${bgPosX}% ${bgPosY}%`,
                 backgroundRepeat: 'no-repeat',
