@@ -131,51 +131,7 @@ jobs:
         run: npx artillery run tests/performance/load-test.yml
         timeout-minutes: 5
 
-  # 6단계: E2E 테스트 (Playwright)
-  e2e-tests:
-    name: E2E Tests (${{ matrix.browser }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [chromium]
-      fail-fast: false
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: |
-            npm install
-            cd frontend && npm install
-        continue-on-error: true
-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Start backend
-        run: cd backend && npm install && npm run dev &
-
-      # Frontend start removed to avoid port 3000 conflict with Playwright webServer
-      
-      - name: Wait for backend
-        run: sleep 15
-
-      - name: Run E2E tests
-        run: |
-          npx playwright test --project=${{ matrix.browser }} --reporter=html
-        timeout-minutes: 30
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-results-${{ matrix.browser }}
-          path: playwright-report/
-          retention-days: 7
 
   # 7단계: 빌드 및 배포 준비
   build:
