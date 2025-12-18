@@ -66,7 +66,7 @@ function AppWithPersistence() {
   }, [progression.studentId]);
 
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Routes>
         <Route path="/entry" element={<EntryPage />} />
         <Route path="/login" element={<LoginPage />} />
