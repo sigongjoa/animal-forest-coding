@@ -1,10 +1,10 @@
 {
   "files": {
     "main.css": "/animal-forest-coding/static/css/main.7e6bca18.css",
-    "main.js": "/animal-forest-coding/static/js/main.8ba673e4.js",
+    "main.js": "/animal-forest-coding/static/js/main.7f163ede.js",
     "static/js/22.43100297.chunk.js": "/animal-forest-coding/static/js/22.43100297.chunk.js",
     "static/js/163.da35def8.chunk.js": "/animal-forest-coding/static/js/163.da35def8.chunk.js",
-    "static/js/847.a8fd2300.chunk.js": "/animal-forest-coding/static/js/847.a8fd2300.chunk.js",
+    "static/js/847.b20be5dc.chunk.js": "/animal-forest-coding/static/js/847.b20be5dc.chunk.js",
     "static/media/grass.png": "/animal-forest-coding/static/media/grass.b136bdf3867582470d14.png",
     "static/media/water.png": "/animal-forest-coding/static/media/water.655e779ff412a6c5edc7.png",
     "static/media/start_btn.png": "/animal-forest-coding/static/media/start_btn.ec92f564af21a435333f.png",
@@ -13,12 +13,12 @@
     "static/media/sand.png": "/animal-forest-coding/static/media/sand.66d5c053e3d4ef387d2f.png",
     "index.html": "/animal-forest-coding/index.html",
     "main.7e6bca18.css.map": "/animal-forest-coding/static/css/main.7e6bca18.css.map",
-    "main.8ba673e4.js.map": "/animal-forest-coding/static/js/main.8ba673e4.js.map",
+    "main.7f163ede.js.map": "/animal-forest-coding/static/js/main.7f163ede.js.map",
     "22.43100297.chunk.js.map": "/animal-forest-coding/static/js/22.43100297.chunk.js.map",
     "163.da35def8.chunk.js.map": "/animal-forest-coding/static/js/163.da35def8.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7e6bca18.css",
-    "static/js/main.8ba673e4.js"
+    "static/js/main.7f163ede.js"
   ]
 }
