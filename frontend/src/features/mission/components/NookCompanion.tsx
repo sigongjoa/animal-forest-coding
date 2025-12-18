@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAudio } from '../../../hooks/useAudio';
 import SpriteCharacter from '../../../components/SpriteCharacter';
+import { getAssetPath } from '../../../utils/assetUtils';
 
 interface NookCompanionProps {
     status: 'idle' | 'thinking' | 'talking' | 'happy' | 'concerned';
@@ -61,7 +62,7 @@ const NookCompanion: React.FC<NookCompanionProps> = ({ status, message, visible 
     // Determine sprite image based on status
     const getSpriteUrl = () => {
         // Assuming sprite sheet logic or static images. For now using static asset.
-        return '/assets/character/nook.png';
+        return getAssetPath('/assets/character/nook.png');
     };
 
     // Determine emotion/animation class
@@ -99,7 +100,7 @@ const NookCompanion: React.FC<NookCompanionProps> = ({ status, message, visible 
                         position={{ x: 0, y: 0 }}
                         direction='left'
                         isMoving={status === 'talking' || isTyping} // Walk/Move animation when talking
-                        spriteUrl='/assets/character/nook.png'
+                        spriteUrl={getAssetPath('/assets/character/nook.png')}
                         scale={2} // Adjust scale as needed
                     />
                 </div>
