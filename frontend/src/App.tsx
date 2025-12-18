@@ -65,8 +65,23 @@ function AppWithPersistence() {
     }
   }, [progression.studentId]);
 
+  // DEMO MODE OVERRIDE
+  if (process.env.REACT_APP_USE_MOCK === 'true') {
+    // Hardcode to Mission 3 for Demo
+    // We need to wrap it in a minimal context provider if MissionPage relies on useParams/useNavigate
+    // But wait, MissionPage DOES use useParams and useNavigate.
+    // So we must provide a Router context even if we ignore the route path.
+    return (
+      <Router>
+        <Routes>
+          <Route path="*" element={<MissionPage />} />
+        </Routes>
+      </Router>
+    );
+  }
+
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router>
       <Routes>
         <Route path="/entry" element={<EntryPage />} />
         <Route path="/login" element={<LoginPage />} />

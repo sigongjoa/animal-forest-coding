@@ -11,7 +11,13 @@ import { MissionScenario, ScriptAction } from '../../types/Mission';
 import { TileGridRenderer } from '../../components/TileGridRenderer';
 
 const MissionPage: React.FC = () => {
-    const { missionId } = useParams<{ missionId: string }>();
+    let { missionId } = useParams<{ missionId: string }>();
+
+    // DEMO MODE HARDCODING
+    if (process.env.REACT_APP_USE_MOCK === 'true') {
+        missionId = 'unit-3-variable-world';
+    }
+
     const navigate = useNavigate();
     const progression = useSelector(selectProgression);
     const studentId = progression.studentId || 'guest';
