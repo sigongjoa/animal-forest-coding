@@ -10,7 +10,7 @@
         {
             "id": 1,
             "title": "Chapter 1. 사라진 4,000벨 (Scope)",
-            "description": "지역 변수(Local Variable)는 메소드가 끝나면 사라집니다. 돈을 영구적으로 보관하려면 인스턴스 변수(Instance Variable)로 옮겨야 합니다.",
+            "description": "메소드 안에서 만든 변수(`int myBells = 4000`)는 **'지역 변수(Local Variable)'**입니다. 이건 마치 **잠깐 쓰고 버리는 영수증**과 같아서, `sellFish` 메소드가 끝나는 순간 사라져버립니다! 😱\n\n돈을 영구적으로 보관하려면 클래스 전체가 공유하는 **'인스턴스 변수(내 지갑)'**에 저장해야 합니다. `myBells` 변수를 메소드 밖(클래스 영역)으로 옮겨보세요.",
             "prompt": "상점 안(메소드)에서 만든 `myBells`를 상점 밖(클래스)의 개인 지갑으로 옮기세요.",
             "template": "public class User {\n    // 여기에 인스턴스 변수를 선언하세요 (내 지갑)\n    \n    public void sellFish() {\n        int myBells = 4000; // ⚠️ 이건 지역 변수(영수증)입니다! 메소드가 끝나면 사라집니다.\n        System.out.println(\"4000벨 획득!\");\n    }\n}",
             "solution": "public class User {\n    private int myBells = 0;\n    \n    public void sellFish() {\n        this.myBells += 4000;\n        System.out.println(\"4000벨 획득!\");\n    }\n}",
@@ -19,7 +19,7 @@
         {
             "id": 2,
             "title": "Chapter 2. 도플갱어의 습격 (Shadowing)",
-            "description": "변수 이름이 같으면 가장 가까운 변수(매개변수)가 우선됩니다. `this`를 사용하여 내 지갑(인스턴스 변수)을 가리키세요.",
+            "description": "지금 `payLoan` 메소드에는 두 명의 `myBells`가 있습니다. 하나는 **'내 지갑(인스턴스 변수)'**이고, 다른 하나는 **'갚을 돈(매개변수)'**입니다.\n\n자바는 이름이 같으면 **가장 가까운 녀석(매개변수)**을 먼저 쳐다봅니다. 이것을 **섀도잉(Shadowing)**이라고 합니다. 👥\n\n**`this.myBells`**라고 콕 집어 말해서 '내 지갑'에서 돈을 빼가도록 수정하세요!",
             "prompt": "`payLoan` 메소드에서 빚을 갚으려는데 돈이 줄어들지 않습니다. `this` 키워드를 사용해 해결하세요.",
             "template": "public class User {\n    private int myBells = 4000;\n    \n    public void payLoan(int myBells) {\n        // ⚠️ 여기서 myBells는 매개변수(갚을 돈)를 가리킵니다.\n        myBells = myBells - myBells; // 내 지갑(인스턴스 변수)에서 돈을 빼야 합니다!\n    }\n}",
             "solution": "public class User {\n    private int myBells = 4000;\n    \n    public void payLoan(int amount) {\n        this.myBells -= amount;\n    }\n}",
@@ -28,7 +28,7 @@
         {
             "id": 3,
             "title": "Chapter 3. 마이너스 통장 버그 (Precondition)",
-            "description": "돈이 부족한데도 물건이 사집니다. 구매 전에 잔액을 확인하는 문지기(Precondition)를 세우세요.",
+            "description": "지금 코드는 돈이 없어도(`myBells < cost`) 물건을 살 수 있는 심각한 버그가 있습니다! 💸\n\n물건을 구매하는 코드(`-= cost`)를 실행하기 전에, **'돈이 충분한가?'**를 먼저 확인하는 **문지기(`if` 문)**를 세워주세요.\n\n이것을 올바른 실행을 위한 **'사전 조건(Precondition)'**이라고 부릅니다.",
             "prompt": "`buyTool` 메소드에 돈이 충분한지 확인하는 `if` 문을 추가하세요.",
             "template": "public class User {\n    private int myBells = 1000;\n    \n    public void buyTool(int cost) {\n        // ⚠️ 돈이 없어도 구매가 됩니다! 막아주세요.\n        this.myBells -= cost;\n        System.out.println(\"구매 완료!\");\n    }\n}",
             "solution": "public class User {\n    private int myBells = 1000;\n    \n    public void buyTool(int cost) {\n        if (this.myBells >= cost) {\n            this.myBells -= cost;\n            System.out.println(\"구매 완료!\");\n        } else {\n            System.out.println(\"잔액이 부족합니다.\");\n        }\n    }\n}",
@@ -112,7 +112,7 @@
         {
             "id": 4,
             "title": "Chapter 4. 최종 미션: 품절입니다! (Advanced Precondition)",
-            "description": "이제 돈은 확인했지만, 물건이 없으면 못 팔겠죠? 재고(inStock)를 확인하는 코드를 추가하세요.",
+            "description": "돈이 있어도 물건이 다 팔렸으면(`inStock == false`) 구매할 수 없어야겠죠? 📦\n\n문지기를 하나 더 세워봅시다. 이번에는 `if` 문 안에서 **재고(inStock)**를 확인하고, 재고가 없으면 `else`를 통해 \"품절입니다!\"라고 외치게 만들어보세요.",
             "prompt": "`buyTool` 메소드에 **재고가 없으면(inStock == false)** \"품절입니다!\"를 출력하고 구매를 막는 코드를 추가하세요.",
             "template": "public class User {\n    private int myBells = 2000;\n    private boolean inStock = false; // ⚠️ 재고가 없습니다!\n    \n    public void buyTool(int cost) {\n        // 1. 돈이 충분한지 확인\n        if (this.myBells >= cost) {\n            // ⚠️ 여기에 재고(inStock) 확인 코드를 추가하세요!\n            // 재고가 있으면 -> 돈 차감 & 구매 완료\n            // 재고가 없으면 -> \"품절입니다!\" 출력\n            \n            this.myBells -= cost;\n            System.out.println(\"구매 완료!\");\n        } else {\n            System.out.println(\"잔액이 부족합니다.\");\n        }\n    }\n}",
             "solution": "public class User {\n    private int myBells = 2000;\n    private boolean inStock = false;\n    \n    public void buyTool(int cost) {\n        if (this.myBells >= cost) {\n            if (this.inStock) {\n                this.myBells -= cost;\n                System.out.println(\"구매 완료!\");\n            } else {\n                System.out.println(\"품절입니다!\");\n            }\n        } else {\n            System.out.println(\"잔액이 부족합니다.\");\n        }\n    }\n}",
