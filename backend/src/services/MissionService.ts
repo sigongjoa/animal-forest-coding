@@ -19,18 +19,18 @@ export class MissionService {
   private isLoaded: boolean = false;
 
   constructor() {
-    // backend/src/services/MissionService.ts -> ../data/missions/missions.json (in src/data)
+    // backend/src/services/MissionService.ts -> ../data/missions/content/
 
     // Explicitly check possible paths
     const pathsToCheck = [
       // 1. Source directory (most likely in dev/local)
-      path.join(process.cwd(), 'src', 'data', 'missions', 'missions.json'),
+      path.join(process.cwd(), 'src', 'data', 'missions', 'content'),
       // 2. Root data directory
-      path.join(process.cwd(), 'data', 'missions', 'missions.json'),
-      // 3. Dist directory (if copied)
-      path.join(process.cwd(), 'dist', 'data', 'missions', 'missions.json'),
-      // 4. Relative to file (fallback)
-      path.join(__dirname, '../../data/missions/missions.json')
+      path.join(process.cwd(), 'data', 'missions', 'content'),
+      // 3. Fallback for mixed environments
+      path.join(process.cwd(), 'backend', 'src', 'data', 'missions', 'content'),
+      // 4. Dist directory
+      path.join(process.cwd(), 'dist', 'data', 'missions', 'content')
     ];
 
 
@@ -44,32 +44,41 @@ export class MissionService {
 
     if (foundPath) {
       this.missionsPath = foundPath;
-      console.log(`📚 MissionService initialized with file: ${this.missionsPath}`);
+      console.log(`📚 MissionService initialized with directory: ${this.missionsPath}`);
     } else {
-      console.error(`❌ Mission file not found! Checked:`, pathsToCheck);
-      // Default fallback even if valid path not found to prevent immediate crash, though loading will fail
+      console.error(`❌ Mission directory not found! Checked:`, pathsToCheck);
       this.missionsPath = pathsToCheck[0];
     }
   }
 
   /**
-   * Ensure missions are loaded from the single JSON file
+   * Ensure missions are loaded from the content directory
    */
   private async ensureLoaded(): Promise<void> {
     if (this.isLoaded) return;
 
     try {
-      const fileContent = await fs.readFile(this.missionsPath, 'utf-8');
-      const missions: Mission[] = JSON.parse(fileContent);
-
+      const files = await fs.readdir(this.missionsPath);
       this.missionsCache.clear();
-      for (const mission of missions) {
-        this.validateMission(mission);
-        this.missionsCache.set(mission.id, mission);
+      let count = 0;
+
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const filePath = path.join(this.missionsPath, file);
+          const fileContent = await fs.readFile(filePath, 'utf-8');
+          try {
+            const mission: Mission = JSON.parse(fileContent);
+            this.validateMission(mission);
+            this.missionsCache.set(mission.id, mission);
+            count++;
+          } catch (err) {
+            console.error(`⚠️ Failed to parse mission file ${file}:`, err);
+          }
+        }
       }
 
       this.isLoaded = true;
-      console.log(`✅ Loaded ${this.missionsCache.size} missions from ${this.missionsPath}`);
+      console.log(`✅ Loaded ${count} missions from ${this.missionsPath}`);
     } catch (error) {
       console.error(`❌ Failed to load missions from ${this.missionsPath}:`, error);
       throw error;

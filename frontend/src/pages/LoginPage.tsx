@@ -102,7 +102,7 @@ const LoginPage: React.FC = () => {
       } else {
         // API 실패해도 계속 진행 (프로토타입 모드)
         console.log('로그인 API 사용 불가 - 로컬 모드로 계속 진행');
-        localStorage.setItem('token', 'demo-token-' + Date.now());
+        localStorage.setItem('token', 'dummy-token-' + Date.now());
         localStorage.setItem('userId', username); // Save userId for persistence
       }
 
@@ -111,7 +111,7 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       console.error('로그인 에러:', error);
       // 에러 발생해도 계속 진행 (프로토타입 모드)
-      localStorage.setItem('token', 'demo-token-' + Date.now());
+      localStorage.setItem('token', 'dummy-token-' + Date.now());
       localStorage.setItem('userId', username); // Save userId for persistence
       navigate('/main', { replace: true });
     }

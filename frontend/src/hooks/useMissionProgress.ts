@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { Mission } from '../types/Mission';
 import apiClient from '../services/apiClient';
@@ -58,17 +59,48 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
         }
     };
 
+    const loadLocalUnit3 = async () => {
+        console.log('📦 Loading Local Unit 3 Data (Variables Mock)...');
+        try {
+            // Dynamic import of JSON requires enabling "resolveJsonModule": true in tsconfig
+            // or we use a workaround if it's not enabled. But let's try direct import.
+            const unit3Mission = await import('../data/mock/unit-3-variable-world.json');
+            setMission(unit3Mission as any); // JSON imports often need 'as any' or defined types
+            if (unit3Mission.steps && unit3Mission.steps.length > 0) {
+                setCode(unit3Mission.steps[0].template);
+            }
+            setLoading(false);
+            setError(null);
+            return true;
+        } catch (err) {
+            console.error('Failed to import local unit 3:', err);
+            return false;
+        }
+    };
+
     const loadMission = async () => {
-        // 1. Check for Unit Match (Local)
+        // 0. Check for MOCK Mode
+        const useMock = process.env.REACT_APP_USE_MOCK === 'true';
+        console.log('Use Mock:', useMock);
+
+        // 1. Check for Unit Match
         const path = window.location.pathname;
         const isUnit1 = (missionId && (missionId.includes('unit-1') || missionId.includes('economics') || missionId === 'mission-001')) || (path && (path.includes('unit-1') || path.includes('mission-001')));
         const isUnit2 = (missionId && (missionId.includes('unit-2') || missionId.includes('fish') || missionId === 'mission-002')) || (path && (path.includes('unit-2') || path.includes('mission-002')));
+        const isUnit3 = (missionId && (missionId.includes('unit-3') || missionId.includes('variable') || missionId === 'mission-003')) || (path && (path.includes('unit-3') || path.includes('mission-003')));
 
-        if (isUnit1) {
+        // Mock Logic Override
+        if (useMock) {
+            if (isUnit1) { await loadLocalUnit1(); return; }
+            if (isUnit2) { await loadLocalUnit2(); return; }
+            if (isUnit3) { await loadLocalUnit3(); return; }
+        }
+
+        if (isUnit1 && !useMock) {
             if (await loadLocalUnit1()) return;
         }
 
-        if (isUnit2) {
+        if (isUnit2 && !useMock) {
             if (await loadLocalUnit2()) {
                 return;
             } else {
@@ -77,6 +109,8 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
                 return;
             }
         }
+
+        // Unit 3 (Variables) - Try Remote first, fallback to mock if fails
 
         if (!missionId) return;
 
@@ -99,6 +133,11 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
             // 3. Fallback
             if (isUnit1 && await loadLocalUnit1()) return;
             if (isUnit2 && await loadLocalUnit2()) return;
+            // Unit 3 Fallback
+            if (isUnit3 && await loadLocalUnit3()) {
+                console.warn('⚠️ Falling back to Unit 3 Mock Data');
+                return;
+            }
 
             const msg = err.response?.data?.message || err.message || 'Unknown error';
             setError(`Failed to load mission: ${msg}`);
@@ -156,9 +195,77 @@ export const useMissionProgress = ({ missionId, studentId }: UseMissionProgressP
                     }
                 }
             }
-        } catch (err) {
-            console.error('Code submission failed:', err);
-            setError('Failed to submit code');
+        } catch (err: any) {
+            console.error('❌ Code submission failed!');
+
+            // --- FALLBACK MOCK VALIDATOR FOR DEMO ---
+            const isMockMode = process.env.REACT_APP_USE_MOCK === 'true';
+
+            // Check if we are in Unit 3 and if failure is connection related
+            const isUnit3 = mission?.id?.includes('unit-3');
+
+            if (isUnit3 && (isMockMode || err.message === 'Network Error' || !err.response)) {
+                console.warn('⚠️ Using Mock Validator for Unit 3');
+                await new Promise(resolve => setTimeout(resolve, 800)); // Simulate delay
+
+                let passed = false;
+                let message = "Hmm... 다시 확인해보세요.";
+                const step = currentStepIndex + 1; // 1-based step
+
+                // Simple pattern matching for demo
+                if (step === 1) { // Scope
+                    if (code.includes('this.myBells += 4000') && !code.includes('int myBells = 4000')) {
+                        passed = true;
+                        message = "훌륭해요! 이제 돈이 사라지지 않아요.";
+                    } else {
+                        message = "지역 변수(int myBells)를 지우고 this.myBells를 사용했나요?";
+                    }
+                } else if (step === 2) { // Shadowing
+                    if (code.includes('this.myBells -= amount') || code.includes('this.myBells -= myBells')) {
+                        passed = true;
+                        message = "완벽해요! 이제 빚을 정확히 갚을 수 있어요.";
+                    } else {
+                        message = "this.myBells를 사용해서 내 지갑을 가리키세요!";
+                    }
+                } else if (step === 3) { // Precondition 1
+                    if (code.includes('if') && code.includes('>=') && code.includes('cost')) {
+                        passed = true;
+                        message = "좋습니다! 이제 돈이 부족하면 살 수 없어요.";
+                    } else {
+                        message = "if문을 사용해서 잔액을 확인했나요?";
+                    }
+                } else if (step === 4) { // Precondition 2 (InStock)
+                    if (code.includes('if') && code.includes('inStock') && code.includes('품절')) {
+                        passed = true;
+                        message = "대단해요! 재고 관리 시스템이 완성되었습니다.";
+                    } else {
+                        message = "inStock 변수를 확인하고 '품절' 메시지를 출력해보세요.";
+                    }
+                }
+
+                setFeedback({
+                    passed,
+                    message,
+                    output: passed ? ["TEST_PASSED"] : ["TEST_FAILED"]
+                });
+                setValidating(false);
+                return;
+            }
+            // ----------------------------------------
+
+            if (axios.isAxiosError(err)) {
+                console.error('🔍 Error Details:', {
+                    url: err.config?.url,
+                    method: err.config?.method,
+                    baseURL: err.config?.baseURL,
+                    status: err.response?.status,
+                    statusText: err.response?.statusText,
+                    data: err.response?.data
+                });
+            } else {
+                console.error('🔍 Unknown Error:', err);
+            }
+            setError('Failed to submit code. Check console for details.');
         } finally {
             setValidating(false);
         }

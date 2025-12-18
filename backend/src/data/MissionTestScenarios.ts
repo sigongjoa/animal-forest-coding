@@ -110,5 +110,188 @@ public class Main {
 }
 `
         }
+    },
+    'unit-3-variable-world': {
+        1: { // Step 1: Fixing Scope - Instance Variable
+            targetClassName: 'User',
+            validationKeywords: ['TEST_PASSED'],
+            mainClass: `
+import java.lang.reflect.Field;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.println("Running Unit 3 Step 1 Tests...");
+            User user = new User();
+            
+            // Reflection to access private myBells
+            Field field = null;
+            try {
+                field = User.class.getDeclaredField("myBells");
+                field.setAccessible(true);
+            } catch (NoSuchFieldException e) {
+                 System.out.println("TEST_FAILED: Could not find variable 'myBells'. Did you declare it at the class level?");
+                 return;
+            }
+
+            int initial = (int) field.get(user);
+            System.out.println("Initial Bells: " + initial);
+
+            user.sellFish();
+            int afterOne = (int) field.get(user);
+            System.out.println("After 1st sell: " + afterOne);
+            
+            if (afterOne <= initial) {
+                 System.out.println("TEST_FAILED: myBells didn't increase. Did you remove the local variable?");
+                 return;
+            }
+
+            user.sellFish();
+            int afterTwo = (int) field.get(user);
+            System.out.println("After 2nd sell: " + afterTwo);
+            
+            if (afterTwo > afterOne) {
+                System.out.println("TEST_PASSED");
+                System.out.println("Excellent! The variable is now persisting state.");
+            } else {
+                System.out.println("TEST_FAILED: State didn't persist on second call.");
+            }
+        } catch (Exception e) {
+            System.out.println("EXECUTION_ERROR");
+            e.printStackTrace();
+        }
+    }
+}
+`
+        },
+        2: { // Step 2: Shadowing - using 'this'
+            targetClassName: 'User',
+            validationKeywords: ['TEST_PASSED'],
+            mainClass: `
+import java.lang.reflect.Field;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.println("Running Unit 3 Step 2 Tests...");
+            User user = new User();
+            
+            Field field = User.class.getDeclaredField("myBells");
+            field.setAccessible(true);
+            
+            // Set initial state
+            field.set(user, 5000);
+            
+            user.payLoan(2000);
+            
+            int result = (int) field.get(user);
+            System.out.println("Result: " + result);
+            
+            if (result == 3000) {
+                System.out.println("TEST_PASSED");
+            } else if (result == 5000) {
+                System.out.println("TEST_FAILED: Amount didn't change. Variable shadowing is still happening!");
+                System.out.println("Did you use 'this.myBells'?");
+            } else {
+                System.out.println("TEST_FAILED: Calculation error. Expected 3000 but got " + result);
+            }
+        } catch (Exception e) {
+            System.out.println("EXECUTION_ERROR");
+            e.printStackTrace();
+        }
+    }
+}
+`
+        },
+        3: { // Step 3: Preconditions
+            targetClassName: 'User',
+            validationKeywords: ['TEST_PASSED'],
+            mainClass: `
+import java.lang.reflect.Field;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.println("Running Unit 3 Step 3 Tests...");
+            User user = new User();
+            
+            Field field = User.class.getDeclaredField("myBells");
+            field.setAccessible(true);
+            
+            // Case 1: Enough money
+            field.set(user, 1000);
+            user.buyTool(500);
+            int r1 = (int) field.get(user);
+            boolean pass1 = (r1 == 500);
+            System.out.println("Case 1 (Have 1000, buy 500): " + r1 + " (Expected 500) -> " + pass1);
+            
+            // Case 2: Not enough money
+            field.set(user, 100);
+            user.buyTool(500);
+            int r2 = (int) field.get(user);
+            boolean pass2 = (r2 == 100);
+            System.out.println("Case 2 (Have 100, buy 500): " + r2 + " (Expected 100) -> " + pass2);
+            
+            if (pass1 && pass2) {
+                System.out.println("TEST_PASSED");
+            } else {
+                System.out.println("TEST_FAILED: Check logic properly.");
+            }
+        } catch (Exception e) {
+            System.out.println("EXECUTION_ERROR");
+            e.printStackTrace();
+        }
+    }
+}
+`
+        },
+        4: { // Step 4: Final Mission - inStock Check
+            targetClassName: 'User',
+            validationKeywords: ['TEST_PASSED'],
+            mainClass: `
+import java.lang.reflect.Field;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            System.out.println("Running Unit 3 Step 4 Tests...");
+            User user = new User();
+            
+            Field bellsField = User.class.getDeclaredField("myBells");
+            bellsField.setAccessible(true);
+            Field stockField = User.class.getDeclaredField("inStock");
+            stockField.setAccessible(true);
+            
+            // Case 1: In Stock & Enough Money -> Should Buy
+            bellsField.set(user, 1000);
+            stockField.set(user, true);
+            user.buyTool(500);
+            int r1 = (int) bellsField.get(user);
+            boolean pass1 = (r1 == 500);
+            System.out.println("Case 1 (Stock=true, Money=1000): " + r1 + " (Exp: 500) -> " + pass1);
+            
+            // Case 2: Out of Stock & Enough Money -> Should NOT Buy
+            bellsField.set(user, 1000);
+            stockField.set(user, false);
+            user.buyTool(500);
+            int r2 = (int) bellsField.get(user);
+            boolean pass2 = (r2 == 1000);
+            System.out.println("Case 2 (Stock=false, Money=1000): " + r2 + " (Exp: 1000) -> " + pass2);
+            
+            if (pass1 && pass2) {
+                System.out.println("TEST_PASSED");
+            } else {
+                System.out.println("TEST_FAILED: Ensure you check both Money and Stock!");
+            }
+        } catch (NoSuchFieldException e) {
+            System.out.println("TEST_FAILED: Could not find 'inStock' variable. Did you declare it?");
+        } catch (Exception e) {
+            System.out.println("EXECUTION_ERROR");
+            e.printStackTrace();
+        }
+    }
+}
+`
+        }
     }
 };

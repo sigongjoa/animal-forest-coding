@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { MissionScenario, ScriptAction } from '../types/Mission';
-import SpriteCharacter from './SpriteCharacter';
-import { Direction } from '../hooks/useCharacterMovement';
-import { useAudio } from '../hooks/useAudio';
+import { MissionScenario, ScriptAction } from '../../../types/Mission';
+import SpriteCharacter from '../../../components/SpriteCharacter';
+import { Direction } from '../../../hooks/useCharacterMovement';
+import { useAudio } from '../../../hooks/useAudio';
 
 interface MissionScenarioPlayerProps {
     scenario: MissionScenario;
@@ -23,6 +23,7 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
     const [activeEmotes, setActiveEmotes] = useState<{ [key: string]: string }>({});
     const [movingCharacters, setMovingCharacters] = useState<Set<string>>(new Set());
     const [charTransitionTimes, setCharTransitionTimes] = useState<{ [key: string]: number }>({});
+    const [activeAnimations, setActiveAnimations] = useState<{ [key: string]: string }>({});
 
     const { generateAudio, playAudio, stopAudio, audioRef } = useAudio();
 
@@ -105,6 +106,24 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                 }
                 nextStep();
                 break;
+
+            case 'animation':
+                setActiveAnimations((prev) => ({ ...prev, [action.target]: action.animation }));
+                await new Promise((resolve) => setTimeout(resolve, action.duration || 1000));
+                // Remove animation
+                setActiveAnimations((prev) => {
+                    const next = { ...prev };
+                    delete next[action.target];
+                    return next;
+                });
+                nextStep();
+                break;
+
+            case 'effect':
+                console.log('Playing effect:', action.effectName);
+                // TODO: Implement actual sound effect playback
+                nextStep();
+                break;
         }
     };
 
@@ -151,8 +170,8 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
 
             const timer = setInterval(() => {
                 if (index < fullText.length) {
-                    setDisplayedText(prev => prev + fullText.charAt(index));
                     index++;
+                    setDisplayedText(fullText.slice(0, index));
                 } else {
                     setIsTyping(false);
                     clearInterval(timer);
@@ -194,7 +213,7 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
             <audio ref={audioRef} />
             {/* Characters */}
             {characters.map((char) => (
-                <div key={char.id} className="relative">
+                <div key={char.id} className={`relative ${activeAnimations[char.id] ? getAnimationClass(activeAnimations[char.id]!) : ''}`}>
                     <SpriteCharacter
                         position={char.initialPosition}
                         direction={char.direction || 'down'}
@@ -251,7 +270,48 @@ const MissionScenarioPlayer: React.FC<MissionScenarioPlayerProps> = ({
                 SKIP ⏩
             </button>
         </div>
+
     );
 };
+
+const getAnimationClass = (anim: string) => {
+    switch (anim) {
+        case 'jump': return 'animate-bounce';
+        case 'spin': return 'animate-spin';
+        case 'shake': return 'animate-shake';
+        case 'bounce': return 'animate-bounce';
+        case 'wiggle': return 'animate-wiggle';
+        default: return '';
+    }
+};
+
+const styles = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    .animate-shake {
+        animation: shake 0.5s ease-in-out infinite;
+    }
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(-3deg); }
+        50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle {
+        animation: wiggle 0.3s ease-in-out infinite;
+    }
+`;
+
+// Append styles to head if not exists (simple hack for this component)
+if (typeof document !== 'undefined') {
+    const styleId = 'mission-scenario-styles';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = styles;
+        document.head.appendChild(style);
+    }
+}
 
 export default MissionScenarioPlayer;

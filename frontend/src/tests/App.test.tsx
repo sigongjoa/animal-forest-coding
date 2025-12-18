@@ -3,8 +3,8 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import App from './App';
-import progressionReducer from './store/slices/progressionSlice';
+import App from '../App';
+import progressionReducer from '../store/slices/progressionSlice';
 
 // Create test store
 const createTestStore = () => configureStore({

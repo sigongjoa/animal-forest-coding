@@ -1,0 +1,314 @@
+{
+    "id": "unit-3-variable-world",
+    "title": "사라진 4,000벨의 행방 (변수의 생명주기와 스코프)",
+    "description": "변수의 스코프(Scope), 라이프 사이클(Lifecycle), 섀도잉(Shadowing), 사전 조건(Precondition)을 배워 지갑을 지킵시다.",
+    "difficulty": "intermediate",
+    "language": "java",
+    "order": 3,
+    "points": 300,
+    "steps": [
+        {
+            "id": 1,
+            "title": "Chapter 1. 사라진 4,000벨 (Scope)",
+            "description": "지역 변수(Local Variable)는 메소드가 끝나면 사라집니다. 돈을 영구적으로 보관하려면 인스턴스 변수(Instance Variable)로 옮겨야 합니다.",
+            "prompt": "상점 안(메소드)에서 만든 `myBells`를 상점 밖(클래스)의 개인 지갑으로 옮기세요.",
+            "template": "public class User {\n    // 여기에 인스턴스 변수를 선언하세요 (내 지갑)\n    \n    public void sellFish() {\n        int myBells = 4000; // ⚠️ 이건 지역 변수(영수증)입니다! 메소드가 끝나면 사라집니다.\n        System.out.println(\"4000벨 획득!\");\n    }\n}",
+            "solution": "public class User {\n    private int myBells = 0;\n    \n    public void sellFish() {\n        this.myBells += 4000;\n        System.out.println(\"4000벨 획득!\");\n    }\n}",
+            "estimatedTimeMinutes": 10
+        },
+        {
+            "id": 2,
+            "title": "Chapter 2. 도플갱어의 습격 (Shadowing)",
+            "description": "변수 이름이 같으면 가장 가까운 변수(매개변수)가 우선됩니다. `this`를 사용하여 내 지갑(인스턴스 변수)을 가리키세요.",
+            "prompt": "`payLoan` 메소드에서 빚을 갚으려는데 돈이 줄어들지 않습니다. `this` 키워드를 사용해 해결하세요.",
+            "template": "public class User {\n    private int myBells = 4000;\n    \n    public void payLoan(int myBells) {\n        // ⚠️ 여기서 myBells는 매개변수(갚을 돈)를 가리킵니다.\n        myBells = myBells - myBells; // 내 지갑(인스턴스 변수)에서 돈을 빼야 합니다!\n    }\n}",
+            "solution": "public class User {\n    private int myBells = 4000;\n    \n    public void payLoan(int amount) {\n        this.myBells -= amount;\n    }\n}",
+            "estimatedTimeMinutes": 10
+        },
+        {
+            "id": 3,
+            "title": "Chapter 3. 마이너스 통장 버그 (Precondition)",
+            "description": "돈이 부족한데도 물건이 사집니다. 구매 전에 잔액을 확인하는 문지기(Precondition)를 세우세요.",
+            "prompt": "`buyTool` 메소드에 돈이 충분한지 확인하는 `if` 문을 추가하세요.",
+            "template": "public class User {\n    private int myBells = 1000;\n    \n    public void buyTool(int cost) {\n        // ⚠️ 돈이 없어도 구매가 됩니다! 막아주세요.\n        this.myBells -= cost;\n        System.out.println(\"구매 완료!\");\n    }\n}",
+            "solution": "public class User {\n    private int myBells = 1000;\n    \n    public void buyTool(int cost) {\n        if (this.myBells >= cost) {\n            this.myBells -= cost;\n            System.out.println(\"구매 완료!\");\n        } else {\n            System.out.println(\"잔액이 부족합니다.\");\n        }\n    }\n}",
+            "estimatedTimeMinutes": 10,
+            "scenario": {
+                "setting": {
+                    "background": "/assets/mission3/nook_store_inside.png",
+                    "characters": [
+                        {
+                            "id": "player",
+                            "initialPosition": {
+                                "x": 200,
+                                "y": 300
+                            },
+                            "sprite": "/assets/character/player.png",
+                            "direction": "right",
+                            "scale": 2
+                        },
+                        {
+                            "id": "nook",
+                            "initialPosition": {
+                                "x": 400,
+                                "y": 300
+                            },
+                            "sprite": "/assets/character/nook.png",
+                            "direction": "left",
+                            "scale": 2
+                        }
+                    ]
+                },
+                "script": [
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "오호! 대출금이 깔끔하게 상환되었군요! `this`를 아주 잘 사용하는구리!",
+                        "emotion": "happy"
+                    },
+                    {
+                        "type": "animation",
+                        "target": "nook",
+                        "animation": "jump",
+                        "duration": 500
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "player",
+                        "text": "휴... 이제 빚쟁이 생활 청산인가요?",
+                        "emotion": "normal"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "자, 신용이 회복되었으니 좋은 물건을 소개하죠. '황금 낚싯대' 어때요? 단돈 500벨!",
+                        "emotion": "happy"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "player",
+                        "text": "하지만 방금 빚 갚느라 빈털터리(0벨)인걸요...",
+                        "emotion": "sad"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "걱정 말아요! 우리 가게 시스템엔 '잔액 확인' 기능이 아직 없거든요. 그냥 가져가도 모를걸요? 허허!",
+                        "emotion": "normal"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "player",
+                        "text": "그럼 마이너스 통장이 되잖아요! 버그를 고쳐야겠어요.",
+                        "emotion": "concerned"
+                    },
+                    {
+                        "type": "transition",
+                        "mode": "IDE"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "title": "Chapter 4. 최종 미션: 품절입니다! (Advanced Precondition)",
+            "description": "이제 돈은 확인했지만, 물건이 없으면 못 팔겠죠? 재고(inStock)를 확인하는 코드를 추가하세요.",
+            "prompt": "`buyTool` 메소드에 **재고가 없으면(inStock == false)** \"품절입니다!\"를 출력하고 구매를 막는 코드를 추가하세요.",
+            "template": "public class User {\n    private int myBells = 2000;\n    private boolean inStock = false; // ⚠️ 재고가 없습니다!\n    \n    public void buyTool(int cost) {\n        // 1. 돈이 충분한지 확인\n        if (this.myBells >= cost) {\n            // ⚠️ 여기에 재고(inStock) 확인 코드를 추가하세요!\n            // 재고가 있으면 -> 돈 차감 & 구매 완료\n            // 재고가 없으면 -> \"품절입니다!\" 출력\n            \n            this.myBells -= cost;\n            System.out.println(\"구매 완료!\");\n        } else {\n            System.out.println(\"잔액이 부족합니다.\");\n        }\n    }\n}",
+            "solution": "public class User {\n    private int myBells = 2000;\n    private boolean inStock = false;\n    \n    public void buyTool(int cost) {\n        if (this.myBells >= cost) {\n            if (this.inStock) {\n                this.myBells -= cost;\n                System.out.println(\"구매 완료!\");\n            } else {\n                System.out.println(\"품절입니다!\");\n            }\n        } else {\n            System.out.println(\"잔액이 부족합니다.\");\n        }\n    }\n}",
+            "estimatedTimeMinutes": 15,
+            "scenario": {
+                "setting": {
+                    "background": "/assets/mission3/nook_store_inside.png",
+                    "characters": [
+                        {
+                            "id": "player",
+                            "initialPosition": {
+                                "x": 200,
+                                "y": 300
+                            },
+                            "sprite": "/assets/character/player.png",
+                            "direction": "right",
+                            "scale": 2
+                        },
+                        {
+                            "id": "nook",
+                            "initialPosition": {
+                                "x": 400,
+                                "y": 300
+                            },
+                            "sprite": "/assets/character/nook.png",
+                            "direction": "left",
+                            "scale": 2
+                        }
+                    ]
+                },
+                "script": [
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "훌륭해요! 이제 '사전 조건(Precondition)' 덕분에 돈이 없으면 물건을 못 사게 되었군요.",
+                        "emotion": "happy"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "오늘 배운 내용을 정리해볼까요?",
+                        "emotion": "normal"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "첫째, 돈은 바구니(지역 변수)가 아니라 지갑(인스턴스 변수)에 챙겨라!"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "둘째, 이름이 겹칠 땐 '내 것(this)'이라고 확실히 말해라!"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "셋째, 거래하기 전에 항상 조건을 확인(if)해라!"
+                    },
+                    {
+                        "type": "animation",
+                        "target": "nook",
+                        "animation": "wiggle",
+                        "duration": 500
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "자, 그럼 마지막 미션입니다! 돈이 있어도 물건이 없으면 못 팔겠죠?",
+                        "emotion": "happy"
+                    },
+                    {
+                        "type": "dialogue",
+                        "speaker": "nook",
+                        "text": "재고(inStock)가 없으면 '품절입니다!'라고 외치는 코드를 작성해보세요. 성공하면 창고를 늘려드리죠!",
+                        "emotion": "happy"
+                    },
+                    {
+                        "type": "transition",
+                        "mode": "IDE"
+                    }
+                ]
+            }
+        }
+    ],
+    "storyContext": {
+        "introImage": "/assets/mission3/nook_store_inside.png",
+        "introDialogue": [
+            "어서오게구리! 자네가 잡은 농어 10마리, 아주 싱싱하더구만.",
+            "자, 여기 4,000벨일세!",
+            "...",
+            "어라? 가게 문을 나서자마자 돈이 사라졌어! 귀신이 곡할 노릇이군."
+        ],
+        "successDialogue": [
+            "훌륭하네! 이제 자네 돈은 안전하게 자네 지갑에 들어갔어.",
+            "앞으로도 변수의 수명(Lifecycle)을 잘 생각하게나, 구리!"
+        ],
+        "failureDialogue": [
+            "저런... 돈이 또 사라졌어?",
+            "메소드 안에서만 변수를 만들면 금방 사라진다네. 클래스 전체에서 쓰는 '인스턴스 변수'를 기억하게!"
+        ]
+    },
+    "rewards": {
+        "basePoints": 300,
+        "speedBonus": 50,
+        "perfectBonus": 50
+    },
+    "unlocks": [],
+    "prerequisites": [
+        "mission-002"
+    ],
+    "scenario": {
+        "setting": {
+            "background": "/assets/mission3/nook_store_inside.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "initialPosition": {
+                        "x": 200,
+                        "y": 300
+                    },
+                    "sprite": "/assets/character/player.png",
+                    "direction": "right",
+                    "scale": 2
+                },
+                {
+                    "id": "nook",
+                    "initialPosition": {
+                        "x": 400,
+                        "y": 300
+                    },
+                    "sprite": "/assets/character/nook.png",
+                    "direction": "left",
+                    "scale": 2
+                }
+            ]
+        },
+        "script": [
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "어서오게구리! 자네가 잡은 농어 10마리, 아주 싱싱하더구만.",
+                "emotion": "happy"
+            },
+            {
+                "type": "move",
+                "target": "nook",
+                "to": {
+                    "x": 350,
+                    "y": 300
+                },
+                "speed": "walk"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "자, 여기 4,000벨일세! 아주 큰 돈이지."
+            },
+            {
+                "type": "effect",
+                "effectName": "coin_sound"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "자, 그럼 이제 가서 대출금을..."
+            },
+            {
+                "type": "move",
+                "target": "player",
+                "to": {
+                    "x": 100,
+                    "y": 300
+                },
+                "speed": "walk"
+            },
+            {
+                "type": "emote",
+                "target": "player",
+                "emoji": "shocked"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "player",
+                "text": "어라? 내 주머니가 비었어! 방금 받은 4,000벨이 사라졌어요!",
+                "emotion": "shocked"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "허허, 자네 '지역 변수' 지갑을 쓴 건가? 그건 가게 나가면 사라진다고!",
+                "emotion": "normal"
+            },
+            {
+                "type": "transition",
+                "mode": "IDE"
+            }
+        ]
+    }
+}

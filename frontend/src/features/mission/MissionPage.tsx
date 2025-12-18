@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useMissionProgress } from '../hooks/useMissionProgress';
-import { MissionStoryDisplay } from '../components/MissionStoryDisplay';
-import { MissionIDEEditor } from '../components/MissionIDEEditor';
-import MissionScenarioPlayer from '../components/MissionScenarioPlayer';
-import NookCompanion from '../components/NookCompanion';
-import { selectProgression } from '../store/slices/progressionSlice';
-import { MissionScenario, ScriptAction } from '../types/Mission';
-import { TileGridRenderer } from '../components/TileGridRenderer';
+import { useMissionProgress } from '../../hooks/useMissionProgress';
+import { MissionStoryDisplay } from './components/MissionStoryDisplay';
+import { MissionIDEEditor } from './components/MissionIDEEditor';
+import MissionScenarioPlayer from './components/MissionScenarioPlayer';
+import NookCompanion from './components/NookCompanion';
+import { selectProgression } from '../../store/slices/progressionSlice';
+import { MissionScenario, ScriptAction } from '../../types/Mission';
+import { TileGridRenderer } from '../../components/TileGridRenderer';
 
 const MissionPage: React.FC = () => {
     const { missionId } = useParams<{ missionId: string }>();

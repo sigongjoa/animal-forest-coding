@@ -9,7 +9,7 @@ import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 
 import IDEPage from './pages/IDEPage';
-import MissionPage from './pages/MissionPage';
+import MissionPage from './features/mission/MissionPage';
 import ProgressPage from './pages/ProgressPage';
 import AdminDashboard from './pages/AdminDashboard';
 import PlaygroundPage from './pages/PlaygroundPage';

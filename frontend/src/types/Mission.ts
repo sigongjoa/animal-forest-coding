@@ -14,8 +14,10 @@ export type ScriptAction =
   | { type: 'dialogue'; speaker: 'nook' | 'player' | 'system' | 'justin' | 'daisy'; text: string; emotion?: 'happy' | 'angry' | 'shocked' | 'normal' | 'sad' | 'neutral' | 'thinking' | 'concerned'; }
   | { type: 'move'; target: 'player' | 'nook' | 'justin' | 'daisy'; to: { x: number; y: number }; speed?: 'walk' | 'run'; }
   | { type: 'emote'; target: 'player' | 'nook' | 'justin' | 'daisy'; emoji: string; }
+  | { type: 'animation'; target: string; animation: 'jump' | 'spin' | 'shake' | 'bounce' | 'wiggle'; duration?: number; }
   | { type: 'transition'; mode: 'IDE' | 'STORY'; }
-  | { type: 'wait'; duration: number; };
+  | { type: 'wait'; duration: number; }
+  | { type: 'effect'; effectName: string; };
 
 export interface MissionScenario {
   setting: {

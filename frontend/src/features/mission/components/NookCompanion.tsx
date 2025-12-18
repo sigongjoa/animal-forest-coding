@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useAudio } from '../hooks/useAudio';
-import SpriteCharacter from './SpriteCharacter';
+import { useAudio } from '../../../hooks/useAudio';
+import SpriteCharacter from '../../../components/SpriteCharacter';
 
 interface NookCompanionProps {
     status: 'idle' | 'thinking' | 'talking' | 'happy' | 'concerned';
@@ -37,8 +37,8 @@ const NookCompanion: React.FC<NookCompanionProps> = ({ status, message, visible 
             let index = 0;
             const timer = setInterval(() => {
                 if (index < message.length) {
-                    setDisplayedText(prev => prev + message.charAt(index));
                     index++;
+                    setDisplayedText(message.slice(0, index));
                 } else {
                     setIsTyping(false);
                     clearInterval(timer);

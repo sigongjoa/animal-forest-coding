@@ -52,7 +52,7 @@ const authenticateUser = (
     const token = authHeader.split(' ')[1]; // Bearer <token>
 
     // 개발용 더미 토큰 허용
-    if (token && token.startsWith('dummy-token')) {
+    if (token && (token.startsWith('dummy-token') || token.startsWith('demo-token'))) {
       req.user = { id: 'test_user', email: 'test@example.com' };
       next();
       return;

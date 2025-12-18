@@ -99,6 +99,7 @@ const MainPage: React.FC = () => {
                         </div>
                     </button>
 
+
                     {/* Unit 2 */}
                     <button
                         onClick={() => navigate('/mission/unit-2-fishing')}
@@ -107,8 +108,21 @@ const MainPage: React.FC = () => {
                         <div className="bg-blue-100 p-3 rounded-full text-2xl">🎣</div>
                         <div>
                             <h3 className="text-lg font-bold text-gray-800">Unit 2: King of Fishing</h3>
-                            <p className="text-sm text-gray-600 mt-1">Master selection & iteration with Justin.</p>
+                            <p className="text-sm text-gray-600 mt-1">Master loops & conditionals with Justin.</p>
                             <span className="inline-block mt-2 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Intermediate</span>
+                        </div>
+                    </button>
+
+                    {/* Unit 3 */}
+                    <button
+                        onClick={() => navigate('/mission/unit-3-variable-world')}
+                        className="bg-white/90 p-6 rounded-2xl shadow-md hover:shadow-xl hover:bg-white transition-all text-left flex items-start space-x-4 border-l-8 border-purple-400"
+                    >
+                        <div className="bg-purple-100 p-3 rounded-full text-2xl">📦</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800">Unit 3: Java Variables</h3>
+                            <p className="text-sm text-gray-600 mt-1">Learn variables & types with Isabelle.</p>
+                            <span className="inline-block mt-2 text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded">Advanced</span>
                         </div>
                     </button>
                 </div>
@@ -122,7 +136,7 @@ const MainPage: React.FC = () => {
             {/* Modals */}
             <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
             <StoryLogModal isOpen={isStoryLogOpen} onClose={() => setIsStoryLogOpen(false)} />
-        </div>
+        </div >
     );
 };
 

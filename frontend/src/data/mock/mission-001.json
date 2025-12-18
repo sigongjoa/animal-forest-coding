@@ -1,0 +1,138 @@
+{
+    "id": "mission-001",
+    "title": "Welcome to Animal Forest",
+    "description": "Learn the basics of coding with Tom Nook.",
+    "difficulty": "beginner",
+    "language": "javascript",
+    "order": 1,
+    "points": 100,
+    "steps": [
+        {
+            "id": 1,
+            "title": "Hello, World!",
+            "description": "Print your first message to the console.",
+            "prompt": "Use console.log() to print 'Hello, Animal Forest!'",
+            "template": "// Write your code here\n",
+            "solution": "console.log('Hello, Animal Forest!');",
+            "estimatedTimeMinutes": 5
+        }
+    ],
+    "storyContext": {
+        "introImage": "/episode/1/mission-001/scene-1.png",
+        "introDialogue": [
+            "Hello there! Welcome to the pristine island of Animal Forest!",
+            "I'm Tom Nook, and I'll be your guide to building a wonderful life here.",
+            "To get started, we need to set up your NookPhone. Can you print a welcome message?"
+        ],
+        "successDialogue": [
+            "Excellent! Your NookPhone is now active.",
+            "You're a natural at this, yes, yes!"
+        ],
+        "failureDialogue": [
+            "Oh dear, it seems the message didn't print correctly.",
+            "Remember to use console.log() and check your spelling."
+        ]
+    },
+    "rewards": {
+        "basePoints": 100,
+        "speedBonus": 50,
+        "perfectBonus": 50
+    },
+    "unlocks": [
+        "mission-002"
+    ],
+    "prerequisites": [],
+    "scenario": {
+        "setting": {
+            "background": "/assets/background/beach_sunset.png",
+            "characters": [
+                {
+                    "id": "player",
+                    "initialPosition": {
+                        "x": 100,
+                        "y": 200
+                    },
+                    "sprite": "/assets/character/player.png",
+                    "direction": "right",
+                    "scale": 2
+                },
+                {
+                    "id": "nook",
+                    "initialPosition": {
+                        "x": 400,
+                        "y": 200
+                    },
+                    "sprite": "/assets/character/nook.png",
+                    "direction": "left",
+                    "scale": 2
+                }
+            ]
+        },
+        "script": [
+            {
+                "type": "wait",
+                "duration": 1000
+            },
+            {
+                "type": "move",
+                "target": "nook",
+                "to": {
+                    "x": 150,
+                    "y": 200
+                },
+                "speed": "walk"
+            },
+            {
+                "type": "emote",
+                "target": "nook",
+                "emoji": "🧮"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "Welcome to Coding Island! Yes, yes!",
+                "emotion": "happy"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "I'm Tom Nook. And now... it's time to settle the bill."
+            },
+            {
+                "type": "move",
+                "target": "nook",
+                "to": {
+                    "x": 140,
+                    "y": 200
+                },
+                "speed": "run"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "Tent fee, NookPhone fee, Tax... Total is 49,800 Bells!"
+            },
+            {
+                "type": "emote",
+                "target": "player",
+                "emoji": "⚡"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "player",
+                "text": "I... I don't have any money!",
+                "emotion": "shocked"
+            },
+            {
+                "type": "dialogue",
+                "speaker": "nook",
+                "text": "No bells? Then you'll have to code your own bank account on this laptop.",
+                "emotion": "normal"
+            },
+            {
+                "type": "transition",
+                "mode": "IDE"
+            }
+        ]
+    }
+}

@@ -26,6 +26,12 @@ export function createServer(): Express {
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
+  // DEBUG LOGGER
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    next();
+  });
+
   // ==================== Rate Limiting ====================
 
   // TTS 엔드포인트: 분당 10개
@@ -38,11 +44,13 @@ export function createServer(): Express {
 
   // ==================== Routes ====================
 
-  // API 라우트
-  app.use('/api', apiRoutes);
+  // ==================== Routes ====================
 
-  // Java Execution 라우트
+  // Java Execution 라우트 (특수 경로 우선)
   app.use('/api/java', javaRoutes);
+
+  // API 라우트 (일반 경로)
+  app.use('/api', apiRoutes);
 
   // 정적 파일
   const dataPath = path.join(__dirname, '../data');
