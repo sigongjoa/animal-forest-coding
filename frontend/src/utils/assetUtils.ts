@@ -17,6 +17,14 @@ export const getAssetPath = (path: string): string => {
     // Remove leading slash if present to safely join
     const cleanPath = path.startsWith('/') ? path.slice(1) : path;
 
+    // Hardcode for GitHub Pages stability
+    if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
+        const repoName = 'animal-forest-coding';
+        if (!cleanPath.startsWith(repoName)) {
+            return `/${repoName}/${cleanPath}`;
+        }
+    }
+
     // Use PUBLIC_URL provided by create-react-app during build
     // In dev: likely empty string or '/'
     // In prod (GH Pages): '/animal-forest-coding'
